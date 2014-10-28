@@ -1,11 +1,11 @@
-// Funções relacianadas aos dados de cursos
+// FunÃ§Ãµes relacianadas aos dados de cursos
 
 #include <stdio.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um curso
-//  Parâmetros: Referência a um curso
+//  ParÃ¢metros: ReferÃªncia a um curso
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
 void leDadosCurso(Curso *curso)
 {
@@ -17,7 +17,7 @@ void leDadosCurso(Curso *curso)
 
 //***********************************************************************************************************************
 //  Objetivo: Gravar os dados de um curso num arquivo
-//  Parâmetros: Referência a um curso
+//  ParÃ¢metros: ReferÃªncia a um curso
 //  Retorno: Nenhum
 void gravaDadosCurso(Curso *curso)
 {
@@ -33,9 +33,9 @@ void gravaDadosCurso(Curso *curso)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Encontrar o proximo código valido de um curso
-//  Parâmetros: Nenhum
-//  Retorno: próximo código valido
+//  Objetivo: Encontrar o proximo cÃ³digo valido de um curso
+//  ParÃ¢metros: Nenhum
+//  Retorno: prÃ³ximo cÃ³digo valido
 int achaProximoCodCurso()
 {
     int codigo = CODIGO_MIN;
@@ -57,7 +57,7 @@ int achaProximoCodCurso()
 
 //***********************************************************************************************************************
 //  Objetivo: Listar os dados de todos os cursos
-//  Parâmetros: nenhum
+//  ParÃ¢metros: nenhum
 //  Retorno: Nenhum
 void listaDadosCurso()
 {
@@ -83,14 +83,14 @@ void listaDadosCurso()
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Pesquisar um curso dentro de um arquivo por código único
-//  Parâmetros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (não zero para sim)
-//  Retorno: numero positivo se encontrado(posição do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
+//  Objetivo: Pesquisar um curso dentro de um arquivo por cÃ³digo Ãºnico
+//  ParÃ¢metros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nÃ£o zero para sim)
+//  Retorno: numero positivo se encontrado(posiÃ§Ã£o do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
 int pesquisaCursoCod(int codCursoBusca, int indPrint)
 {
     FILE *arq;
     Curso curso;
-    int pos = 0;
+    int pos = 0, flag = 0;
     if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
     {
         while(!feof(arq))
@@ -101,19 +101,20 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint)
                 {
                     if(indPrint)
                     	printf("Nome do Curso: %s\nCodigo: %d\nCarga Horaria: %d\nValor da mensalidade: %.2f\n", curso.nome, curso.codigo, curso.cargaHoraria, curso.mensalidade);
+                    flag = 1;
                     break;
                 }
             }
         fclose(arq);
     }
-    if(indPrint && !pos)
+    if(indPrint && !flag)
         printf("O curso nao foi encontrado!");
     return pos;
 }
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
-//  Parâmetros: nome a ser pesquisado
+//  ParÃ¢metros: nome a ser pesquisado
 //  Retorno: nenhum
 void pesquisaCursoNome(char *nomeBusca)
 {
