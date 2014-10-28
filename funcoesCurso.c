@@ -101,7 +101,6 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint)
                 {
                     if(indPrint)
                     	printf("Nome do Curso: %s\nCodigo: %d\nCarga Horaria: %d\nValor da mensalidade: %.2f\n", curso.nome, curso.codigo, curso.cargaHoraria, curso.mensalidade);
-                    flag = 1;
                     break;
                 }
             }
