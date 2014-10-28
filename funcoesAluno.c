@@ -23,7 +23,6 @@ int pesquisaAlunoMatricula(int matriculaBusca, int indPrint)
                     if(indPrint)
                         // TODO Formatar dados saida aluno
                         printf("");
-                    flag = 1;
                     break;
                 }
             }
