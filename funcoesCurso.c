@@ -1,11 +1,11 @@
-// FunÃ§Ãµes relacianadas aos dados de cursos
+// FunÃƒÂ§ÃƒÂµes relacianadas aos dados de cursos
 
 #include <stdio.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um curso
-//  ParÃ¢metros: ReferÃªncia a um curso
+//  ParÃƒÂ¢metros: ReferÃƒÂªncia a um curso
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
 void leDadosCurso(Curso *curso)
 {
@@ -17,7 +17,7 @@ void leDadosCurso(Curso *curso)
 
 //***********************************************************************************************************************
 //  Objetivo: Gravar os dados de um curso num arquivo
-//  ParÃ¢metros: ReferÃªncia a um curso
+//  ParÃƒÂ¢metros: ReferÃƒÂªncia a um curso
 //  Retorno: Nenhum
 void gravaDadosCurso(Curso *curso)
 {
@@ -33,9 +33,9 @@ void gravaDadosCurso(Curso *curso)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Encontrar o proximo cÃ³digo valido de um curso
-//  ParÃ¢metros: Nenhum
-//  Retorno: prÃ³ximo cÃ³digo valido
+//  Objetivo: Encontrar o proximo cÃƒÂ³digo valido de um curso
+//  ParÃƒÂ¢metros: Nenhum
+//  Retorno: prÃƒÂ³ximo cÃƒÂ³digo valido
 int achaProximoCodCurso()
 {
     int codigo = CODIGO_MIN;
@@ -57,7 +57,7 @@ int achaProximoCodCurso()
 
 //***********************************************************************************************************************
 //  Objetivo: Listar os dados de todos os cursos
-//  ParÃ¢metros: nenhum
+//  ParÃƒÂ¢metros: nenhum
 //  Retorno: Nenhum
 void listaDadosCurso()
 {
@@ -83,9 +83,9 @@ void listaDadosCurso()
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Pesquisar um curso dentro de um arquivo por cÃ³digo Ãºnico
-//  ParÃ¢metros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nÃ£o zero para sim)
-//  Retorno: numero positivo se encontrado(posiÃ§Ã£o do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
+//  Objetivo: Pesquisar um curso dentro de um arquivo por cÃƒÂ³digo ÃƒÂºnico
+//  ParÃƒÂ¢metros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nÃƒÂ£o zero para sim)
+//  Retorno: numero positivo se encontrado(posiÃƒÂ§ÃƒÂ£o do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
 int pesquisaCursoCod(int codCursoBusca, int indPrint)
 {
     FILE *arq;
@@ -114,13 +114,13 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint)
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
-//  ParÃ¢metros: nome a ser pesquisado
+//  ParÃƒÂ¢metros: nome a ser pesquisado
 //  Retorno: nenhum
 void pesquisaCursoNome(char *nomeBusca)
 {
     FILE *arq;
-    Curso curso;
-    int qtdCorrespondencias = 0;
+    Curso curso, *cursos = NULL, *cursosAux;
+    int qtdLidos = 0, contador;
     char copiaNome[TAM_NOME_CURSO];
     
     strToLower(nomeBusca);
@@ -129,24 +129,73 @@ void pesquisaCursoNome(char *nomeBusca)
     if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
     {
         while(!feof(arq))
+        {
             if(fread(&curso, sizeof(Curso), 1, arq))
             {
                 strcpy(copiaNome, curso.nome);
                 strToLower(copiaNome);
                 if(strstr(copiaNome, nomeBusca))
                 {
-                    
-                    printf("%-50s%-7d%-7d%-10.2f\n",curso.nome,curso.codigo,curso.cargaHoraria,curso.mensalidade);
-                    qtdCorrespondencias++;
+                    cursosAux = (Curso *) realloc(cursos, sizeof(Curso)*(qtdLidos+1));
+                    if(cursosAux != NULL)
+                    {
+                        cursos = cursosAux;
+                        cursos[qtdLidos] = curso;
+                        qtdLidos++;
+                    }
+                    else
+                        break;
                 }
             }
-            
+            else
+                break;
+        }
         fclose(arq);
     }
     
-    if(!qtdCorrespondencias)
+    if(qtdLidos)
+    {            
+        if(cursosAux != NULL)
+        {
+            ordenaCursosPeloNome(cursos, qtdLidos);
+            for(contador = 0; contador < qtdLidos; contador++)
+                printf("%-50s%-7d%-7d%-10.2f\n", cursos[contador].nome, cursos[contador].codigo, 
+                       cursos[contador].cargaHoraria,cursos[contador].mensalidade);
+        }
+        else
+        {
+            clrscr();
+            puts("Houve erro na leitura dos cursos");
+        }
+        
+        if(cursos != NULL)
+            free(cursos);
+    }
+    else
     {
         clrscr();
-        printf("O curso nao foi encontrado!");
+        puts("Nao houve nenhuma correspondencia!");   
+    } 
+    fclose(arq);
+}
+
+//  Objetivo: Ordenar cursos pelo nome
+//  Parâmetros: Referencia a um vetor de cursos e a quantidade de cursos
+//  Retorno: Nenhum
+void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
+{
+    Curso cursoAux;
+    int contador, auxiliar;
+    for(auxiliar = 0; auxiliar < qtdeCursos-1; auxiliar++)
+    {
+        for(contador = auxiliar+1; contador < qtdeCursos; contador++)
+        {
+            if(stricmp(cursos[auxiliar].nome, cursos[contador].nome) > 0)
+            {
+                cursoAux = cursos[auxiliar];
+                cursos[auxiliar] = cursos[contador];
+                cursos[contador] = cursoAux;
+            }
+        }
     }
 }
