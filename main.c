@@ -1,6 +1,6 @@
-// Alunos : Marcus Vinícius Campos Fonseca e Lucas Lima da Silva
-// Matrículas: UC14101868, UC14102446
-// Implementação de algumas das funcionalidades do projeto final
+// Alunos : Marcus VinÃ­cius Campos Fonseca e Lucas Lima da Silva
+// MatrÃ­culas: UC14101868, UC14102446
+// ImplementaÃ§Ã£o de algumas das funcionalidades do projeto final
 
 #include <stdio.h>
 #include <conio.c>
@@ -48,7 +48,7 @@ int main(void)
             	switch(subOpcao)
             	{
             		case '1':
-            			cod = leValidaInteiro("Informe a matricula a buscar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+            			cod = leValidaInteiro("Informe a matricula do aluno a alterar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
             			alteraDadosAluno(cod);
                         getch();
             			break;
@@ -68,8 +68,9 @@ int main(void)
             	switch(subOpcao)
             	{
             		case '1':
-            			puts("Ainda nao implementado!");
-                        getch();
+            			cod = leValidaInteiro("Informe a matricula do aluno a excluir", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+            			excluiDadosAluno(cod);
+            			getch();
             			break;
             		case '2':
             			puts("Ainda nao implementado!");
