@@ -2,8 +2,10 @@
 Busca
 ***************************************
 1 - Buscar um Aluno
+
 2 - Buscar um Curso por Codigo
 3 - Buscar um Curso por Nome
 4 - Buscar uma Matricula
 0 - Voltar
+
 ***************************************
