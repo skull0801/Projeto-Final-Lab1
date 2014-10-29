@@ -2,7 +2,9 @@
 Menu Principal
 ***************************************
 1 - Cadastrar
-2 - Pesquisar
-3 - Listar
+2 - Alterar
+3 - Excluir
+4 - Pesquisar
+5 - Listar
 0 - Sair
 ***************************************
