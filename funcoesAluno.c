@@ -1,11 +1,11 @@
-// Funções relacionadas aos dados de alunos
+// FunÃ§Ãµes relacionadas aos dados de alunos
 
 #include <stdio.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um aluno
-//  Parâmetros: Referência ao aluno
+//  ParÃ¢metros: ReferÃªncia ao aluno
 //  Retorno: Nenhum
 void leDadosAluno(Aluno *aluno)
 {
@@ -39,7 +39,7 @@ void leDadosAluno(Aluno *aluno)
 
 //***********************************************************************************************************************
 // Objetivo: Gravar os dados de um aluno
-// Parâmetros: Referência ao aluno
+// ParÃ¢metros: ReferÃªncia ao aluno
 // Retorno: nenhum
 void gravaDadosAluno(Aluno *aluno)
 {
@@ -58,7 +58,7 @@ void gravaDadosAluno(Aluno *aluno)
 
 //***********************************************************************************************************************
 // Objetivo: Listar todos os alunos cadastrados
-// Parâmetros: Nenhum
+// ParÃ¢metros: Nenhum
 // Retorno: nenhum
 void listaDadosAlunos()
 {
@@ -98,7 +98,7 @@ void listaDadosAlunos()
 
 //***********************************************************************************************************************
 //  Objetivo: Alterar os dados de um aluno
-//  Parâmetros: Matricula do aluno a ser alterado
+//  ParÃ¢metros: Matricula do aluno a ser alterado
 //  Retorno: nenhum
 void alteraDadosAluno(int matricula)
 {
@@ -116,7 +116,7 @@ void alteraDadosAluno(int matricula)
             {
                 if(fread(&aluno, sizeof(Aluno), 1, arq))
                 {
-                    opcao = leValidaChar("\nO que deseja alterar?\n1 - Nome\n2 - Idade\n3 - Sexo", "1230");
+                    opcao = leValidaChar("\n\nO que deseja alterar?\n1 - Nome\n2 - Idade\n3 - Sexo\n0 - Sair", "1230");
                     switch(opcao)
                     {
                         case '1':
@@ -164,8 +164,81 @@ void alteraDadosAluno(int matricula)
 }
 
 //***********************************************************************************************************************
+//  Objetivo: Excluir um aluno
+//  Parâmetros: Matricula do aluno a ser excluido
+//  Retorno: nenhum
+void excluiDadosAluno(int matricula)
+{
+    FILE *arq, *arqTemp;
+    int posAluno, qtdCopiados = 0;
+    char opcao;
+    Aluno aluno;
+    
+    posAluno = pesquisaAlunoMatricula(matricula, 1);
+    if(posAluno)
+    {
+        opcao = leValidaChar("\n\nTem certeza de que deseja excluir este aluno? (S/N) ", "SN");
+        if(opcao=='S')
+        {
+            if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL )
+            {
+                if((arqTemp = fopen(ARQ_ALUNOS_TEMP, "wb")) != NULL)
+                {
+                    while(!feof(arq))
+                    {
+                        if(fread(&aluno, sizeof(Aluno), 1, arq))
+                        {
+                            qtdCopiados++;
+                            if(posAluno!=qtdCopiados)
+                                fwrite(&aluno, sizeof(Aluno), 1, arqTemp);
+                        }
+                    }
+                    
+                    fclose(arqTemp);
+                    fclose(arq);
+                    
+                    if(!remove(ARQ_ALUNOS))
+                    {
+                        if(!rename(ARQ_ALUNOS_TEMP, ARQ_ALUNOS))
+                        {
+                            printf("O aluno foi excluido com sucesso!");
+                        }
+                        else
+                        {
+                            clrscr();
+                            printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
+                        }
+                    }
+                    else
+                    {
+                        clrscr();
+                        printf("O arquivo antigo nao pode ser excluido, logo o aluno nao foi excluido!");
+                    }
+                    
+                }
+                else
+                {
+                    clrscr();
+                    printf("O arquivo para exclusao nao pode ser criado!");
+                }
+            }
+            else
+            {
+                clrscr();
+                printf("O arquivo nao pode ser aberto para remover o aluno!");
+            }
+        }
+        else
+        {
+            clrscr();
+            printf("Os dados do aluno nao foram excluidos!");
+        }
+    }
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Pesquisar um aluno dentro de um arquivo por matricula
-//  Parâmetros: matricula a ser pesquisada, indicador se o dado encontrado deve ser escrito (nÃƒÂ£o zero para sim)
+//  ParÃ¢metros: matricula a ser pesquisada, indicador se o dado encontrado deve ser escrito (nÃƒÆ’Ã‚Â£o zero para sim)
 //  Retorno: numero positivo se encontrado (posicao do aluno no arquivo de 1 a n, sendo n o numero de alunos), 0 - codigo nao encontrado
 int pesquisaAlunoMatricula(int matriculaBusca, int indPrint)
 {
@@ -205,8 +278,8 @@ int pesquisaAlunoMatricula(int matriculaBusca, int indPrint)
 
 //***********************************************************************************************************************
 //  Objetivo: Validar um cpf
-//  Parâmetros: Cpf a ser validado
-//  Retorno: 1 - Cpf é valido, 0 - Cpf é invalido
+//  ParÃ¢metros: Cpf a ser validado
+//  Retorno: 1 - Cpf Ã© valido, 0 - Cpf Ã© invalido
 int validaCPF(const char *cpf)
 {
     char *cpfsInvalidos[] = {"11111111111",
@@ -271,9 +344,9 @@ int validaCPF(const char *cpf)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar se o cpf de um aluno já esta cadastrado
-//  Parâmetros: Referência ao cpf a ser buscado
-//  Retorno: 1 - O cpf existe, 0 - O cpf não existe
+//  Objetivo: Verificar se o cpf de um aluno jÃ¡ esta cadastrado
+//  ParÃ¢metros: ReferÃªncia ao cpf a ser buscado
+//  Retorno: 1 - O cpf existe, 0 - O cpf nÃ£o existe
 int verificaCPFAluno(const char *cpf)
 {
     FILE *arq;
