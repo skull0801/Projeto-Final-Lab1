@@ -1,11 +1,12 @@
-// FunÁıes basicas
+// Fun√ß√µes basicas
 
 #include <stdio.h>
+#include <time.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um numero inteiro
-//  Par‚metros: Referencia ‡ uma mensagem, referÍncia ‡ identificacao do numero inteiro, valor minimo e valor maximo
+//  Par√¢metros: Referencia √† uma mensagem, refer√™ncia √† identificacao do numero inteiro, valor minimo e valor maximo
 //  Retorno: O numero inteiro validado
 int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax)
 {
@@ -34,7 +35,7 @@ int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, in
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um numero Inteiro
-//  Par‚metros: Referencia ‡ uma mensagem, referÍncia ‡ identificacao do numero real, valor minimo e valor maximo
+//  Par√¢metros: Referencia √† uma mensagem, refer√™ncia √† identificacao do numero real, valor minimo e valor maximo
 //  Retorno: O numero real validado
 float leValidaReal(const char *msg, const char *identificacao, float valorMin, float valorMax)
 {
@@ -64,7 +65,7 @@ float leValidaReal(const char *msg, const char *identificacao, float valorMin, f
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um texto
-//  Par‚metros: Referencia ‡ uma mensagem, ‡ identificacao,ao texto, o tamanho minimo e o tamanho maximo do texto
+//  Par√¢metros: Referencia √† uma mensagem, √† identificacao,ao texto, o tamanho minimo e o tamanho maximo do texto
 //  Retorno: Nenhum
 void leValidaTexto(char *texto, const char *msg, const char *identificacao, int valorMin, int valorMax)
 {
@@ -86,7 +87,7 @@ void leValidaTexto(char *texto, const char *msg, const char *identificacao, int 
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um caractere
-//  Par‚metros: Referencia ‡ mensagem, e ‡ string de escolhas
+//  Par√¢metros: Referencia √† mensagem, e √† string de escolhas
 //  Retorno: Caractere validado (MAIUSCULO)
 char leValidaChar(const char *titulo, const char *escolhas)
 {
@@ -103,8 +104,23 @@ char leValidaChar(const char *titulo, const char *escolhas)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Registra a data atual
+// Par√¢metros: Refer√™ncia a uma struct tm para guardar a data atual
+// Retorno: nenhum
+void geraDataIngresso(Data *data)
+{
+    time_t tempoBruto;
+    struct tm *tempoAtual;
+    time(&tempoBruto);
+    tempoAtual = localtime(&tempoBruto);
+    data->dia = tempoAtual->tm_mday;
+    data->mes = tempoAtual->tm_mon+1;
+    data->ano = tempoAtual->tm_year+1900;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Passar uma string para minusculo
-// Par‚metros: String a ser passada
+// Par√¢metros: String a ser passada
 // Retorno: nenhum
 void strToLower(char *string)
 {
@@ -114,7 +130,7 @@ void strToLower(char *string)
 
 //***********************************************************************************************************************
 // Objetivo: Apresentar menu contido em um arquivo
-// Par‚metros: Nome do arquivo de menu
+// Par√¢metros: Nome do arquivo de menu
 // Retorno: nenhum
 void apresentaMenu(char *nomeArquivo)
 {
