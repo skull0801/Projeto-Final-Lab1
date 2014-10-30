@@ -1,11 +1,11 @@
-// FunÃƒÂ§ÃƒÂµes relacianadas aos dados de cursos
+// FunÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes relacianadas aos dados de cursos
 
 #include <stdio.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um curso
-//  ParÃƒÂ¢metros: ReferÃƒÂªncia a um curso
+//  ParÃƒÆ’Ã‚Â¢metros: ReferÃƒÆ’Ã‚Âªncia a um curso
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
 void leDadosCurso(Curso *curso)
 {
@@ -17,7 +17,7 @@ void leDadosCurso(Curso *curso)
 
 //***********************************************************************************************************************
 //  Objetivo: Gravar os dados de um curso num arquivo
-//  ParÃƒÂ¢metros: ReferÃƒÂªncia a um curso
+//  ParÃƒÆ’Ã‚Â¢metros: ReferÃƒÆ’Ã‚Âªncia a um curso
 //  Retorno: Nenhum
 void gravaDadosCurso(Curso *curso)
 {
@@ -33,9 +33,9 @@ void gravaDadosCurso(Curso *curso)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Encontrar o proximo cÃƒÂ³digo valido de um curso
-//  ParÃƒÂ¢metros: Nenhum
-//  Retorno: prÃƒÂ³ximo cÃƒÂ³digo valido
+//  Objetivo: Encontrar o proximo cÃƒÆ’Ã‚Â³digo valido de um curso
+//  ParÃƒÆ’Ã‚Â¢metros: Nenhum
+//  Retorno: prÃƒÆ’Ã‚Â³ximo cÃƒÆ’Ã‚Â³digo valido
 int achaProximoCodCurso()
 {
     int codigo = CODIGO_MIN;
@@ -57,7 +57,7 @@ int achaProximoCodCurso()
 
 //***********************************************************************************************************************
 //  Objetivo: Listar os dados de todos os cursos
-//  ParÃƒÂ¢metros: nenhum
+//  ParÃƒÆ’Ã‚Â¢metros: nenhum
 //  Retorno: Nenhum
 void listaDadosCurso()
 {
@@ -83,9 +83,9 @@ void listaDadosCurso()
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Pesquisar um curso dentro de um arquivo por cÃƒÂ³digo ÃƒÂºnico
-//  ParÃƒÂ¢metros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nÃƒÂ£o zero para sim)
-//  Retorno: numero positivo se encontrado(posiÃƒÂ§ÃƒÂ£o do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
+//  Objetivo: Pesquisar um curso dentro de um arquivo por cÃƒÆ’Ã‚Â³digo ÃƒÆ’Ã‚Âºnico
+//  ParÃƒÆ’Ã‚Â¢metros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nÃƒÆ’Ã‚Â£o zero para sim)
+//  Retorno: numero positivo se encontrado(posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
 int pesquisaCursoCod(int codCursoBusca, int indPrint)
 {
     FILE *arq;
@@ -114,7 +114,7 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint)
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
-//  ParÃƒÂ¢metros: nome a ser pesquisado
+//  ParÃƒÆ’Ã‚Â¢metros: nome a ser pesquisado
 //  Retorno: nenhum
 void pesquisaCursoNome(char *nomeBusca)
 {
@@ -180,7 +180,7 @@ void pesquisaCursoNome(char *nomeBusca)
 }
 
 //  Objetivo: Ordenar cursos pelo nome
-//  Parâmetros: Referencia a um vetor de cursos e a quantidade de cursos
+//  ParÃ¢metros: Referencia a um vetor de cursos e a quantidade de cursos
 //  Retorno: Nenhum
 void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
 {
@@ -195,6 +195,136 @@ void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
                 cursoAux = cursos[auxiliar];
                 cursos[auxiliar] = cursos[contador];
                 cursos[contador] = cursoAux;
+            }
+        }
+    }
+}
+
+//***********************************************************************************************************************
+//	Objetivo: Editar os dados de um curso
+//	Parametros: O codigo do curso a ser alterado
+//	Retorno: Nenhum
+void alteraDadosCurso(int codigoBusca)
+{
+	char opcao,confirma;
+	FILE *arq;
+	int posCurso;
+	Curso curso;
+	posCurso = pesquisaCursoCod(codigoBusca, 1);
+
+	if(posCurso)
+	{
+		if((arq = fopen(ARQ_CURSOS,"rb+")) != NULL)
+		{
+			if(!fseek(arq, sizeof(Curso)*(posCurso-1),0))
+			{
+				if((fread(&curso, sizeof(Curso), 1, arq)) == 1)
+				{
+					printf("Qual dos dados deseja alterar?\n1 - Alterar nome do curso\n2 - Alterar valor da mensalidade\n3 - Alterar a carga horaria\n0 - Voltar");
+					opcao = leValidaChar("","1230");
+					switch(opcao)
+					{
+						case '1':
+							leValidaTexto(curso.nome,"Informe qual o novo nome do curso","Novo nome do curso",3,TAM_NOME_CURSO);
+							break;
+						case '2':
+							curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
+							break;
+						case '3':
+							curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
+							break;
+					}
+					if(opcao != '0')
+					{
+                        if(!fseek(arq, sizeof(Curso)*(posCurso-1),0))
+    	               	{
+                			if((fwrite(&curso, sizeof(Curso), 1, arq)) == 1)
+                				puts("Dados alterados com sucesso!");
+                			else
+                				puts("Houve um erro na alteracao dos dados!");
+                		}
+                		else
+                			puts("Os dados nao foram encontrados!");
+    				}
+    				else
+    				    puts("Os dados nao foram alterados!");
+                }
+                else
+                {
+                    clrscr();
+                    puts("O curso nao pode ser lido!");
+                }
+			}
+			else
+            {
+                clrscr();   
+                puts("O dado nao pode ser encontrado!");
+            }
+            fclose(arq);
+		}
+		else
+		{
+            clrscr();
+            puts("O arquivo dos cursos nao pode ser encontrado!");
+        }
+	}
+}
+
+//***********************************************************************************************************************
+//	Objetivo: Excluir um curso
+//	Parametros: codigo do curso a ser excluido
+//	Retorno: Nenhum
+void excluiDadosCurso(int codExclusao)
+{
+    FILE *arq, *arqTemp;
+    char opcao;
+    int posCurso, contaCopiados = 0;
+    Curso curso;
+    posCurso = pesquisaCursoCod(codExclusao, 1);
+    if(posCurso)
+    {
+        opcao = leValidaChar("\n\nTem certeza de que deseja excluir este curso? (S/N) ", "SN");
+        if(opcao == 'S')
+    	{
+    		if((arq = fopen(ARQ_CURSOS,"rb")) != NULL)
+    		{
+                if((arqTemp = fopen(ARQ_CURSOS_TEMP,"wb")) != NULL)
+                {
+                    while(!feof(arq))
+                    {
+                        if((fread(&curso, sizeof(Curso), 1, arq)) == 1)
+                        {
+                            contaCopiados++;
+                            if(posCurso != contaCopiados)
+                                if(fwrite(&curso, sizeof(Curso), 1,arqTemp) != 1)
+                                    puts("Os dados nao puderam ser excluidos!");
+                        }
+                    }
+                    fclose(arqTemp);
+                    fclose(arq);
+                    
+                    if(remove(ARQ_CURSOS) == 0)
+                    {
+                        if(rename(ARQ_CURSOS_TEMP,ARQ_CURSOS) == 0)
+                        {
+                            puts("O curso foi removido com sucesso!");
+                        }
+                    }
+                    else
+                    {
+                        puts("O arquivo nao pode ser removido");
+                    }
+                }
+                else
+                {
+                    clrscr();
+                    puts("O arquivo temporario nao pode ser criado!");
+                }
+            }
+            else
+            {
+                clrscr();
+                puts("O curso nao foi encontrado!");
             }
         }
     }
