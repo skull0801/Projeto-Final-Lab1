@@ -2,7 +2,7 @@
 #define DADOS_H
 #include <time.h>
 
-// DefiniÃ§Ãµes
+// DefiniÃƒÂ§ÃƒÂµes
 #define TAM_NOME_ALUNO 81
 #define TAM_NOME_CURSO 51
 #define TAM_CPF 12
@@ -18,6 +18,7 @@
 #define MAX_IDADE 150
 #define ARQ_ALUNOS "alunos.b"
 #define ARQ_ALUNOS_TEMP "alTemp.b"
+#define ARQ_CURSOS_TEMP "cursoTemp.b"
 #define ARQ_CURSOS "cursos.b"
 #define ARQ_MATRICULAS "matriculas.b"
 #define MENU_PRINCIPAL "menu.txt"
@@ -57,8 +58,8 @@ typedef struct
     char situacaoAluno, situacaoPagamento;
 }Cadastro;
 
-//   FunÃ§Ãµes
-//  ProtÃ³tipos
+//   FunÃƒÂ§ÃƒÂµes
+//  ProtÃƒÂ³tipos
 int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax);
 float leValidaReal(const char *msg, const char *identificacao, float valorMin, float valorMax);
 void leValidaTexto(char *texto, const char *msg, const char *identificacao, int valorMin, int valorMax);
@@ -74,6 +75,7 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint);
 void pesquisaCursoNome(char *nomeBusca);
 int achaProximoCodCurso();
 void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos);
+void alteraDadosCurso(int codigoBusca);
 
 void leDadosAluno(Aluno *aluno);
 void gravaDadosAluno(Aluno *aluno);
