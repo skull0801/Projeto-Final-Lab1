@@ -2,7 +2,7 @@
 #define DADOS_H
 #include <time.h>
 
-// DefiniÃƒÂ§ÃƒÂµes
+// Definicoes
 #define TAM_NOME_ALUNO 81
 #define TAM_NOME_CURSO 51
 #define TAM_CPF 12
@@ -58,8 +58,8 @@ typedef struct
     char situacaoAluno, situacaoPagamento;
 }Cadastro;
 
-//   FunÃƒÂ§ÃƒÂµes
-//  ProtÃƒÂ³tipos
+//   Funcoes
+//  Prototipos
 int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax);
 float leValidaReal(const char *msg, const char *identificacao, float valorMin, float valorMax);
 void leValidaTexto(char *texto, const char *msg, const char *identificacao, int valorMin, int valorMax);
