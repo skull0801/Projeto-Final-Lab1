@@ -1,11 +1,11 @@
-// FunÃƒÂ§ÃƒÂµes relacionadas aos dados de alunos
+// Funcoes relacionadas aos dados de alunos
 
 #include <stdio.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um aluno
-//  ParÃƒÂ¢metros: ReferÃƒÂªncia ao aluno
+//  Parametros: Referencia ao aluno
 //  Retorno: Nenhum
 void leDadosAluno(Aluno *aluno)
 {
@@ -39,7 +39,7 @@ void leDadosAluno(Aluno *aluno)
 
 //***********************************************************************************************************************
 // Objetivo: Gravar os dados de um aluno
-// ParÃƒÂ¢metros: ReferÃƒÂªncia ao aluno
+// Parametros: Referencia ao aluno
 // Retorno: nenhum
 void gravaDadosAluno(Aluno *aluno)
 {
@@ -58,7 +58,7 @@ void gravaDadosAluno(Aluno *aluno)
 
 //***********************************************************************************************************************
 // Objetivo: Listar todos os alunos cadastrados
-// ParÃƒÂ¢metros: Nenhum
+// Parametros: Nenhum
 // Retorno: nenhum
 void listaDadosAlunos()
 {
@@ -98,7 +98,7 @@ void listaDadosAlunos()
 
 //***********************************************************************************************************************
 //  Objetivo: Alterar os dados de um aluno
-//  ParÃƒÂ¢metros: Matricula do aluno a ser alterado
+//  Parametros: Matricula do aluno a ser alterado
 //  Retorno: nenhum
 void alteraDadosAluno(int matricula)
 {
@@ -167,7 +167,7 @@ void alteraDadosAluno(int matricula)
 
 //***********************************************************************************************************************
 //  Objetivo: Excluir um aluno
-//  ParÃ¢metros: Matricula do aluno a ser excluido
+//  Parametros: Matricula do aluno a ser excluido
 //  Retorno: nenhum
 void excluiDadosAluno(int matricula)
 {
@@ -240,7 +240,7 @@ void excluiDadosAluno(int matricula)
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um aluno dentro de um arquivo por matricula
-//  ParÃƒÂ¢metros: matricula a ser pesquisada, indicador se o dado encontrado deve ser escrito (nÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o zero para sim)
+//  Parametros: matricula a ser pesquisada, indicador se o dado encontrado deve ser escrito (nao zero para sim)
 //  Retorno: numero positivo se encontrado (posicao do aluno no arquivo de 1 a n, sendo n o numero de alunos), 0 - codigo nao encontrado
 int pesquisaAlunoMatricula(int matriculaBusca, int indPrint)
 {
@@ -280,8 +280,8 @@ int pesquisaAlunoMatricula(int matriculaBusca, int indPrint)
 
 //***********************************************************************************************************************
 //  Objetivo: Validar um cpf
-//  ParÃƒÂ¢metros: Cpf a ser validado
-//  Retorno: 1 - Cpf ÃƒÂ© valido, 0 - Cpf ÃƒÂ© invalido
+//  Parametros: Cpf a ser validado
+//  Retorno: 1 - Cpf e valido, 0 - Cpf e invalido
 int validaCPF(const char *cpf)
 {
     char *cpfsInvalidos[] = {"11111111111",
@@ -346,9 +346,9 @@ int validaCPF(const char *cpf)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar se o cpf de um aluno jÃƒÂ¡ esta cadastrado
-//  ParÃƒÂ¢metros: ReferÃƒÂªncia ao cpf a ser buscado
-//  Retorno: 1 - O cpf existe, 0 - O cpf nÃƒÂ£o existe
+//  Objetivo: Verificar se o cpf de um aluno ja esta cadastrado
+//  Parametros: Referencia ao cpf a ser buscado
+//  Retorno: 1 - O cpf existe, 0 - O cpf nao existe
 int verificaCPFAluno(const char *cpf)
 {
     FILE *arq;
