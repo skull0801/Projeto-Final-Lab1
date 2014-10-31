@@ -5,7 +5,7 @@
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um curso
-//  ParÃƒÆ’Ã‚Â¢metros: ReferÃƒÆ’Ã‚Âªncia a um curso
+//  Parametros: Referencia a um curso
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
 void leDadosCurso(Curso *curso)
 {
@@ -17,7 +17,7 @@ void leDadosCurso(Curso *curso)
 
 //***********************************************************************************************************************
 //  Objetivo: Gravar os dados de um curso num arquivo
-//  ParÃƒÆ’Ã‚Â¢metros: ReferÃƒÆ’Ã‚Âªncia a um curso
+//  Parametros: Referencia a um curso
 //  Retorno: Nenhum
 void gravaDadosCurso(Curso *curso)
 {
