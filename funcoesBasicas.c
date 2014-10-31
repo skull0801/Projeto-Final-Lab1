@@ -6,7 +6,7 @@
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um numero inteiro
-//  Parametros: Referencia a uma mensagem, referência à identificacao do numero inteiro, valor minimo e valor maximo
+//  Parametros: Referencia a uma mensagem, referencia a identificacao do numero inteiro, valor minimo e valor maximo
 //  Retorno: O numero inteiro validado
 int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax)
 {
