@@ -1,3 +1,3 @@
-// Funções relacionadas aos dados de Cadastros
+// Funcoes relacionadas aos dados de Cadastros
 
 #include "dados.h"
