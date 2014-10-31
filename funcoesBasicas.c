@@ -35,7 +35,7 @@ int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, in
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um numero Inteiro
-//  Parametros: Referencia a uma mensagem, referência a identificacao do numero real, valor minimo e valor maximo
+//  Parametros: Referencia a uma mensagem, referencia a identificacao do numero real, valor minimo e valor maximo
 //  Retorno: O numero real validado
 float leValidaReal(const char *msg, const char *identificacao, float valorMin, float valorMax)
 {
