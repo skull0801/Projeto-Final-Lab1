@@ -13,7 +13,7 @@ void leDadosCurso(Curso *curso)
 {
     leValidaTexto(curso->nome, "Informe o nome do curso", "Curso", 3, TAM_NOME_CURSO);
     curso->cargaHoraria = leValidaInteiro("Informe a carga horaria", "Carga Horaria", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
-    curso->mensalidade = leValidaReal("Informe o valor da mensalidade","Mensalidade",MENSALIDADE_MIN,MENSALIDADE_MAX);
+    curso->mensalidade = leValidaReal("Informe o valor da mensalidade","Mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
     curso->codigo = achaProximoCodCurso();
 }
 
@@ -86,9 +86,9 @@ void listaDadosCurso()
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por codigo unico
-//  Parametros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nao zero para sim)
+//  Parametros: codigo a ser pesquisado
 //  Retorno: numero positivo se encontrado(posicao do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
-int pesquisaCursoCod(int codCursoBusca, int indPrint)
+int pesquisaCursoCod(int codCursoBusca)
 {
     FILE *arq;
     Curso curso;
@@ -101,16 +101,14 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint)
             	pos++;
                 if(codCursoBusca == curso.codigo)
                 {
-                    if(indPrint)
-                    	printf("Nome do Curso: %s\nCodigo: %d\nCarga Horaria: %d\nValor da mensalidade: %.2f\n", curso.nome, curso.codigo, curso.cargaHoraria, curso.mensalidade);
                     flag = 1;
                     break;
                 }
             }
         fclose(arq);
     }
-    if(indPrint && !flag)
-        printf("O curso nao foi encontrado!");
+    if(!flag)
+        pos = 0;
     return pos;
 }
 
@@ -197,11 +195,12 @@ void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
 //	Retorno: Nenhum
 void alteraDadosCurso(int codigoBusca)
 {
-	char opcao,confirma;
+	char opcao, confirmacao;
 	FILE *arq;
 	int posCurso;
 	Curso curso;
-	posCurso = pesquisaCursoCod(codigoBusca, 1);
+	
+	posCurso = pesquisaCursoCod(codigoBusca);
 
 	if(posCurso)
 	{
@@ -211,31 +210,43 @@ void alteraDadosCurso(int codigoBusca)
 			{
 				if((fread(&curso, sizeof(Curso), 1, arq)) == 1)
 				{
-					printf("Qual dos dados deseja alterar?\n1 - Alterar nome do curso\n2 - Alterar valor da mensalidade\n3 - Alterar a carga horaria\n0 - Voltar");
-					opcao = leValidaChar("","1230");
-					switch(opcao)
+                    do
+                    {
+                        apresentaCurso(curso);
+    					opcao = leValidaChar("\n\nQual dos dados deseja alterar?\n1 - Nome\n2 - Mensalidade\n3 - Carga Horaria\nC - Cancelar\nG - Gravar","123GC");
+    					switch(opcao)
+    					{
+    						case '1':
+    							leValidaTexto(curso.nome,"Informe qual o novo nome do curso","Novo nome do curso",3,TAM_NOME_CURSO);
+    							break;
+    						case '2':
+    							curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
+    							break;
+    						case '3':
+    							curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
+    							break;
+    					}
+                    }
+                    while(opcao != 'G' && opcao != 'C');
+                    
+					if(opcao != 'C')
 					{
-						case '1':
-							leValidaTexto(curso.nome,"Informe qual o novo nome do curso","Novo nome do curso",3,TAM_NOME_CURSO);
-							break;
-						case '2':
-							curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
-							break;
-						case '3':
-							curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
-							break;
-					}
-					if(opcao != '0')
-					{
-                        if(!fseek(arq, sizeof(Curso)*(posCurso-1),0))
-    	               	{
-                			if((fwrite(&curso, sizeof(Curso), 1, arq)) == 1)
-                				puts("Dados alterados com sucesso!");
-                			else
-                				puts("Houve um erro na alteracao dos dados!");
-                		}
-                		else
-                			puts("Os dados nao foram encontrados!");
+                        apresentaCurso(curso);
+                        confirmacao = leValidaChar("Voce tem certeza que deseja salvar as alteracoes? (S/N)", "SN");
+                        if(confirmacao == 'S')
+                        {
+                            if(!fseek(arq, sizeof(Curso)*(posCurso-1),0))
+        	               	{
+                    			if((fwrite(&curso, sizeof(Curso), 1, arq)) == 1)
+                    				puts("Dados alterados com sucesso!");
+                    			else
+                    				puts("Houve um erro na alteracao dos dados!");
+                    		}
+                    		else
+                    			puts("Os dados nao foram encontrados!");
+                        }
+                        else
+                            puts("Os dados nao foram alterados!");
     				}
     				else
     				    puts("Os dados nao foram alterados!");
@@ -262,61 +273,112 @@ void alteraDadosCurso(int codigoBusca)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Ler o codigo de um curso, buscar pelo mesmo, e confirmar se o usuario deseja excluir o curso, caso queira, excluir
+// Parametros: Nenhum
+// Retorno: Nenhum
+void excluiCurso(void)
+{
+    Curso curso;
+    FILE *arq = NULL;
+    int posCurso, codigo;
+    char opcao;
+    
+    codigo = leValidaInteiro("Informe o codigo do curso a excluir", "Codigo", CODIGO_MIN, CODIGO_MAX);
+    
+    posCurso = pesquisaCursoCod(codigo);
+    
+    if(posCurso)
+    {
+        if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+        {
+            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+            {
+                if(fread(&curso, sizeof(Curso), 1, arq))
+                {
+                    apresentaCurso(curso);
+                    opcao = leValidaChar("\n\nTem certeza de que deseja excluir este curso? (S/N) ", "SN");
+                    if(opcao == 'S')
+                    {
+                        fclose(arq);
+                        arq = NULL;
+                        excluiDadosCurso(posCurso);
+                    }
+                    else
+                        printf("Os dados nao foram excluidos!");
+                }
+                else
+                    printf("O curso nao pode ser lido!");
+            }
+            else
+                printf("O curso nao pode ser encontrado!");
+        }
+        else
+            printf("O arquivo de curso nao pode ser aberto!");
+        
+        if(arq != NULL)
+            fclose(arq);
+    }
+    else
+        printf("Este curso nao esta cadastrado!");
+}
+
+//***********************************************************************************************************************
 //	Objetivo: Excluir um curso
-//	Parametros: codigo do curso a ser excluido
+//	Parametros: posicao do curso a ser excluido
 //	Retorno: Nenhum
-void excluiDadosCurso(int codExclusao)
+void excluiDadosCurso(int posCurso)
 {
     FILE *arq, *arqTemp;
     char opcao;
-    int posCurso, contaCopiados = 0;
+    int contaCopiados = 0;
     Curso curso;
-    posCurso = pesquisaCursoCod(codExclusao, 1);
+    
     if(posCurso)
     {
-        opcao = leValidaChar("\n\nTem certeza de que deseja excluir este curso? (S/N) ", "SN");
-        if(opcao == 'S')
-    	{
-    		if((arq = fopen(ARQ_CURSOS,"rb")) != NULL)
-    		{
-                if((arqTemp = fopen(ARQ_CURSOS_TEMP,"wb")) != NULL)
+		if((arq = fopen(ARQ_CURSOS,"rb")) != NULL)
+		{
+            if((arqTemp = fopen(ARQ_CURSOS_TEMP,"wb")) != NULL)
+            {
+                while(!feof(arq))
                 {
-                    while(!feof(arq))
+                    if((fread(&curso, sizeof(Curso), 1, arq)) == 1)
                     {
-                        if((fread(&curso, sizeof(Curso), 1, arq)) == 1)
-                        {
-                            contaCopiados++;
-                            if(posCurso != contaCopiados)
-                                if(fwrite(&curso, sizeof(Curso), 1,arqTemp) != 1)
-                                    puts("Os dados nao puderam ser excluidos!");
-                        }
+                        contaCopiados++;
+                        if(posCurso != contaCopiados)
+                            if(fwrite(&curso, sizeof(Curso), 1,arqTemp) != 1)
+                                puts("Os dados nao puderam ser excluidos!");
                     }
-                    fclose(arqTemp);
-                    fclose(arq);
-                    
-                    if(remove(ARQ_CURSOS) == 0)
-                    {
-                        if(rename(ARQ_CURSOS_TEMP,ARQ_CURSOS) == 0)
-                        {
-                            puts("O curso foi removido com sucesso!");
-                        }
-                    }
+                }
+                
+                fclose(arqTemp);
+                fclose(arq);
+                
+                if(remove(ARQ_CURSOS) == 0)
+                {
+                    if(rename(ARQ_CURSOS_TEMP,ARQ_CURSOS) == 0)
+                        puts("O curso foi removido com sucesso!");
                     else
-                    {
-                        puts("O arquivo nao pode ser removido");
-                    }
+                        puts("O arquivo antigo nao pode ser renomeado. Todos os dados foram perdidos!");
                 }
                 else
-                {
-                    clrscr();
-                    puts("O arquivo temporario nao pode ser criado!");
-                }
+                    puts("O arquivo nao pode ser removido");
             }
             else
-            {
-                clrscr();
-                puts("O curso nao foi encontrado!");
-            }
+                puts("O arquivo temporario nao pode ser criado!");
         }
+        else
+            puts("O curso nao foi encontrado!");
     }
+}
+
+//***********************************************************************************************************************
+// Objetivo: Apresentar um curso
+// Parametros: Curso
+// Retorno: Nenhum
+void apresentaCurso(Curso curso)
+{
+    printf("Nome do Curso: %s\n", curso.nome);
+    printf("Codigo: %d\n", curso.codigo);
+    printf("Carga Horaria: %d\n", curso.cargaHoraria);
+    printf("Valor da mensalidade: %.2f\n", curso.mensalidade);
 }

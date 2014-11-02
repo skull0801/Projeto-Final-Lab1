@@ -176,7 +176,7 @@ void alteraDadosAluno(int matricula)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Ler o codigo de um aluno, buscar pelo mesmo, e confirmar se o usuario deseja excluir o aluno
+// Objetivo: Ler o codigo de um aluno, buscar pelo mesmo, e confirmar se o usuario deseja excluir o aluno, caso queira, excluir
 // Parametros: Nenhum
 // Retorno: Nenhum
 void excluiAluno()
@@ -227,7 +227,7 @@ void excluiAluno()
 
 //***********************************************************************************************************************
 //  Objetivo: Excluir um aluno
-//  Parametros: Matricula do aluno a ser excluido
+//  Parametros: Posicao do aluno a ser excluido
 //  Retorno: nenhum
 void excluiDadosAluno(int posAluno)
 {

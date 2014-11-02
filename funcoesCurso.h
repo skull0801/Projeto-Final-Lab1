@@ -6,10 +6,13 @@
 void leDadosCurso(Curso *curso);
 void gravaDadosCurso(Curso *curso);
 void listaDadosCurso();
-int pesquisaCursoCod(int codCursoBusca, int indPrint);
+void excluiCurso(void);
+void excluiDadosCurso(int posCurso);
+int pesquisaCursoCod(int codCursoBusca);
 void pesquisaCursoNome(char *nomeBusca);
 int achaProximoCodCurso();
 void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos);
 void alteraDadosCurso(int codigoBusca);
+void apresentaCurso(Curso curso);
 
 #endif

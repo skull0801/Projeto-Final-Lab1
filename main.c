@@ -77,8 +77,7 @@ int main(void)
             			getch();
             			break;
             		case '2':
-            			cod = leValidaInteiro("Informe o codigo do curso a excluir", "Codigo", CODIGO_MIN, CODIGO_MAX);
-            			excluiDadosCurso(cod);
+            			excluiCurso();
                         getch();
             			break;
             		case '3':
@@ -99,7 +98,7 @@ int main(void)
             			break;
             		case '2':
             			cod = leValidaInteiro("Informe o codigo a buscar", "Codigo", CODIGO_MIN, CODIGO_MAX);
-            			pesquisaCursoCod(cod, 1);
+            			pesquisaCursoCod(cod);
             			getch();
             			break;
             		case '3':
