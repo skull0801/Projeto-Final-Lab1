@@ -1,0 +1,42 @@
+# Project: ProjetoFinal
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o funcoesCurso.o funcoesCadastro.o funcoesBasicas.o funcoesAluno.o $(RES)
+LINKOBJ  = main.o funcoesCurso.o funcoesCadastro.o funcoesBasicas.o funcoesAluno.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib"  
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = ProjetoFinal.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ProjetoFinal.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "ProjetoFinal.exe" $(LIBS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+funcoesCurso.o: funcoesCurso.c
+	$(CC) -c funcoesCurso.c -o funcoesCurso.o $(CFLAGS)
+
+funcoesCadastro.o: funcoesCadastro.c
+	$(CC) -c funcoesCadastro.c -o funcoesCadastro.o $(CFLAGS)
+
+funcoesBasicas.o: funcoesBasicas.c
+	$(CC) -c funcoesBasicas.c -o funcoesBasicas.o $(CFLAGS)
+
+funcoesAluno.o: funcoesAluno.c
+	$(CC) -c funcoesAluno.c -o funcoesAluno.o $(CFLAGS)

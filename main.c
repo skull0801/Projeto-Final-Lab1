@@ -1,6 +1,6 @@
-// Alunos : Marcus Vinicius Campos Fonseca e Lucas Lima da Silva
-// Matriculas: UC14101868, UC14102446
-// Implementacao: de algumas das funcionalidades do projeto final
+// Alunos : Marcus VinÃƒÂ­cius Campos Fonseca e Lucas Lima da Silva
+// MatrÃƒÂ­culas: UC14101868, UC14102446
+// ImplementaÃƒÂ§ÃƒÂ£o de algumas das funcionalidades do projeto final
 
 #include <stdio.h>
 #include <conio.c>
@@ -37,7 +37,7 @@ int main(void)
 		                getch();
 		                break;
 		            case '3':
-            			puts("Ainda nao implementado!");
+            			cadastraAlunoEmCurso();
                         getch();
             			break;
                 }	
@@ -125,7 +125,7 @@ int main(void)
            				getch();
             			break;
             		case '3':
-            			puts("Ainda nao implementado!");
+            			listaDadosCadastro();
                         getch();
             			break;	
             	}

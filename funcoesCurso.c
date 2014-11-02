@@ -1,11 +1,11 @@
-// Funcoes relacianadas aos dados de cursos
+// FunÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes relacianadas aos dados de cursos
 
 #include <stdio.h>
 #include "dados.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um curso
-//  Parametros: Referencia a um curso
+//  ParÃƒÆ’Ã‚Â¢metros: ReferÃƒÆ’Ã‚Âªncia a um curso
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
 void leDadosCurso(Curso *curso)
 {
@@ -17,7 +17,7 @@ void leDadosCurso(Curso *curso)
 
 //***********************************************************************************************************************
 //  Objetivo: Gravar os dados de um curso num arquivo
-//  Parametros: Referencia a um curso
+//  ParÃƒÆ’Ã‚Â¢metros: ReferÃƒÆ’Ã‚Âªncia a um curso
 //  Retorno: Nenhum
 void gravaDadosCurso(Curso *curso)
 {
@@ -33,9 +33,9 @@ void gravaDadosCurso(Curso *curso)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Encontrar o proximo codigo valido de um curso
-//  Parametros: Nenhum
-//  Retorno: proximo codigo valido
+//  Objetivo: Encontrar o proximo cÃƒÆ’Ã‚Â³digo valido de um curso
+//  ParÃƒÆ’Ã‚Â¢metros: Nenhum
+//  Retorno: proximo cÃƒÆ’Ã‚Â³digo valido
 int achaProximoCodCurso()
 {
     int codigo = CODIGO_MIN;
@@ -57,7 +57,7 @@ int achaProximoCodCurso()
 
 //***********************************************************************************************************************
 //  Objetivo: Listar os dados de todos os cursos
-//  Parametros: nenhum
+//  ParÃƒÆ’Ã‚Â¢metros: nenhum
 //  Retorno: Nenhum
 void listaDadosCurso()
 {
@@ -83,9 +83,9 @@ void listaDadosCurso()
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Pesquisar um curso dentro de um arquivo por codigo unico
-//  Parametros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nao zero para sim)
-//  Retorno: numero positivo se encontrado(posicao do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
+//  Objetivo: Pesquisar um curso dentro de um arquivo por cÃƒÆ’Ã‚Â³digo ÃƒÆ’Ã‚Âºnico
+//  ParÃƒÆ’Ã‚Â¢metros: codigo a ser pesquisado, e indicador se o dado encontrado deve ser escrito (nÃƒÆ’Ã‚Â£o zero para sim)
+//  Retorno: numero positivo se encontrado(posiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
 int pesquisaCursoCod(int codCursoBusca, int indPrint)
 {
     FILE *arq;
@@ -114,7 +114,7 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint)
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
-//  Parametros: nome a ser pesquisado
+//  ParÃƒÆ’Ã‚Â¢metros: nome a ser pesquisado
 //  Retorno: nenhum
 void pesquisaCursoNome(char *nomeBusca)
 {
@@ -154,22 +154,33 @@ void pesquisaCursoNome(char *nomeBusca)
     }
     
     if(qtdLidos)
-    {
-        ordenaCursosPeloNome(cursos, qtdLidos);
-        for(contador = 0; contador < qtdLidos; contador++)
+    {            
+        if(cursosAux != NULL)
+        {
+            ordenaCursosPeloNome(cursos, qtdLidos);
+            for(contador = 0; contador < qtdLidos; contador++)
                 printf("%-50s%-7d%-7d%-10.2f\n", cursos[contador].nome, cursos[contador].codigo, 
-                cursos[contador].cargaHoraria,cursos[contador].mensalidade);
-        free(cursos);
+                       cursos[contador].cargaHoraria,cursos[contador].mensalidade);
+        }
+        else
+        {
+            clrscr();
+            puts("Houve erro na leitura dos cursos");
+        }
+        
+        if(cursos != NULL)
+            free(cursos);
     }
     else
     {
         clrscr();
         puts("Nao houve nenhuma correspondencia!");   
-    }
+    } 
+    fclose(arq);
 }
 
 //  Objetivo: Ordenar cursos pelo nome
-//  Parametros: Referencia a um vetor de cursos e a quantidade de cursos
+//  ParÃ¢metros: Referencia a um vetor de cursos e a quantidade de cursos
 //  Retorno: Nenhum
 void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
 {
