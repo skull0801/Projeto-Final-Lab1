@@ -20,12 +20,6 @@
 #define ARQ_CURSOS_TEMP "cursoTemp.b"
 #define ARQ_CURSOS "cursos.b"
 #define ARQ_MATRICULAS "matriculas.b"
-#define MENU_PRINCIPAL "menu.txt"
-#define MENU_BUSCA "subMenuBusca.txt"
-#define MENU_CADASTRO "subMenuCadastro.txt"
-#define MENU_ALTERAR "subMenuAlterar.txt"
-#define MENU_EXCLUIR "subMenuExcluir.txt"
-#define MENU_LISTA "subMenuLista.txt"
 
 // Estruturas
 // Data

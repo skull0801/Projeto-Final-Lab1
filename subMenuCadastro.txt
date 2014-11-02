@@ -1,8 +1,0 @@
-***************************************
-Cadastros
-***************************************
-1 - Cadastrar Aluno
-2 - Cadastrar Curso
-3 - Matricular Aluno em um Curso
-0 - Voltar
-***************************************

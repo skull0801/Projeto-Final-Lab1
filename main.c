@@ -20,21 +20,25 @@ int main(void)
                                    "Matriculas",
                                    "Relatorios",
                                    "Sair do Programa"};
+                                   
     char *opcoesMenuAlunos[] = {"Cadastrar um Aluno",
                                 "Alterar Dados de um Aluno",
                                 "Excluir um Aluno",
                                 "Pesquisar um Aluno",
                                 "Apresentar Alunos Cadastrados",
                                 "Voltar para Menu Principal"};
+                                
     char *opcoesMenuCursos[] = {"Criar um Novo Curso",
                                 "Alterar Dados de um Curso",
                                 "Excluir um Curso",
                                 "Pesquisar Cursos",
                                 "Apresentar Cursos Existentes",
                                 "Voltar para Menu Principal"};
+                                
     char *opcoesMenuMatriculas[] = {"Matricular Aluno em um Curso",
                                     "Apresentar Matriculas Existentes",
                                     "Voltar para Menu Principal"};
+                                    
     char *opcoesMenuRelatorios[] = {"Voltar para Menu Principal"};
     // Instrucoes
     do

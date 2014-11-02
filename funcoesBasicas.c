@@ -130,23 +130,6 @@ void strToLower(char *string)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Apresentar menu contido em um arquivo
-// Parametros: Nome do arquivo de menu
-// Retorno: nenhum
-void apresentaMenu(char *nomeArquivo)
-{
-    FILE * menu;
-    char caractere;
-    clrscr();
-    if((menu = fopen(nomeArquivo, "r")) != NULL)
-    {
-        while(!feof(menu) && (caractere = getc(menu)) != EOF)
-            putc(caractere, stdout);
-        fclose(menu);
-    }
-}
-
-//***********************************************************************************************************************
 // Objetivo: Fazer um menu e lidar com as escolhas do usuario
 // Parâmetros: opcoes - Opções do menu
 //             qtdOpcoes - quantidade de opções
