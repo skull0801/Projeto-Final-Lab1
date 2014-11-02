@@ -21,7 +21,7 @@ void cadastraAlunoEmCurso()
         listaDadosAlunos();
         if((arqAlunos = fopen(ARQ_ALUNOS,"rb")) != NULL)
         {
-            matricula.matriculaAluno = leValidaInteiro("Informe a matricula do Aluno","Matricula do aluno", MATRICULA_MIN, MATRICULA_MAX);
+            matricula.matriculaAluno = leValidaInteiro("Informe a matricula do Aluno", "Matricula do aluno", MATRICULA_MIN, MATRICULA_MAX);
             while(!feof(arqAlunos))
             {
                 
@@ -56,7 +56,7 @@ void cadastraAlunoEmCurso()
     flag = 0;
     do
     {
-        listaDadosCurso();
+        listaDadosCursos();
         if((arqCursos = fopen(ARQ_CURSOS,"rb")) != NULL)
         {
             matricula.codigoCurso = leValidaInteiro("\nInforme o codigo do Curso","Codigo do curso", CODIGO_MIN, CODIGO_MAX);

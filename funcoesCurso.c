@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include "dados.h"
+#include "cores.h"
 #include "funcoesBasicas.h"
 #include "funcoesCurso.h"
 
@@ -72,7 +73,7 @@ int achaProximoCodCurso()
 //  Objetivo: Listar os dados de todos os cursos
 //  Parametros: nenhum
 //  Retorno: Nenhum
-void listaDadosCurso()
+void listaDadosCursos()
 {
     FILE *arq;
     Curso curso;
@@ -101,16 +102,20 @@ void listaDadosCurso()
 // Retorno: nenhum
 void pesquisaCurso(void)
 {
-    int codigo, posCurso;
-    char nomeBusca[TAM_NOME_CURSO], opcao;
+    int codigo, posCurso, opcao;
+    char nomeBusca[TAM_NOME_CURSO];
+    char *opcoesPesquisa[] = {"Pesquisa por Codigo",
+                              "Pesquisa por Nome",
+                              "Voltar"};
     FILE *arq;
     Curso curso;
     
-    opcao = leValidaChar("Deseja pesquisar por nome ou por codigo? (N/C)", "NC");
+    opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    clrscr();
     
     switch(opcao)
     {
-        case 'C':
+        case 1:
             codigo = leValidaInteiro("Informe o codigo do curso a pesquisar", "Codigo", CODIGO_MIN, CODIGO_MAX);
             posCurso = pesquisaCursoCod(codigo);
             if(posCurso)
@@ -135,7 +140,7 @@ void pesquisaCurso(void)
             else
                 printf("O curso nao foi encontrado!");
             break;
-        case 'N':
+        case 2:
 			leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
 			pesquisaCursoNome(nomeBusca);
 			break;
@@ -255,10 +260,17 @@ void alteraCurso(void)
 {
     FILE *arq;
     int posCurso, codigo;
-    char opcao, confirmacao;
+    int opcao, confirmacao;
     Curso curso;
+    char *opcoesAlteracao[] = {"Alterar Nome",
+                               "Alterar Mensalidade",
+                               "Alterar Carga Horaria",
+                               "Salvar Mudancas",
+                               "Cancelar Mudancas"};
     
-    codigo = leValidaInteiro("Informe o codigo do curso que deseja editar","Codigo a ser editado",CODIGO_MIN,CODIGO_MAX);
+    listaDadosCursos();
+    
+    codigo = leValidaInteiro("\nInforme o codigo do curso que deseja editar","Codigo a ser editado",CODIGO_MIN,CODIGO_MAX);
     
     posCurso = pesquisaCursoCod(codigo);
     
@@ -273,27 +285,28 @@ void alteraCurso(void)
                     do
                     {
                         apresentaCurso(curso);
-                        opcao = leValidaChar("\n\nQual dos dados deseja alterar?\n1 - Nome\n2 - Mensalidade\n3 - Carga Horaria\nC - Cancelar\nG - Gravar","123GC");
+                        opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                        gotoxy(1, 6);
     					switch(opcao)
     					{
-    						case '1':
+    						case 1:
     							leValidaTexto(curso.nome, "Informe qual o novo nome do curso", "Novo nome do curso", 3, TAM_NOME_CURSO);
     							break;
-    						case '2':
+    						case 2:
     							curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
     							break;
-    						case '3':
+    						case 3:
     							curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
     							break;
     					}
                     }
-                    while(opcao != 'C' && opcao != 'G');
+                    while(opcao != 0 && opcao != 4 && opcao != 5);
                     
-                    if(opcao == 'G')
+                    if(opcao == 4)
                     {
-                        apresentaCurso(curso);
-                        confirmacao = leValidaChar("\n\nVoce tem certeza que deseja salvar os dados? (S/N)", "SN");
-                        if(confirmacao=='S')
+                        confirmacao = confirmaEscolha(55, 1);
+                        clrscr();
+                        if(confirmacao == 1)
                         {
                             alteraDadosCurso(curso, posCurso);
                         }
@@ -356,9 +369,11 @@ void excluiCurso(void)
     Curso curso;
     FILE *arq = NULL;
     int posCurso, codigo;
-    char opcao;
+    char confirmacao;
     
-    codigo = leValidaInteiro("Informe o codigo do curso a excluir", "Codigo", CODIGO_MIN, CODIGO_MAX);
+    listaDadosCursos();
+    
+    codigo = leValidaInteiro("\nInforme o codigo do curso a excluir", "Codigo", CODIGO_MIN, CODIGO_MAX);
     
     posCurso = pesquisaCursoCod(codigo);
     
@@ -371,8 +386,9 @@ void excluiCurso(void)
                 if(fread(&curso, sizeof(Curso), 1, arq))
                 {
                     apresentaCurso(curso);
-                    opcao = leValidaChar("\n\nTem certeza de que deseja excluir este curso? (S/N) ", "SN");
-                    if(opcao == 'S')
+                    confirmacao = confirmaEscolha(55, 1);
+                    clrscr();
+                    if(confirmacao == 1)
                     {
                         fclose(arq);
                         arq = NULL;

@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include "dados.h"
+#include "cores.h"
 #include "funcoesBasicas.h"
 #include "funcoesAluno.h"
 
@@ -117,10 +118,17 @@ void alteraAluno(void)
 {
     FILE *arq;
     int posAluno, matricula;
-    char opcao, confirmacao;
+    int opcao, confirmacao;
+    char *opcoesAlteracao[] = {"Alterar Nome",
+                               "Alterar Idade",
+                               "Alterar Sexo",
+                               "Salvar Mudancas",
+                               "Cancelar Mudancas"};
     Aluno aluno;
     
-    matricula = leValidaInteiro("Informe a matricula do aluno a alterar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    listaDadosAlunos();
+    
+    matricula = leValidaInteiro("\n\nInforme a matricula do aluno a alterar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
@@ -135,27 +143,28 @@ void alteraAluno(void)
                     do
                     {
                         apresentaAluno(aluno);
-                        opcao = leValidaChar("\n\nO que deseja alterar?\n1 - Nome\n2 - Idade\n3 - Sexo\nC - Cancelar\nG - Gravar", "123GC");
+                        opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                        gotoxy(1, 8);
                         switch(opcao)
                         {
-                            case '1':
+                            case 1:
                                 leValidaTexto(aluno.nome, "Informe o novo nome", "Nome", 3, TAM_NOME_ALUNO);
                                 break;
-                            case '2':
+                            case 2:
                                 aluno.idade = leValidaInteiro("Informe a nova idade", "Idade", MIN_IDADE, MAX_IDADE);
                                 break;
-                            case '3':
+                            case 3:
                                 aluno.sexo = leValidaChar("Informe o novo sexo (M/F): ", "MF");
                                 break;
                         }
                     }
-                    while(opcao != 'C' && opcao != 'G');
+                    while(opcao != 0 && opcao != 4 && opcao != 5);
                     
-                    if(opcao == 'G')
+                    if(opcao == 4)
                     {
-                        apresentaAluno(aluno);
-                        confirmacao = leValidaChar("\n\nVoce tem certeza que deseja salvar os dados? (S/N)", "SN");
-                        if(confirmacao=='S')
+                        confirmacao = confirmaEscolha(55, 1);
+                        clrscr();
+                        if(confirmacao == 1)
                         {
                             alteraDadosAluno(aluno, posAluno);
                         }
@@ -217,9 +226,11 @@ void excluiAluno()
     Aluno aluno;
     FILE *arq = NULL;
     int posAluno, matricula;
-    char opcao;
+    int confirmacao;
     
-    matricula = leValidaInteiro("Informe a matricula do aluno para excluir", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    listaDadosAlunos();
+    
+    matricula = leValidaInteiro("\n\nInforme a matricula do aluno para excluir", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
@@ -232,8 +243,9 @@ void excluiAluno()
                 if(fread(&aluno, sizeof(Aluno), 1, arq))
                 {
                     apresentaAluno(aluno);
-                    opcao = leValidaChar("\n\nTem certeza de que deseja excluir este aluno? (S/N) ", "SN");
-                    if(opcao == 'S')
+                    confirmacao = confirmaEscolha(55, 1);
+                    clrscr();
+                    if(confirmacao == 1)
                     {
                         fclose(arq);
                         arq = NULL;

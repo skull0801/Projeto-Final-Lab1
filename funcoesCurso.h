@@ -6,7 +6,7 @@
 void cadastraCurso(void);
 void leDadosCurso(Curso *curso);
 void gravaDadosCurso(Curso *curso);
-void listaDadosCurso();
+void listaDadosCursos();
 void excluiCurso(void);
 void excluiDadosCurso(int posCurso);
 void pesquisaCurso(void);
