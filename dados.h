@@ -1,6 +1,5 @@
 #ifndef DADOS_H
 #define DADOS_H
-#include <time.h>
 
 // Definicoes
 #define TAM_NOME_ALUNO 81
@@ -58,41 +57,4 @@ typedef struct
     char situacaoAluno, situacaoPagamento;
 }Cadastro;
 
-//   Funcoes
-//  Prototipos
-int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax);
-float leValidaReal(const char *msg, const char *identificacao, float valorMin, float valorMax);
-void leValidaTexto(char *texto, const char *msg, const char *identificacao, int valorMin, int valorMax);
-char leValidaChar(const char *titulo, const char *escolhas);
-void strToLower(char *string);
-void apresentaMenu(char *nomeArquivo);
-void geraDataIngresso(Data *data);
-
-void leDadosCurso(Curso *curso);
-void gravaDadosCurso(Curso *curso);
-void listaDadosCurso();
-int pesquisaCursoCod(int codCursoBusca, int indPrint);
-void pesquisaCursoNome(char *nomeBusca);
-int achaProximoCodCurso();
-void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos);
-void alteraDadosCurso(int codigoBusca);
-
-void leDadosAluno(Aluno *aluno);
-void gravaDadosAluno(Aluno *aluno);
-void listaDadosAlunos();
-int pesquisaAlunoMatricula(int matriculaBusca, int indPrint);
-// void pesquisaAlunoNome(char *nomeBusca);
-void alteraDadosAluno(int matricula);
-void excluiDadosAluno(int matricula);
-int validaCPF(const char *cpf);
-int verificaCPFAluno(const char *cpf);
-
-
-/* Ainda nao serao usadas
-
-int leDadosCadastro(Cadastro *cadastro);
-void pesquisaCadastro(Cadastro *query, int paramBusca);
-void gravaDadosCadastro(Cadastro *cadastro);
-void listaDadosCadastro();
-*/
 #endif

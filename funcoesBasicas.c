@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "dados.h"
+#include "funcoesBasicas.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler e validar um numero inteiro

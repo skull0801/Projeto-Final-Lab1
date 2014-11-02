@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include "dados.h"
+#include "funcoesBasicas.h"
+#include "funcoesAluno.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um aluno

@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <conio.c>
 #include "dados.h"
+#include "funcoesAluno.h"
+#include "funcoesCurso.h"
+#include "funcoesBasicas.h"
+#include "funcoesCadastro.h"
 
 int main(void)
 {
