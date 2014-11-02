@@ -1,5 +1,6 @@
 // Funcoes relacionadas aos dados de Cadastros
 
+#include <stdio.h>
 #include "dados.h"
 #include "funcoesBasicas.h"
 
@@ -88,11 +89,13 @@ void cadastraAlunoEmCurso()
     matricula.situacaoAluno = leValidaChar("Qual a situacao do aluno?\n1 - Cursando\n2 - Concluiu","12");
     matricula.situacaoPagamento = leValidaChar("Qual a situacao de pagamento do aluno?\n1 - Regular\n2 - Atrasada\n3 - Paga","123");
     if((arqMatriculas = fopen(ARQ_MATRICULAS,"ab")) != NULL)
+    {
         if(fwrite(&matricula, sizeof(Cadastro), 1, arqMatriculas))
             puts("Dados cadastrados com sucesso!");
         else
             puts("Os dados nao foram gravados com sucesso!");
-    
+        fclose(arqMatriculas);
+    }
 }
 
 //***********************************************************************************************************************

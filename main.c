@@ -41,7 +41,7 @@ int main(void)
 		                getch();
 		                break;
 		            case '3':
-            			puts("Ainda nao implementado!");
+                        cadastraAlunoEmCurso();
                         getch();
             			break;
                 }	
@@ -129,7 +129,7 @@ int main(void)
            				getch();
             			break;
             		case '3':
-            			puts("Ainda nao implementado!");
+                        listaDadosCadastro();
                         getch();
             			break;	
             	}
