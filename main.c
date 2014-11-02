@@ -13,11 +13,7 @@
 int main(void)
 {
 // Declaracoes
-    Curso curso;
-    Aluno aluno;
-    int posCursoEncontrado;
-    char opcao, subOpcao, nomeBusca[100];
-    int cod;
+    char opcao, subOpcao;
 // Instrucoes
     do
     {
@@ -31,13 +27,11 @@ int main(void)
             	switch(subOpcao)
             	{
             		case '1':
-                        leDadosAluno(&aluno);
-                        gravaDadosAluno(&aluno);
+                        cadastraAluno();
                         getch();
             			break;
             		case '2':
-		                leDadosCurso(&curso);
-		                gravaDadosCurso(&curso);
+		                cadastraCurso();
 		                getch();
 		                break;
 		            case '3':
@@ -52,13 +46,11 @@ int main(void)
             	switch(subOpcao)
             	{
             		case '1':
-            			cod = leValidaInteiro("Informe a matricula do aluno a alterar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-            			alteraDadosAluno(cod);
+            			alteraAluno();
                         getch();
             			break;
             		case '2':
-            			cod = leValidaInteiro("Informe o codigo do curso que deseja editar","Codigo a ser editado",CODIGO_MIN,CODIGO_MAX);
-            			alteraDadosCurso(cod);
+                        alteraCurso();
                         getch();
             			break;
             		case '3':
@@ -88,25 +80,18 @@ int main(void)
             	break;
             case '4':
                 apresentaMenu(MENU_BUSCA);
-                subOpcao = leValidaChar("", "12340");
+                subOpcao = leValidaChar("", "1230");
 				switch(subOpcao)
 				{
 					case '1':
-            			cod = leValidaInteiro("Informe a matricula a buscar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-            			pesquisaAlunoMatricula(cod);
+            			pesquisaAluno();
                         getch();
             			break;
             		case '2':
-            			cod = leValidaInteiro("Informe o codigo a buscar", "Codigo", CODIGO_MIN, CODIGO_MAX);
-            			pesquisaCursoCod(cod);
+            			pesquisaCurso();
             			getch();
             			break;
             		case '3':
-						leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
-						pesquisaCursoNome(nomeBusca);
-						getch();
-						break;
-            		case '4':
             			puts("Ainda nao implementado!");
                         getch();
             			break;

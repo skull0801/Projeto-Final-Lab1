@@ -3,13 +3,16 @@
 #define FUNCOESALUNO_H
 #include "dados.h"
 
+void cadastraAluno(void);
 void leDadosAluno(Aluno *aluno);
 void gravaDadosAluno(Aluno *aluno);
 void listaDadosAlunos(void);
 void apresentaAluno(Aluno aluno);
+void pesquisaAluno(void);
 int pesquisaAlunoMatricula(int matriculaBusca);
 // void pesquisaAlunoNome(char *nomeBusca);
-void alteraDadosAluno(int matricula);
+void alteraAluno(void);
+void alteraDadosAluno(Aluno aluno, int posAluno);
 void excluiAluno(void);
 void excluiDadosAluno(int posAluno);
 int validaCPF(const char *cpf);

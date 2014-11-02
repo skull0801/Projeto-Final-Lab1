@@ -6,6 +6,17 @@
 #include "funcoesAluno.h"
 
 //***********************************************************************************************************************
+// Objetivo: Cadastrar aluno
+// Parametros: nenhum
+// Retorno: nenhum
+void cadastraAluno(void)
+{
+    Aluno aluno;
+    leDadosAluno(&aluno);
+    gravaDadosAluno(&aluno);
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Ler os dados de um aluno
 //  Parametros: Referencia ao aluno
 //  Retorno: Nenhum
@@ -99,21 +110,23 @@ void listaDadosAlunos()
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Alterar os dados de um aluno
-//  Parametros: Matricula do aluno a ser alterado
-//  Retorno: nenhum
-void alteraDadosAluno(int matricula)
+// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanças devem ser salvas
+// Parâmetros: nenhum
+// Retorno: nenhum
+void alteraAluno(void)
 {
     FILE *arq;
-    int posAluno;
+    int posAluno, matricula;
     char opcao, confirmacao;
     Aluno aluno;
+    
+    matricula = leValidaInteiro("Informe a matricula do aluno a alterar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
     if(posAluno)
     {
-        if((arq = fopen(ARQ_ALUNOS, "rb+")) != NULL )
+        if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
         {
             if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
             {
@@ -138,21 +151,13 @@ void alteraDadosAluno(int matricula)
                     }
                     while(opcao != 'C' && opcao != 'G');
                     
-                    if(opcao!='C')
+                    if(opcao == 'G')
                     {
                         apresentaAluno(aluno);
                         confirmacao = leValidaChar("\n\nVoce tem certeza que deseja salvar os dados? (S/N)", "SN");
                         if(confirmacao=='S')
                         {
-                            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
-                            {
-                                if(fwrite(&aluno, sizeof(Aluno), 1, arq))
-                                    printf("Dados alterados com sucesso!");
-                                else
-                                    printf("Os dados nao puderam ser alterados!");
-                            }
-                            else
-                                printf("Os dados nao puderam ser alterados!");
+                            alteraDadosAluno(aluno, posAluno);
                         }
                         else
                             printf("Os dados nao foram alterados!");
@@ -161,18 +166,46 @@ void alteraDadosAluno(int matricula)
                         printf("Os dados nao foram alterados!");
                 }
                 else
-                    printf("O aluno nao pode ser lido para ser alterado!");
+                    printf("Os dados do aluno nao puderam ser lidos!");
             }
             else
-                printf("O aluno nao pode ser lido para ser alterado!");
+                printf("Os dados do aluno nao puderam ser lidos!");
+            fclose(arq);
+        }
+        else
+            printf("O aluno nao pode ser recuperado!");
+    }
+    else
+        printf("O aluno nao foi encontrado!"); 
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Salvar alteracoes nos dados de um aluno
+//  Parametros: Dados do aluno, posicao do aluno no arquivo
+//  Retorno: nenhum
+void alteraDadosAluno(Aluno aluno, int posAluno)
+{
+    FILE *arq;
+    
+    if(posAluno)
+    {
+        if((arq = fopen(ARQ_ALUNOS, "rb+")) != NULL )
+        {
+            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
+            {
+                if(fwrite(&aluno, sizeof(Aluno), 1, arq))
+                    printf("Os dados foram alterados com sucesso!");
+                else
+                    printf("Os dados nao puderam ser alterados!");
+            }
+            else
+                printf("O aluno nao pode ser recuperado!");
                 
             fclose(arq);
         }
         else
             printf("O arquivo nao pode ser aberto para ser alterado!");
     }
-    else
-        printf("O aluno nao foi encontrado!");
 }
 
 //***********************************************************************************************************************
@@ -233,7 +266,6 @@ void excluiDadosAluno(int posAluno)
 {
     FILE *arq, *arqTemp;
     int qtdCopiados = 0;
-    char opcao;
     Aluno aluno;
     
     if(posAluno)
@@ -273,6 +305,41 @@ void excluiDadosAluno(int posAluno)
         }
         else
             printf("O arquivo nao pode ser aberto para remover o aluno!");
+    }
+}
+
+//***********************************************************************************************************************
+// Objetivo: Pesquisar por um ou mais alunos
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaAluno(void)
+{
+    FILE *arq;
+    Aluno aluno;
+    int matricula, posAluno;
+    
+    matricula = leValidaInteiro("Informe a matricula do aluno a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    
+    posAluno = pesquisaAlunoMatricula(matricula);
+    
+    if(posAluno)
+    {
+        if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+        {
+            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
+            {
+                if(fread(&aluno, sizeof(Aluno), 1, arq))
+                {
+                    apresentaAluno(aluno);
+                }
+                else
+                    printf("O aluno nao pode ser lido!");
+            }
+            else
+                printf("O aluno nao pode ser recuperado!");
+        }
+        else
+            printf("O arquivo de alunos nao pode ser aberto!");
     }
     else
         printf("O aluno nao foi encontrado!");

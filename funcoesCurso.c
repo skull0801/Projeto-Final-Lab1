@@ -6,6 +6,17 @@
 #include "funcoesCurso.h"
 
 //***********************************************************************************************************************
+// Objetivo: Cadastrar um curso
+// Parametros: nenhum
+// Retorno: nenhum
+void cadastraCurso(void)
+{
+    Curso curso;
+    leDadosCurso(&curso);
+    gravaDadosCurso(&curso);
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Ler os dados de um curso
 //  Parametros: Referencia a um curso
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
@@ -81,6 +92,53 @@ void listaDadosCurso()
     {
         clrscr();
         puts("Nao ha nenhum curso cadastrado ate o momento!");    
+    }
+}
+
+//***********************************************************************************************************************
+// Objetivo: Pesquisar por um ou mais cursos
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaCurso(void)
+{
+    int codigo, posCurso;
+    char nomeBusca[TAM_NOME_CURSO], opcao;
+    FILE *arq;
+    Curso curso;
+    
+    opcao = leValidaChar("Deseja pesquisar por nome ou por codigo? (N/C)", "NC");
+    
+    switch(opcao)
+    {
+        case 'C':
+            codigo = leValidaInteiro("Informe o codigo do curso a pesquisar", "Codigo", CODIGO_MIN, CODIGO_MAX);
+            posCurso = pesquisaCursoCod(codigo);
+            if(posCurso)
+            {
+                if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+                {
+                    if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+                    {
+                        if(fread(&curso, sizeof(Curso), 1, arq))
+                        {
+                            apresentaCurso(curso);
+                        }
+                        else
+                            printf("O curso nao pode ser lido!");
+                    }
+                    else
+                        printf("O curso nao pode ser encontrado!");
+                }
+                else
+                    printf("O arquivo de cursos nao pode ser aberto!");
+            }
+            else
+                printf("O curso nao foi encontrado!");
+            break;
+        case 'N':
+			leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
+			pesquisaCursoNome(nomeBusca);
+			break;
     }
 }
 
@@ -190,34 +248,36 @@ void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
 }
 
 //***********************************************************************************************************************
-//	Objetivo: Editar os dados de um curso
-//	Parametros: O codigo do curso a ser alterado
-//	Retorno: Nenhum
-void alteraDadosCurso(int codigoBusca)
+// Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanças devem ser salvas
+// Parâmetros: nenhum
+// Retorno: nenhum
+void alteraCurso(void)
 {
-	char opcao, confirmacao;
-	FILE *arq;
-	int posCurso;
-	Curso curso;
-	
-	posCurso = pesquisaCursoCod(codigoBusca);
-
-	if(posCurso)
-	{
-		if((arq = fopen(ARQ_CURSOS,"rb+")) != NULL)
-		{
-			if(!fseek(arq, sizeof(Curso)*(posCurso-1),0))
-			{
-				if((fread(&curso, sizeof(Curso), 1, arq)) == 1)
-				{
+    FILE *arq;
+    int posCurso, codigo;
+    char opcao, confirmacao;
+    Curso curso;
+    
+    codigo = leValidaInteiro("Informe o codigo do curso que deseja editar","Codigo a ser editado",CODIGO_MIN,CODIGO_MAX);
+    
+    posCurso = pesquisaCursoCod(codigo);
+    
+    if(posCurso)
+    {
+        if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+        {
+            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+            {
+                if(fread(&curso, sizeof(Curso), 1, arq))
+                {
                     do
                     {
                         apresentaCurso(curso);
-    					opcao = leValidaChar("\n\nQual dos dados deseja alterar?\n1 - Nome\n2 - Mensalidade\n3 - Carga Horaria\nC - Cancelar\nG - Gravar","123GC");
+                        opcao = leValidaChar("\n\nQual dos dados deseja alterar?\n1 - Nome\n2 - Mensalidade\n3 - Carga Horaria\nC - Cancelar\nG - Gravar","123GC");
     					switch(opcao)
     					{
     						case '1':
-    							leValidaTexto(curso.nome,"Informe qual o novo nome do curso","Novo nome do curso",3,TAM_NOME_CURSO);
+    							leValidaTexto(curso.nome, "Informe qual o novo nome do curso", "Novo nome do curso", 3, TAM_NOME_CURSO);
     							break;
     						case '2':
     							curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
@@ -227,49 +287,64 @@ void alteraDadosCurso(int codigoBusca)
     							break;
     					}
                     }
-                    while(opcao != 'G' && opcao != 'C');
+                    while(opcao != 'C' && opcao != 'G');
                     
-					if(opcao != 'C')
-					{
+                    if(opcao == 'G')
+                    {
                         apresentaCurso(curso);
-                        confirmacao = leValidaChar("Voce tem certeza que deseja salvar as alteracoes? (S/N)", "SN");
-                        if(confirmacao == 'S')
+                        confirmacao = leValidaChar("\n\nVoce tem certeza que deseja salvar os dados? (S/N)", "SN");
+                        if(confirmacao=='S')
                         {
-                            if(!fseek(arq, sizeof(Curso)*(posCurso-1),0))
-        	               	{
-                    			if((fwrite(&curso, sizeof(Curso), 1, arq)) == 1)
-                    				puts("Dados alterados com sucesso!");
-                    			else
-                    				puts("Houve um erro na alteracao dos dados!");
-                    		}
-                    		else
-                    			puts("Os dados nao foram encontrados!");
+                            alteraDadosCurso(curso, posCurso);
                         }
                         else
-                            puts("Os dados nao foram alterados!");
-    				}
-    				else
-    				    puts("Os dados nao foram alterados!");
+                            printf("Os dados nao foram alterados!");
+                    }
+                    else
+                        printf("Os dados nao foram alterados!");
                 }
                 else
-                {
-                    clrscr();
-                    puts("O curso nao pode ser lido!");
-                }
-			}
-			else
-            {
-                clrscr();   
-                puts("O dado nao pode ser encontrado!");
+                    printf("Os dados do curso nao puderam ser lidos!");
             }
+            else
+                printf("Os dados do curso nao puderam ser lidos!");
+                
             fclose(arq);
-		}
-		else
-		{
-            clrscr();
-            puts("O arquivo dos cursos nao pode ser encontrado!");
         }
-	}
+        else
+            printf("O curso nao pode ser recuperado!");
+    }
+    else
+        printf("O curso nao foi encontrado!"); 
+}
+
+//***********************************************************************************************************************
+//	Objetivo: Editar os dados de um curso
+//	Parametros: O codigo do curso a ser alterado
+//	Retorno: Nenhum
+void alteraDadosCurso(Curso curso, int posCurso)
+{
+	FILE *arq;
+
+    if(posCurso)
+    {
+        if((arq = fopen(ARQ_CURSOS, "rb+")) != NULL)
+        {
+            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+            {
+                if(fwrite(&curso, sizeof(Curso), 1, arq))
+                    printf("Os dados foram alterados com sucesso!");
+                else
+                    printf("Os dados nao puderam ser alterados!");
+            }
+            else
+                printf("O curso nao pode ser recuperado!");
+                
+            fclose(arq);
+        }
+        else
+            printf("O arquivo nao pode ser aberto para ser alterado!");
+    }
 }
 
 //***********************************************************************************************************************
