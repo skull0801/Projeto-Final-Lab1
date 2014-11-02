@@ -3,9 +3,7 @@
 #define FUNCOESCADASTRO_H
 #include "dados.h"
 
-int leDadosCadastro(Cadastro *cadastro);
-void pesquisaCadastro(Cadastro *query, int paramBusca);
-void gravaDadosCadastro(Cadastro *cadastro);
+void cadastraAlunoEmCurso();
 void listaDadosCadastro();
 
 #endif
