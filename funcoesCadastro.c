@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "dados.h"
 #include "funcoesBasicas.h"
+//  Velho, só consegui fazer funcionar assim, no header tem o prototipo mas mesmo assim diz que a funcao nao foi declarada...
+void gravaDadosMatricula(Cadastro matricula);
 
 //***********************************************************************************************************************
 //  Objetivo: Matricular um aluno em um curso
@@ -11,7 +13,7 @@
 void cadastraAlunoEmCurso()
 {
     FILE *arqAlunos, *arqCursos, *arqMatriculas;
-    int flag = 0, contaAlunos = 0, contaCursos = 0;   
+    int flag = 0, flagRepetido = 0, contaAlunos = 0, contaCursos = 0;   
     Curso curso;
     Aluno aluno;
     Cadastro matricula;
@@ -60,6 +62,7 @@ void cadastraAlunoEmCurso()
         {
             matricula.codigoCurso = leValidaInteiro("\nInforme o codigo do Curso","Codigo do curso", CODIGO_MIN, CODIGO_MAX);
             while(!feof(arqCursos))
+            {
                 if(fread(&curso, sizeof(Curso), 1, arqCursos))
                 {
                     contaCursos++;
@@ -69,7 +72,8 @@ void cadastraAlunoEmCurso()
                         break;
                     }
                 }
-            fclose(arqCursos);      
+            }
+            fclose(arqCursos);   
         }
         else
         {
@@ -86,16 +90,15 @@ void cadastraAlunoEmCurso()
     }
     while(flag == 0);
     
-    matricula.situacaoAluno = leValidaChar("Qual a situacao do aluno?\n1 - Cursando\n2 - Concluiu","12");
-    matricula.situacaoPagamento = leValidaChar("Qual a situacao de pagamento do aluno?\n1 - Regular\n2 - Atrasada\n3 - Paga","123");
-    if((arqMatriculas = fopen(ARQ_MATRICULAS,"ab")) != NULL)
+    flag = verificaAlunoRepetidoCadastrando(curso, aluno);
+    if(flag == 0)
     {
-        if(fwrite(&matricula, sizeof(Cadastro), 1, arqMatriculas))
-            puts("Dados cadastrados com sucesso!");
-        else
-            puts("Os dados nao foram gravados com sucesso!");
-        fclose(arqMatriculas);
+        matricula.situacaoAluno = leValidaChar("Qual a situacao do aluno?\n1 - Cursando\n2 - Concluiu","12");
+        matricula.situacaoPagamento = leValidaChar("Qual a situacao de pagamento do aluno?\n1 - Regular\n2 - Atrasada\n3 - Paga","123");
+        gravaDadosMatricula(matricula);
     }
+    else
+        puts("O aluno ja esta matriculado nesse curso!");
 }
 
 //***********************************************************************************************************************
@@ -109,22 +112,22 @@ void listaDadosCadastro()
     int contaMatriculas;
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
-        printf("%-18s%-19s%-19s%-10s\n","Matricula Aluno","Codigo do Curso","Situacao do Aluno","Situacao de Pagamento");
+        printf("%-18s%-19s%-19s%-10s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
         while(!feof(arq))
             if(fread(&matricula, sizeof(Cadastro), 1, arq))
             {
-                printf("%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
+                printf("\n%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
                 if(matricula.situacaoAluno == '1')
                     printf("%-19s","Cursando");          
                 else
                    printf("%-19s","Concluiu");
                 if(matricula.situacaoPagamento == '1')
-                    printf("%-19s","Regular\n");
+                    printf("%-19s","Regular");
                 else
                     if(matricula.situacaoPagamento == '2')
-                        printf("%-19s","Atrasada\n");
+                        printf("%-19s","Atrasada");
                     else
-                        printf("%-19s","Totalmente paga\n");
+                        printf("%-19s","Totalmente paga");
             }
             fclose(arq);
     }
@@ -134,4 +137,44 @@ void listaDadosCadastro()
         puts("Nao ha nenhum aluno matriculado ate o momento");
         return;
     }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Gravar os dados de uma matricula(Cadastro)
+//  Parametros: A matricula
+//  Retorno: Nenhum
+void gravaDadosMatricula(Cadastro matricula)
+{
+    FILE *arq;
+    if((arq = fopen(ARQ_MATRICULAS,"ab")) != NULL)
+    {
+        if(fwrite(&matricula, sizeof(Cadastro), 1, arq))
+            puts("Dados cadastrados com sucesso!");
+        else
+            puts("Os dados nao foram gravados!");
+        fclose(arq);
+    }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Verificar se o aluno ja esta cadastrado em um curso
+//  Parametros: O codigo do curso e a matricula do Aluno
+//  Retorno: Flag = 1 se o aluno ja estiver cadastrado ou flag = 0 se o aluno nao estiver cadastrado
+int verificaAlunoRepetidoCadastrando(Curso curso, Aluno aluno)
+{
+    int flag = 0;
+    FILE *arq;
+    Cadastro matricula;
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
+    {
+        while(!feof(arq))
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+                if(matricula.matriculaAluno == aluno.matricula && matricula.codigoCurso == curso.codigo && matricula.situacaoAluno == '1')
+                {
+                    flag =1;
+                    break;
+                }
+        fclose(arq);
+    }
+    return flag;
 }

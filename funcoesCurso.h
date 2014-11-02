@@ -10,6 +10,6 @@ int pesquisaCursoCod(int codCursoBusca, int indPrint);
 void pesquisaCursoNome(char *nomeBusca);
 int achaProximoCodCurso();
 void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos);
-void alteraDadosCurso(int codigoBusca);
+void gravaDadosMatricula(Cadastro matricula);
 
 #endif
