@@ -73,8 +73,7 @@ int main(void)
             	switch(subOpcao)
             	{
             		case '1':
-            			cod = leValidaInteiro("Informe a matricula do aluno para editar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-            			excluiDadosAluno(cod);
+            			excluiAluno();
             			getch();
             			break;
             		case '2':
@@ -95,7 +94,7 @@ int main(void)
 				{
 					case '1':
             			cod = leValidaInteiro("Informe a matricula a buscar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-            			pesquisaAlunoMatricula(cod, 1);
+            			pesquisaAlunoMatricula(cod);
                         getch();
             			break;
             		case '2':
@@ -135,9 +134,9 @@ int main(void)
             	}
             	break;            	
 	      }
- }
- while(opcao != '0');
+    }
+    while(opcao != '0');
  
-return 0;
+    return 0;
 }
 

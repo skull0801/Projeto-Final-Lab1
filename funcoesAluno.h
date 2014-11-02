@@ -5,11 +5,13 @@
 
 void leDadosAluno(Aluno *aluno);
 void gravaDadosAluno(Aluno *aluno);
-void listaDadosAlunos();
-int pesquisaAlunoMatricula(int matriculaBusca, int indPrint);
+void listaDadosAlunos(void);
+void apresentaAluno(Aluno aluno);
+int pesquisaAlunoMatricula(int matriculaBusca);
 // void pesquisaAlunoNome(char *nomeBusca);
 void alteraDadosAluno(int matricula);
-void excluiDadosAluno(int matricula);
+void excluiAluno(void);
+void excluiDadosAluno(int posAluno);
 int validaCPF(const char *cpf);
 int verificaCPFAluno(const char *cpf);
 
