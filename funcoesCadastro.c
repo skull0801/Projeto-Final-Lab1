@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include "dados.h"
 #include "funcoesBasicas.h"
-//  Velho, só consegui fazer funcionar assim, no header tem o prototipo mas mesmo assim diz que a funcao nao foi declarada...
-void gravaDadosMatricula(Cadastro matricula);
+#include "funcoesCadastro.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Matricular um aluno em um curso

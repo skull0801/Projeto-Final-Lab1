@@ -7,4 +7,5 @@ void cadastraAlunoEmCurso();
 void listaDadosCadastro();
 void gravaDadosMatricula(Cadastro matricula);
 int verificaAlunoRepetidoCadastrando(Curso curso, Aluno aluno);
+
 #endif
