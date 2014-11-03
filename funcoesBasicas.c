@@ -131,7 +131,7 @@ void strToLower(char *string)
 
 //***********************************************************************************************************************
 // Objetivo: Fazer um menu e lidar com as escolhas do usuario
-// Parâmetros: opcoes - Opções do menu
+// Parametros: opcoes - Opcoes do menu
 //             qtdOpcoes - quantidade de opções
 //             corL - cor da letra do menu
 //             corS - cor da selecaoda opcao do menu
@@ -141,7 +141,7 @@ void strToLower(char *string)
 //             selInicial - selecao inicial da opcao
 //             corFundoAtual - cor do fundo antes da chamada do menu
 //             corLetraAtual - cor da letra antes da chamada do menu
-// Retorno: Indice escolhido pelo usuario, de 1 a n
+// Retorno: Indice escolhido pelo usuario, de 1 a n, ou 0 caso esc seja pressionado
 int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, int moldura, int coluna, int linha, 
          int selecaoInicial, int corFundoAtual, int corLetraAtual)
 {
@@ -237,7 +237,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
 
 //***********************************************************************************************************************
 // Objetivo: Desenha uma moldura
-// Parâmetros: linha inicial, coluna inicial , linha final , coluna final, cor do fundo da janela e cor da letra(moldura)
+// Parametros: linha inicial, coluna inicial , linha final , coluna final, cor do fundo da janela e cor da letra(moldura)
 // Retorno: nenhum
 void desenhaMoldura(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo, int corLetra)
 {
@@ -276,7 +276,7 @@ void desenhaMoldura(int linhaInicial, int colunaInicial, int linhaFinal, int col
 
 //***********************************************************************************************************************
 // Objetivo: Limpar uma parte da janela
-// Parâmetros: linha inicial, coluna inicial, linha final, coluna final e cor da janela
+// Parametros: linha inicial, coluna inicial, linha final, coluna final e cor da janela
 // Retorno: nenhum
 void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo)
 {
