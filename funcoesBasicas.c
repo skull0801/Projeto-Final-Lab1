@@ -131,8 +131,8 @@ void strToLower(char *string)
 
 //***********************************************************************************************************************
 // Objetivo: Fazer um menu e lidar com as escolhas do usuario
-// Par‚metros: opcoes - OpÁıes do menu
-//             qtdOpcoes - quantidade de opÁıes
+// Par√¢metros: opcoes - Op√ß√µes do menu
+//             qtdOpcoes - quantidade de op√ß√µes
 //             corL - cor da letra do menu
 //             corS - cor da selecaoda opcao do menu
 //             moldura - indicador se havera moldura 
@@ -146,7 +146,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
          int selecaoInicial, int corFundoAtual, int corLetraAtual)
 {
     int contador;
-    int val; // Indica se a tecla pressionada È relevante ao menu
+    int val; // Indica se a tecla pressionada √© relevante ao menu
     int tecla; // Registra a tecla que o usuario pressionou
     int tamMaiorOpcao; // Registra o tamanho da maior opcao escrita
     int selecao; // Registra o item selecionado no momento
@@ -172,7 +172,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
         if(contador == selecao)                 // Define a cor da selecao
             textbackground(corSelecao);
         else
-            textbackground(0);
+            textbackground(corFundoAtual);
             
         gotoxy(coluna, linha+contador);
         printf(opcoes[contador]);
@@ -191,7 +191,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
         do
         {
             tecla = toupper(getch());
-            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada È relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
+            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada √© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
                 val = 1;                                                                               // 27 - esc, 13 - enter
             else
                 val = 0;
@@ -237,7 +237,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
 
 //***********************************************************************************************************************
 // Objetivo: Desenha uma moldura
-// Par‚metros: linha inicial, coluna inicial , linha final , coluna final, cor do fundo da janela e cor da letra(moldura)
+// Par√¢metros: linha inicial, coluna inicial , linha final , coluna final, cor do fundo da janela e cor da letra(moldura)
 // Retorno: nenhum
 void desenhaMoldura(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo, int corLetra)
 {
@@ -276,7 +276,7 @@ void desenhaMoldura(int linhaInicial, int colunaInicial, int linhaFinal, int col
 
 //***********************************************************************************************************************
 // Objetivo: Limpar uma parte da janela
-// Par‚metros: linha inicial, coluna inicial, linha final, coluna final e cor da janela
+// Par√¢metros: linha inicial, coluna inicial, linha final, coluna final e cor da janela
 // Retorno: nenhum
 void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo)
 {
@@ -294,7 +294,7 @@ void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int coluna
 
 //***********************************************************************************************************************
 // Objetivo: Confirmar uma escolha do usuario
-// Par‚metros: Coluna e linha onde a confirmacao deve comecar
+// Par√¢metros: Coluna e linha onde a confirmacao deve comecar
 // Retorno: 1 para confirma, 0 para nao confirma
 int confirmaEscolha(int coluna, int linha)
 {
