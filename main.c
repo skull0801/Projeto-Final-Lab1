@@ -37,6 +37,7 @@ int main(void)
                                 
     char *opcoesMenuMatriculas[] = {"Matricular Aluno em um Curso",
                                     "Apresentar Matriculas Existentes",
+                                    "Excluir a matricula de um aluno em um curso",
                                     "Voltar para Menu Principal"};
                                     
     char *opcoesMenuRelatorios[] = {"Pesquisa por Chave dos Dados",
@@ -131,7 +132,7 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuMatriculas, 3, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuMatriculas, 4, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -141,13 +142,17 @@ int main(void)
                             clrscr();
                             break;
                         case 2:
-                            listaDadosCadastro();
+                            pesquisaAlunosMatriculadosEmUmCurso();
                             getch();
                             clrscr();
                             break;
+                        case 3:
+                            excluiMatriculaAlunoEmUmCurso();
+                            getch();
+                            break;
                     }
                 }
-                while(subOpcao != 0 && subOpcao != 3);
+                while(subOpcao != 0 && subOpcao != 4);
                 
                 break;
             case 4:
@@ -178,6 +183,11 @@ int main(void)
                             }
                             while(subSubOpcao != 0 && subSubOpcao != 4);
                             
+                            break;
+                        case 3:
+                            pesquisaAlunosMatriculadosEmUmCurso();
+                            getch();
+                            clrscr();
                             break;
                         case 4:
                             pesquisaApresentaCursoNome();
