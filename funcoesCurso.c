@@ -95,6 +95,132 @@ void listaDadosCursos()
         puts("Nao ha nenhum curso cadastrado ate o momento!");    
     }
 }
+
+//***********************************************************************************************************************
+// Objetivo: Obter todos os cursos do arquivo
+// Parametros: Referencia a quantidade de cursos (valor sera dado pela funcao)
+// Retorno: Ponteiro para memoria alocada na qual os cursos estao
+Curso * obtemDadosCursosArquivo(int * qtdCursos)
+{
+    FILE *arq;
+    Curso *cursos = NULL;
+    
+    if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+    {
+        if(!fseek(arq, 0, SEEK_END))
+        {
+            *qtdCursos = (ftell(arq)/sizeof(Curso));
+            
+            cursos = malloc(sizeof(Curso)*(*qtdCursos));
+            
+            if(cursos != NULL)
+            {
+                rewind(arq);
+                if(fread(cursos, sizeof(Curso), *qtdCursos, arq) != *qtdCursos)
+                {
+                    printf("Erro ao recuperar os dados de cursos!");
+                    free(cursos);
+                    cursos = NULL;
+                }
+            }
+            else
+                printf("Erro ao alocar memoria para cursos!");
+        }
+        else
+            printf("Erro ao obter quantidade de cursos.");
+            
+        fclose(arq);
+    }
+    else
+        printf("Erro ao abrir o arquivo de cursos.");
+        
+    return cursos;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Apresentar os dados todos os cursos em forma de menu
+// Parametros: nenhum
+// Retorno: Codigo do curso selecionado, 0 se nenhum foi selecionado
+int apresentaDadosCursos(void)
+{
+    Curso *cursos;
+    int qtdCursos = 0, selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
+    int codigoSelecao = 0;
+    char ** linhasTabela, codigoTexto[7];
+    
+    if((cursos = obtemDadosCursosArquivo(&qtdCursos)) != NULL)
+    {
+        if(qtdCursos != 0)
+        {
+            
+            ordenaCursosPeloNome(cursos, qtdCursos);
+            
+            linhasTabela = (char**) malloc(sizeof(char*) * qtdCursos);
+            if(linhasTabela != NULL)
+            {
+                for(contador=0;contador<qtdCursos;contador++)
+                {
+                    linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
+                    if(linhasTabela[contador] != NULL)
+                    {
+                        sprintf(linhasTabela[contador], "%06d - %-25.20s - %5dh", cursos[contador].codigo, cursos[contador].nome, cursos[contador].cargaHoraria);
+                        qtdLinhasAlocada++;
+                    }
+                    else
+                    {
+                        flag = 1;
+                        printf("A memoria para uma das linhas nao pode ser alocada");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                flag = 1;
+                printf("A memoria para tabela nao pode ser alocada!");
+            }
+            
+            free(cursos);
+            
+            if(!flag)
+            {
+                for(contador=0;contador<qtdCursos;contador+=10)
+                {
+                    qtdItens = qtdCursos - contador > 10 ? 10 : qtdCursos - contador;
+                    
+                    selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    
+                    if(selecao != 0)
+                    {
+                        strncpy(codigoTexto, linhasTabela[contador+selecao-1], 6);
+                        codigoTexto[6] = '\0';
+                        codigoSelecao = atoi(codigoTexto);
+                        break;
+                    }
+                    else if(contador+10<qtdCursos)
+                    {
+                        if(confirmaEscolha(20, 5))
+                            break;
+                    }
+                }
+            }
+            
+            if(linhasTabela != NULL)
+            {
+                for(contador=0;contador<qtdLinhasAlocada;contador++)
+                    free(linhasTabela[contador]);
+                free(linhasTabela);
+            }
+        }
+        else
+        {
+            printf("Nao existem cursos cadastrados!");
+            getch();
+        }
+    }
+    return codigoSelecao;
+}
+
 //***********************************************************************************************************************
 // Objetivo: Pesquisar e apresentar um curso por codigo
 // Parametros: nenhum
@@ -266,8 +392,8 @@ void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanças devem ser salvas
-// Parâmetros: nenhum
+// Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudancas devem ser salvas
+// Parametros: nenhum
 // Retorno: nenhum
 void alteraCurso(void)
 {
@@ -281,12 +407,11 @@ void alteraCurso(void)
                                "Salvar Mudancas",
                                "Cancelar Mudancas"};
     
-    listaDadosCursos();
-    
-    codigo = leValidaInteiro("\nInforme o codigo do curso que deseja editar","Codigo a ser editado",CODIGO_MIN,CODIGO_MAX);
+    codigo = apresentaDadosCursos();
     
     posCurso = pesquisaCursoCodigo(codigo);
     
+    gotoxy(1,1);
     if(posCurso)
     {
         if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
@@ -340,8 +465,6 @@ void alteraCurso(void)
         else
             printf("O curso nao pode ser recuperado!");
     }
-    else
-        printf("O curso nao foi encontrado!"); 
 }
 
 //***********************************************************************************************************************
@@ -384,11 +507,11 @@ void excluiCurso(void)
     int posCurso, codigo;
     char confirmacao;
     
-    listaDadosCursos();
-    
-    codigo = leValidaInteiro("\nInforme o codigo do curso a excluir", "Codigo", CODIGO_MIN, CODIGO_MAX);
+    codigo = apresentaDadosCursos();
     
     posCurso = pesquisaCursoCodigo(codigo);
+    
+    gotoxy(1,1);
     
     if(posCurso)
     {
@@ -422,8 +545,6 @@ void excluiCurso(void)
         if(arq != NULL)
             fclose(arq);
     }
-    else
-        printf("Este curso nao esta cadastrado!");
 }
 
 //***********************************************************************************************************************
