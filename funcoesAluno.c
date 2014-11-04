@@ -197,8 +197,8 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
     }
     else
     {
+        gotoxy(1,1);
         printf("Nao existem alunos cadastrados!");
-        getch();
     }
     return matriculaSelecao;
 }
@@ -267,12 +267,11 @@ Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanÃƒÂ§as devem ser salvas
-// ParÃƒÂ¢metros: nenhum
+// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudancas devem ser salvas
+// Parametros: nenhum
 // Retorno: nenhum
 void alteraAluno(void)
 {
-    FILE *arq;
     int posAluno, matricula;
     int opcao, confirmacao;
     char *opcoesAlteracao[] = {"Alterar Nome",
@@ -290,52 +289,41 @@ void alteraAluno(void)
     
     if(posAluno)
     {
-        if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+        if(obtemAlunoArquivo(&aluno, posAluno))
         {
-            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
+            do
             {
-                if(fread(&aluno, sizeof(Aluno), 1, arq))
+                apresentaAluno(aluno);
+                opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                gotoxy(1, 8);
+                switch(opcao)
                 {
-                    do
-                    {
-                        apresentaAluno(aluno);
-                        opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
-                        gotoxy(1, 8);
-                        switch(opcao)
-                        {
-                            case 1:
-                                leValidaTexto(aluno.nome, "Informe o novo nome", "Nome", 3, TAM_NOME_ALUNO);
-                                break;
-                            case 2:
-                                aluno.idade = leValidaInteiro("Informe a nova idade", "Idade", MIN_IDADE, MAX_IDADE);
-                                break;
-                            case 3:
-                                aluno.sexo = leValidaChar("Informe o novo sexo (M/F): ", "MF");
-                                break;
-                        }
-                    }
-                    while(opcao != 0 && opcao != 4 && opcao != 5);
-                    
-                    if(opcao == 4)
-                    {
-                        confirmacao = confirmaEscolha(55, 1);
-                        clrscr();
-                        if(confirmacao == 1)
-                        {
-                            alteraDadosAluno(aluno, posAluno);
-                        }
-                        else
-                            printf("Os dados nao foram alterados!");
-                    }
-                    else
-                        printf("Os dados nao foram alterados!");
+                    case 1:
+                        leValidaTexto(aluno.nome, "Informe o novo nome", "Nome", 3, TAM_NOME_ALUNO);
+                        break;
+                    case 2:
+                        aluno.idade = leValidaInteiro("Informe a nova idade", "Idade", MIN_IDADE, MAX_IDADE);
+                        break;
+                    case 3:
+                        aluno.sexo = leValidaChar("Informe o novo sexo (M/F): ", "MF");
+                        break;
+                }
+            }
+            while(opcao != 0 && opcao != 4 && opcao != 5);
+            
+            if(opcao == 4)
+            {
+                confirmacao = confirmaEscolha(55, 1);
+                clrscr();
+                if(confirmacao == 1)
+                {
+                    alteraDadosAluno(aluno, posAluno);
                 }
                 else
-                    printf("Os dados do aluno nao puderam ser lidos!");
+                    printf("Os dados nao foram alterados!");
             }
             else
-                printf("Os dados do aluno nao puderam ser lidos!");
-            fclose(arq);
+                printf("Os dados nao foram alterados!");
         }
         else
             printf("O aluno nao pode ser recuperado!");
@@ -372,13 +360,34 @@ void alteraDadosAluno(Aluno aluno, int posAluno)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Encontrar um aluno no arquivo
+// Parametros: Ponteiro para aluno, e posicao do aluno no arquivo
+// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
+int obtemAlunoArquivo(Aluno *aluno, int posAluno)
+{
+    FILE *arq;
+    int flag = 0;
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
+        {
+            if(fread(aluno, sizeof(Aluno), 1, arq))
+            {
+                flag = 1;
+            }
+        }
+        fclose(arq);
+    }
+    return flag;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Ler o codigo de um aluno, buscar pelo mesmo, e confirmar se o usuario deseja excluir o aluno, caso queira, excluir
 // Parametros: Nenhum
 // Retorno: Nenhum
 void excluiAluno()
 {
     Aluno aluno;
-    FILE *arq = NULL;
     int posAluno, matricula;
     int confirmacao;
     
@@ -387,43 +396,23 @@ void excluiAluno()
     posAluno = pesquisaAlunoMatricula(matricula);
     
     gotoxy(1,1);
-    
     if(posAluno)
     {
-        if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+        if(obtemAlunoArquivo(&aluno, posAluno))
         {
-            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
-            {
-                if(fread(&aluno, sizeof(Aluno), 1, arq))
-                {
-                    apresentaAluno(aluno);
-                    confirmacao = confirmaEscolha(55, 1);
-                    clrscr();
-                    if(confirmacao == 1)
-                    {
-                        if(fclose(arq) == 0)
-                        {
-                            arq = NULL;
-                            excluiDadosAluno(posAluno);
-                        }
-                        else
-                            printf("O arquivo nao pode ser fechado para ser alterado!");
-                    }
-                    else
-                        printf("Os dados nao foram excluidos!");
-                }
-                else
-                    printf("O aluno nao pode ser lido!");
-            }
+            apresentaAluno(aluno);
+            confirmacao = confirmaEscolha(55, 1);
+            clrscr();
+            if(confirmacao == 1)
+                excluiDadosAluno(posAluno);
             else
-                printf("O aluno nao pode ser encontrado!");
+                printf("Os dados nao foram excluidos!");
         }
         else
-            printf("O arquivo de alunos nao pode ser aberto!");
-        
-        if(arq != NULL)
-            fclose(arq);
+            printf("O aluno nao pode ser recuperado!");
     }
+    else
+        printf("O aluno nao foi encontrado!");
 }
 
 //***********************************************************************************************************************
