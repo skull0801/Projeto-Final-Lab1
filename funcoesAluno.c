@@ -248,6 +248,8 @@ Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
         }
         else
             printf("Erro ao obter quantidade de alunos.");
+            
+        fclose(arq);
     }
     else
         printf("Erro ao abrir o arquivo de alunos.");
@@ -256,8 +258,8 @@ Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanças devem ser salvas
-// Parâmetros: nenhum
+// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanÃ§as devem ser salvas
+// ParÃ¢metros: nenhum
 // Retorno: nenhum
 void alteraAluno(void)
 {
@@ -271,11 +273,11 @@ void alteraAluno(void)
                                "Cancelar Mudancas"};
     Aluno aluno;
     
-    listaDadosAlunos();
-    
-    matricula = leValidaInteiro("\n\nInforme a matricula do aluno a alterar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    matricula = apresentaDadosAlunos();
     
     posAluno = pesquisaAlunoMatricula(matricula);
+    
+    gotoxy(1,1);
     
     if(posAluno)
     {
@@ -373,11 +375,11 @@ void excluiAluno()
     int posAluno, matricula;
     int confirmacao;
     
-    listaDadosAlunos();
-    
-    matricula = leValidaInteiro("\n\nInforme a matricula do aluno para excluir", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    matricula = apresentaDadosAlunos();
     
     posAluno = pesquisaAlunoMatricula(matricula);
+    
+    gotoxy(1,1);
     
     if(posAluno)
     {
@@ -392,9 +394,13 @@ void excluiAluno()
                     clrscr();
                     if(confirmacao == 1)
                     {
-                        fclose(arq);
-                        arq = NULL;
-                        excluiDadosAluno(posAluno);
+                        if(fclose(arq) == 0)
+                        {
+                            arq = NULL;
+                            excluiDadosAluno(posAluno);
+                        }
+                        else
+                            printf("O arquivo nao pode ser fechado para ser alterado!");
                     }
                     else
                         printf("Os dados nao foram excluidos!");
@@ -441,18 +447,20 @@ void excluiDadosAluno(int posAluno)
                     }
                 }
                 
-                fclose(arqTemp);
-                fclose(arq);
-                
-                if(!remove(ARQ_ALUNOS))
+                if(!fclose(arqTemp) && !fclose(arq))
                 {
-                    if(!rename(ARQ_ALUNOS_TEMP, ARQ_ALUNOS))
-                        printf("O aluno foi excluido com sucesso!");
+                    if(!remove(ARQ_ALUNOS))
+                    {
+                        if(!rename(ARQ_ALUNOS_TEMP, ARQ_ALUNOS))
+                            printf("O aluno foi excluido com sucesso!");
+                        else
+                            printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
+                    }
                     else
-                        printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
+                        printf("O arquivo antigo nao pode ser excluido, logo o aluno nao foi excluido!");
                 }
                 else
-                    printf("O arquivo antigo nao pode ser excluido, logo o aluno nao foi excluido!");
+                    printf("Os arquivos nao puderam ser fechados para alteracao!");
             }
             else
             {
