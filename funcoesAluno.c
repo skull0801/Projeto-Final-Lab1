@@ -111,7 +111,7 @@ void listaDadosAlunos()
 }
 
 //***********************************************************************************************************************
-// Objetivo: Apresentar todos os alunos de um arquivo em forma de tabela
+// Objetivo: Apresentar todos os alunos de um arquivo em forma de menu
 // Parametros: Nenhum
 // Retorno: Matricula do aluno selecionado (0 se nenhum foi selecionado)
 int apresentaDadosAlunos(void)
@@ -331,8 +331,6 @@ void alteraAluno(void)
         else
             printf("O aluno nao pode ser recuperado!");
     }
-    else
-        printf("O aluno nao foi encontrado!"); 
 }
 
 //***********************************************************************************************************************
@@ -417,8 +415,6 @@ void excluiAluno()
         if(arq != NULL)
             fclose(arq);
     }
-    else
-        printf("Este aluno nao esta matriculado!");
 }
 
 //***********************************************************************************************************************
