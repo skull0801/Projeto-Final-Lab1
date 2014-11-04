@@ -87,7 +87,7 @@ int main(void)
                             clrscr();
                             break;
                         case 5:
-                            apresentaDadosAlunos();
+                            apresentaTodosAlunos();
                             break;
                     }
                 }
@@ -121,7 +121,7 @@ int main(void)
                             clrscr();
                             break;
                         case 5:
-                            apresentaDadosCursos();
+                            apresentaTodosCursos();
                             break;
                     }
                 }
