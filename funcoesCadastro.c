@@ -22,8 +22,8 @@ void cadastraAlunoEmCurso()
                                       "Atrasada",
                                       "Totalmente Paga"};
     Cadastro matricula;
-    matricula.matriculaAluno = apresentaDadosAlunos();
-    matricula.codigoCurso = apresentaDadosCursos();
+    matricula.matriculaAluno = apresentaTodosAlunos();
+    matricula.codigoCurso = apresentaTodosCursos();
     flag = verificaAlunoRepetidoCadastrando(matricula.codigoCurso, matricula.matriculaAluno);
     if(flag == 0)
     {
@@ -146,7 +146,7 @@ void pesquisaAlunosMatriculadosEmUmCurso()
                             "Ambos"};
     do
     {
-        codigoCurso = apresentaDadosCursos();
+        codigoCurso = apresentaTodosCursos();
     }
     while(codigoCurso == 0);
     
@@ -208,10 +208,85 @@ void apresentaAlunosMatriculadosEmUmCurso(int codCurso, int indicador)
                                 sprintf(situacaoPagamento,"Totalmente paga");
                                 break;
                         }
+                        gotoxy(1,1);
                         printf("\n%-18d%-19d%-19s%-16s",matricula.codigoCurso, matricula.matriculaAluno, situacaoAluno, situacaoPagamento);
                     }
                 }    
     }
 }
-
-
+//***********************************************************************************************************************
+//  Objetivo: Excluir uma matricula de um aluno em um curso
+//  Parametros: Nenhum
+//  Retorno: Nenhum
+void excluiMatriculaAlunoEmUmCurso()
+{
+    int codigoCurso, matriculaASerExcluida, qtdeAlunos = 0, flagErro = 0, posMatricula;
+    FILE *arq;
+    Aluno *alunos = NULL, *alunosAux = NULL, aluno;
+    Cadastro matricula;
+    do
+    {
+        codigoCurso = apresentaTodosCursos();
+    }
+    while(codigoCurso == 0);
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            {
+                if(matricula.codigoCurso == codigoCurso)
+                {
+                    alunosAux = (Aluno*) realloc(alunos, (qtdeAlunos+1) * sizeof(Aluno));
+                    if(alunosAux != NULL)
+                    {
+                        alunos = alunosAux;
+                        posMatricula = pesquisaAlunoMatricula(matricula.matriculaAluno);
+                        if(posMatricula)
+                        {
+                            if(obtemAlunoArquivo(&alunos[qtdeAlunos], posMatricula))
+                            {
+                                qtdeAlunos++;
+                            }
+                            else
+                            {
+                                printf("Nao pode obter aluno!");
+                                flagErro = 1;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            printf("Nao encontrou aluno!");
+                            flagErro = 1;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        printf("Nao alocou memoria!");
+                        flagErro = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(arq);
+        if(!flagErro && qtdeAlunos)
+        {
+            matriculaASerExcluida = apresentaDadosAlunos(alunos, qtdeAlunos);
+            //funcao
+        }
+        if(alunosAux == NULL)
+        {
+            if(alunos != NULL)
+            {
+                free(alunos);
+            }
+        }
+        else
+        {
+            free(alunos);
+        }
+    }
+}
