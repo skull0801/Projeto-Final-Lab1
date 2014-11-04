@@ -2,8 +2,11 @@
 
 #include <stdio.h>
 #include "dados.h"
+#include "cores.h"
 #include "funcoesBasicas.h"
 #include "funcoesCadastro.h"
+#include "funcoesCurso.h"
+#include "funcoesAluno.h"
 
 //***********************************************************************************************************************
 //  Objetivo: Matricular um aluno em um curso
@@ -11,89 +14,32 @@
 //  Retorno: Nenhum
 void cadastraAlunoEmCurso()
 {
-    FILE *arqAlunos, *arqCursos, *arqMatriculas;
-    int flag = 0, flagRepetido = 0, contaAlunos = 0, contaCursos = 0;   
-    Curso curso;
-    Aluno aluno;
+    FILE *arqMatriculas;
+    int flag, opcao;
+    char *opcoesSituacaoAluno[] = {"Cursando",
+                                   "Concluiu"};
+    char *opcaoSituacaoPagamento[] = {"Regular",
+                                      "Atrasada",
+                                      "Totalmente Paga"};
     Cadastro matricula;
-    do
-    {
-        listaDadosAlunos();
-        if((arqAlunos = fopen(ARQ_ALUNOS,"rb")) != NULL)
-        {
-            matricula.matriculaAluno = leValidaInteiro("Informe a matricula do Aluno", "Matricula do aluno", MATRICULA_MIN, MATRICULA_MAX);
-            while(!feof(arqAlunos))
-            {
-                
-                if(fread(&aluno, sizeof(Aluno), 1, arqAlunos))
-                {
-                    contaAlunos++;
-                    if(aluno.matricula == matricula.matriculaAluno)
-                    {
-                        flag = 1;
-                        break;
-                    }
-                    
-                }
-                
-            }
-            fclose(arqAlunos);
-        }
-        else
-        {
-            puts("O arquivo dos alunos nao foi encontrado!");
-            return ;
-        }
-        
-        if(contaAlunos == 0)
-        {
-            clrscr();
-            printf("Nao ha nenhum Aluno cadastrado ate o momento!");
-            return;
-        }
-    }
-    while(flag == 0);
-    flag = 0;
-    do
-    {
-        listaDadosCursos();
-        if((arqCursos = fopen(ARQ_CURSOS,"rb")) != NULL)
-        {
-            matricula.codigoCurso = leValidaInteiro("\nInforme o codigo do Curso","Codigo do curso", CODIGO_MIN, CODIGO_MAX);
-            while(!feof(arqCursos))
-            {
-                if(fread(&curso, sizeof(Curso), 1, arqCursos))
-                {
-                    contaCursos++;
-                    if(curso.codigo == matricula.codigoCurso)
-                    {
-                        flag = 1;
-                        break;
-                    }
-                }
-            }
-            fclose(arqCursos);   
-        }
-        else
-        {
-            puts("O arquivo dos cursos nao foi encontrado!");
-            return ;
-        }
-        
-        if(contaCursos == 0)
-        {
-            clrscr();
-            printf("Nao ha nenhum Curso cadastrado ate o momento!");
-            return;
-        }
-    }
-    while(flag == 0);
-    
-    flag = verificaAlunoRepetidoCadastrando(curso, aluno);
+    matricula.matriculaAluno = apresentaDadosAlunos();
+    matricula.codigoCurso = apresentaDadosCursos();
+    flag = verificaAlunoRepetidoCadastrando(matricula.codigoCurso, matricula.matriculaAluno);
     if(flag == 0)
     {
-        matricula.situacaoAluno = leValidaChar("Qual a situacao do aluno?\n1 - Cursando\n2 - Concluiu","12");
-        matricula.situacaoPagamento = leValidaChar("Qual a situacao de pagamento do aluno?\n1 - Regular\n2 - Atrasada\n3 - Paga","123");
+        do
+        {
+            opcao = menuVertical(opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+        }
+        while(!opcao);
+        matricula.situacaoAluno = opcao + '0';
+        do
+        {
+            opcao = menuVertical(opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+        }
+        while(!opcao);
+        
+        matricula.situacaoPagamento = opcao + '0';
         gravaDadosMatricula(matricula);
     }
     else
@@ -109,24 +55,30 @@ void listaDadosCadastro()
     FILE *arq;
     Cadastro matricula;
     int contaMatriculas;
+    char situacaoAluno[9], situacaoPagamento[16];
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
         printf("%-18s%-19s%-19s%-10s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
         while(!feof(arq))
             if(fread(&matricula, sizeof(Cadastro), 1, arq))
             {
-                printf("\n%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
                 if(matricula.situacaoAluno == '1')
-                    printf("%-19s","Cursando");          
+                    sprintf(situacaoAluno,"Cursando");          
                 else
-                   printf("%-19s","Concluiu");
-                if(matricula.situacaoPagamento == '1')
-                    printf("%-19s","Regular");
-                else
-                    if(matricula.situacaoPagamento == '2')
-                        printf("%-19s","Atrasada");
-                    else
-                        printf("%-19s","Totalmente paga");
+                    sprintf(situacaoAluno,"Concluiu");
+                switch(matricula.situacaoPagamento)
+                {
+                    case '1':
+                        sprintf(situacaoPagamento,"Regular");
+                        break;
+                    case '2':
+                        sprintf(situacaoPagamento,"Atrasada");
+                        break;
+                    case '3':
+                        sprintf(situacaoPagamento,"Totalmente paga");
+                        break;
+                }
+                printf("\n%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
             }
             fclose(arq);
     }
@@ -159,7 +111,7 @@ void gravaDadosMatricula(Cadastro matricula)
 //  Objetivo: Verificar se o aluno ja esta cadastrado em um curso
 //  Parametros: O codigo do curso e a matricula do Aluno
 //  Retorno: Flag = 1 se o aluno ja estiver cadastrado ou flag = 0 se o aluno nao estiver cadastrado
-int verificaAlunoRepetidoCadastrando(Curso curso, Aluno aluno)
+int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula)
 {
     int flag = 0;
     FILE *arq;
@@ -168,12 +120,68 @@ int verificaAlunoRepetidoCadastrando(Curso curso, Aluno aluno)
     {
         while(!feof(arq))
             if(fread(&matricula, sizeof(Cadastro), 1, arq))
-                if(matricula.matriculaAluno == aluno.matricula && matricula.codigoCurso == curso.codigo && matricula.situacaoAluno == '1')
-                {
-                    flag =1;
-                    break;
-                }
+                if(matricula.matriculaAluno == alunoMatricula)
+                    if(matricula.codigoCurso == codCurso) 
+                        if(matricula.situacaoAluno == '1')
+                        {
+                            flag =1;
+                            break;
+                        }
         fclose(arq);
     }
+    else
+        puts("O arquivo nao pode ser aberto!");
     return flag;
 }
+
+//***********************************************************************************************************************
+//  Objetivo: Apresentar os todos os alunos matriculados em um curso
+//  Parametros: Codigo do curso a ser apresentado e o indicador( 1-Cursando, 2-Concluido e 3-Ambos)
+//  Retorno: Nenhum
+void apresentaAlunosMatriculadosEmUmCurso(int codCurso, int indicador)
+{
+    FILE *arq;
+    Cadastro matricula;
+    int flag, qtdeApresentados = 0;
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
+    {
+        while(!feof(arq))
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+                if(codCurso == matricula.codigoCurso)
+                {
+                    flag = 0;
+                    switch(indicador)
+                    {
+                        case 1:
+                            if(matricula.situacaoAluno == '1')
+                                flag = 1;
+                            break;
+                        case 2:
+                            if(matricula.situacaoAluno == '2')
+                                flag = 1;
+                            break;
+                        case 3:
+                            flag = 1;
+                            break;
+                    }
+                    if(flag == 1)
+                    {
+                       qtdeApresentados++;
+                        printf("\n%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
+                        if(matricula.situacaoAluno == '1')
+                            printf("%-19s","Cursando");          
+                        else
+                           printf("%-19s","Concluiu");
+                        if(matricula.situacaoPagamento == '1')
+                            printf("%-19s","Regular");
+                        else
+                            if(matricula.situacaoPagamento == '2')
+                                printf("%-19s","Atrasada");
+                            else
+                                printf("%-19s","Totalmente paga"); 
+                    }
+                }    
+    }
+}
+
+
