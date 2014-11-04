@@ -294,7 +294,7 @@ void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int coluna
 
 //***********************************************************************************************************************
 // Objetivo: Confirmar uma escolha do usuario
-// ParÃ¢metros: Coluna e linha onde a confirmacao deve comecar
+// Parametros: Coluna e linha onde a confirmacao deve comecar
 // Retorno: 1 para confirma, 0 para nao confirma
 int confirmaEscolha(int coluna, int linha)
 {
