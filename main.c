@@ -14,7 +14,7 @@
 int main(void)
 {
     // Declaracoes
-    int opcao, subOpcao;
+    int opcao, subOpcao, subSubOpcao;
     char *opcoesMenuPrincipal[] = {"Alunos",
                                    "Cursos",
                                    "Matriculas",
@@ -39,7 +39,20 @@ int main(void)
                                     "Apresentar Matriculas Existentes",
                                     "Voltar para Menu Principal"};
                                     
-    char *opcoesMenuRelatorios[] = {"Voltar para Menu Principal"};
+    char *opcoesMenuRelatorios[] = {"Pesquisa por Chave dos Dados",
+                                    "Pesquisa de Alunos por Nome",
+                                    "Listar Alunos de um Curso",
+                                    "Pesquisar Cursos por Nome",
+                                    "Alunos Matriculados em um Periodo",
+                                    "Situacao Financeira dos Estudantes",
+                                    "Voltar para Menu Principal"};
+                                    
+    char *opcoesPesquisaChave[] = {"Pesquisar Alunos por Matricula",
+                                   "Pesquisar Curso por Codigo",
+                                   "Pesquisar Matricula de Aluno em Curso",
+                                   "Voltar"};
+    
+    
     // Instrucoes
     do
     {
@@ -145,9 +158,44 @@ int main(void)
             case 4:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuRelatorios, 1, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuRelatorios, 7, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                    gotoxy(1,1);
+                    switch(subOpcao)
+                    {
+                        case 1:
+                            do
+                            {
+                                subSubOpcao = menuVertical(opcoesPesquisaChave, 4, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                                gotoxy(1,1);
+                                switch(subSubOpcao)
+                                {
+                                    case 1:
+                                        pesquisaAluno();
+                                        getch();
+                                        clrscr();
+                                        break;
+                                    case 2:
+                                        pesquisaApresentaCursoCodigo();
+                                        getch();
+                                        clrscr();
+                                        break;
+                                }
+                            }
+                            while(subSubOpcao != 0 && subSubOpcao != 4);
+                            
+                            break;
+                        case 3:
+                            apresentaDadosAlunos();
+                            clrscr();
+                            break;
+                        case 4:
+                            pesquisaApresentaCursoNome();
+                            getch();
+                            clrscr();
+                            break;
+                    }
                 }
-                while(subOpcao != 0 && subOpcao != 1);
+                while(subOpcao != 0 && subOpcao != 7);
                 
                 break;
         }
