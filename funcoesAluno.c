@@ -161,7 +161,7 @@ int apresentaDadosAlunos(void)
                 {
                     qtdItens = qtdAlunos - contador > 10 ? 10 : qtdAlunos - contador;
                     
-                    selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, VERMELHO, 1, 10, 5, 1, PRETO, CINZA_C);
+                    selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     
                     if(selecao != 0)
                     {
