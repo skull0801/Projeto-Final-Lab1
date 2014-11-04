@@ -95,6 +95,42 @@ void listaDadosCursos()
         puts("Nao ha nenhum curso cadastrado ate o momento!");    
     }
 }
+//***********************************************************************************************************************
+// Objetivo: Pesquisar e apresentar um curso por codigo
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaApresentaCursoCodigo(void)
+{
+    FILE *arq;
+    int codigo, posCurso;
+    Curso curso;
+    
+    codigo = leValidaInteiro("Informe o codigo do curso a pesquisar", "Codigo", CODIGO_MIN, CODIGO_MAX);
+    
+    posCurso = pesquisaCursoCodigo(codigo);
+    
+    if(posCurso)
+    {
+        if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+        {
+            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+            {
+                if(fread(&curso, sizeof(Curso), 1, arq))
+                {
+                    apresentaCurso(curso);
+                }
+                else
+                    printf("O curso nao pode ser lido!");
+            }
+            else
+                printf("O curso nao pode ser encontrado!");
+        }
+        else
+            printf("O arquivo de cursos nao pode ser aberto!");
+    }
+    else
+        printf("O curso nao foi encontrado!");
+}
 
 //***********************************************************************************************************************
 // Objetivo: Pesquisar por um ou mais cursos
@@ -102,13 +138,10 @@ void listaDadosCursos()
 // Retorno: nenhum
 void pesquisaCurso(void)
 {
-    int codigo, posCurso, opcao;
-    char nomeBusca[TAM_NOME_CURSO];
+    int opcao;
     char *opcoesPesquisa[] = {"Pesquisa por Codigo",
                               "Pesquisa por Nome",
                               "Voltar"};
-    FILE *arq;
-    Curso curso;
     
     opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
     clrscr();
@@ -116,33 +149,10 @@ void pesquisaCurso(void)
     switch(opcao)
     {
         case 1:
-            codigo = leValidaInteiro("Informe o codigo do curso a pesquisar", "Codigo", CODIGO_MIN, CODIGO_MAX);
-            posCurso = pesquisaCursoCod(codigo);
-            if(posCurso)
-            {
-                if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
-                {
-                    if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
-                    {
-                        if(fread(&curso, sizeof(Curso), 1, arq))
-                        {
-                            apresentaCurso(curso);
-                        }
-                        else
-                            printf("O curso nao pode ser lido!");
-                    }
-                    else
-                        printf("O curso nao pode ser encontrado!");
-                }
-                else
-                    printf("O arquivo de cursos nao pode ser aberto!");
-            }
-            else
-                printf("O curso nao foi encontrado!");
+            pesquisaApresentaCursoCodigo();
             break;
         case 2:
-			leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
-			pesquisaCursoNome(nomeBusca);
+			pesquisaApresentaCursoNome();
 			break;
     }
 }
@@ -151,7 +161,7 @@ void pesquisaCurso(void)
 //  Objetivo: Pesquisar um curso dentro de um arquivo por codigo unico
 //  Parametros: codigo a ser pesquisado
 //  Retorno: numero positivo se encontrado(posicao do curso de 1 a n, sendo n o numero de cursos), 0 - codigo nao encontrado
-int pesquisaCursoCod(int codCursoBusca)
+int pesquisaCursoCodigo(int codCursoBusca)
 {
     FILE *arq;
     Curso curso;
@@ -179,13 +189,15 @@ int pesquisaCursoCod(int codCursoBusca)
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
 //  Parametros: nome a ser pesquisado
 //  Retorno: nenhum
-void pesquisaCursoNome(char *nomeBusca)
+void pesquisaApresentaCursoNome()
 {
     FILE *arq;
     Curso curso, *cursos = NULL, *cursosAux;
     int qtdLidos = 0, contador;
-    char copiaNome[TAM_NOME_CURSO];
+    char copiaNome[TAM_NOME_CURSO], nomeBusca[TAM_NOME_CURSO];
     
+	leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
+	
     strToLower(nomeBusca);
     printf("%-50s%-7s%-7s%-10s\n","Nome","Codigo","Horas","Mensalidade");
     
@@ -231,6 +243,7 @@ void pesquisaCursoNome(char *nomeBusca)
     }
 }
 
+//***********************************************************************************************************************
 //  Objetivo: Ordenar cursos pelo nome
 //  Parametros: Referencia a um vetor de cursos e a quantidade de cursos
 //  Retorno: Nenhum
@@ -253,8 +266,8 @@ void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanÁas devem ser salvas
-// Par‚metros: nenhum
+// Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudan√ßas devem ser salvas
+// Par√¢metros: nenhum
 // Retorno: nenhum
 void alteraCurso(void)
 {
@@ -272,7 +285,7 @@ void alteraCurso(void)
     
     codigo = leValidaInteiro("\nInforme o codigo do curso que deseja editar","Codigo a ser editado",CODIGO_MIN,CODIGO_MAX);
     
-    posCurso = pesquisaCursoCod(codigo);
+    posCurso = pesquisaCursoCodigo(codigo);
     
     if(posCurso)
     {
@@ -375,7 +388,7 @@ void excluiCurso(void)
     
     codigo = leValidaInteiro("\nInforme o codigo do curso a excluir", "Codigo", CODIGO_MIN, CODIGO_MAX);
     
-    posCurso = pesquisaCursoCod(codigo);
+    posCurso = pesquisaCursoCodigo(codigo);
     
     if(posCurso)
     {
