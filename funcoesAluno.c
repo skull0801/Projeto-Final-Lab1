@@ -111,8 +111,153 @@ void listaDadosAlunos()
 }
 
 //***********************************************************************************************************************
-// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanÁas devem ser salvas
-// Par‚metros: nenhum
+// Objetivo: Apresentar todos os alunos de um arquivo em forma de tabela
+// Parametros: Nenhum
+// Retorno: Matricula do aluno selecionado (0 se nenhum foi selecionado)
+int apresentaDadosAlunos(void)
+{
+    Aluno *alunos;
+    int qtdAlunos, selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
+    int matriculaSelecao = 0;
+    char ** linhasTabela, matriculaTexto[7];
+    
+    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos)) != NULL)
+    {
+        if(qtdAlunos != 0)
+        {
+            
+            ordenaAlunosPorNome(alunos, qtdAlunos);
+            
+            linhasTabela = (char**) malloc(sizeof(char*) * qtdAlunos);
+            if(linhasTabela != NULL)
+            {
+                for(contador=0;contador<qtdAlunos;contador++)
+                {
+                    linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
+                    if(linhasTabela[contador] != NULL)
+                    {
+                        sprintf(linhasTabela[contador], "%06d - %-25.20s - %12s", alunos[contador].matricula, alunos[contador].nome, alunos[contador].cpf);
+                        qtdLinhasAlocada++;
+                    }
+                    else
+                    {
+                        flag = 1;
+                        printf("A memoria para uma das linhas nao pode ser alocada");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                flag = 1;
+                printf("A memoria para tabela nao pode ser alocada!");
+            }
+            
+            free(alunos);
+            
+            if(!flag)
+            {
+                for(contador=0;contador<qtdAlunos;contador+=10)
+                {
+                    qtdItens = qtdAlunos - contador > 10 ? 10 : qtdAlunos - contador;
+                    
+                    selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, VERMELHO, 1, 10, 5, 1, PRETO, CINZA_C);
+                    
+                    if(selecao != 0)
+                    {
+                        strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
+                        matriculaTexto[6] = '\0';
+                        matriculaSelecao = atoi(matriculaTexto);
+                        break;
+                    }
+                    else if(contador+10<qtdAlunos)
+                    {
+                        if(confirmaEscolha(20, 5))
+                            break;
+                    }
+                }
+            }
+            
+            if(linhasTabela != NULL)
+            {
+                for(contador=0;contador<qtdLinhasAlocada;contador++)
+                    free(linhasTabela[contador]);
+                free(linhasTabela);
+            }
+        }
+        else
+        {
+            printf("Nao existem alunos cadastrados!");
+            getch();
+        }
+    }
+    return matriculaSelecao;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Ordenar os alunos de um vetor por nome
+// Parametros: Referencia ao vetor de alunos, e quantidade de alunos
+// Retorno: nenhum
+void ordenaAlunosPorNome(Aluno *alunos, int qtdAlunos)
+{
+    Aluno alunoAux;
+    int contador, auxiliar;
+    for(auxiliar = 0; auxiliar < qtdAlunos-1; auxiliar++)
+    {
+        for(contador = auxiliar+1; contador < qtdAlunos; contador++)
+        {
+            if(stricmp(alunos[auxiliar].nome, alunos[contador].nome) > 0)
+            {
+                alunoAux = alunos[auxiliar];
+                alunos[auxiliar] = alunos[contador];
+                alunos[contador] = alunoAux;
+            }
+        }
+    }
+}
+
+//***********************************************************************************************************************
+// Objetivo: Obter todos os alunos do arquivo
+// Parametros: Referencia a quantidade de alunos (valor sera dado pela funcao)
+// Retorno: Ponteiro para memoria alocada na qual os alunos estao
+Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
+{
+    FILE *arq;
+    Aluno *alunos = NULL;
+    
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        if(!fseek(arq, 0, SEEK_END))
+        {
+            *qtdAlunos = (ftell(arq)/sizeof(Aluno));
+            
+            alunos = malloc(sizeof(Aluno)*(*qtdAlunos));
+            
+            if(alunos != NULL)
+            {
+                rewind(arq);
+                if(fread(alunos, sizeof(Aluno), *qtdAlunos, arq) != *qtdAlunos)
+                {
+                    printf("Erro ao recuperar os dados de alunos!");
+                    free(alunos);
+                    alunos = NULL;
+                }
+            }
+            else
+                printf("Erro ao alocar memoria para alunos!");
+        }
+        else
+            printf("Erro ao obter quantidade de alunos.");
+    }
+    else
+        printf("Erro ao abrir o arquivo de alunos.");
+        
+    return alunos;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudan√ßas devem ser salvas
+// Par√¢metros: nenhum
 // Retorno: nenhum
 void alteraAluno(void)
 {
