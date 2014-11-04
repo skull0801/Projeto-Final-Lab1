@@ -87,9 +87,7 @@ int main(void)
                             clrscr();
                             break;
                         case 5:
-                            listaDadosAlunos();
-                            getch();
-                            clrscr();
+                            apresentaDadosAlunos();
                             break;
                     }
                 }
@@ -183,10 +181,6 @@ int main(void)
                             }
                             while(subSubOpcao != 0 && subSubOpcao != 4);
                             
-                            break;
-                        case 3:
-                            apresentaDadosAlunos();
-                            clrscr();
                             break;
                         case 4:
                             pesquisaApresentaCursoNome();
