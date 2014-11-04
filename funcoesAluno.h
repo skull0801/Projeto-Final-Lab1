@@ -21,5 +21,6 @@ void excluiAluno(void);
 void excluiDadosAluno(int posAluno);
 int validaCPF(const char *cpf);
 int verificaCPFAluno(const char *cpf);
+int obtemAlunoArquivo(Aluno *aluno, int posAluno);
 
 #endif
