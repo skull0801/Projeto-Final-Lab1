@@ -379,6 +379,28 @@ void pesquisaApresentaCursoNome()
 }
 
 //***********************************************************************************************************************
+// Objetivo: Encontrar um curso no arquivo
+// Parametros: Ponteiro para curso, e posicao do curso no arquivo
+// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
+int obtemCursoArquivo(Curso *curso, int posCurso)
+{
+    FILE *arq;
+    int flag = 0;
+    if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+    {
+        if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+        {
+            if(fread(curso, sizeof(Curso), 1, arq))
+            {
+                flag = 1;
+            }
+        }
+        fclose(arq);
+    }
+    return flag;
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Ordenar cursos pelo nome
 //  Parametros: Referencia a um vetor de cursos e a quantidade de cursos
 //  Retorno: Nenhum
@@ -406,7 +428,6 @@ void ordenaCursosPorNome(Curso *cursos, int qtdeCursos)
 // Retorno: nenhum
 void alteraCurso(void)
 {
-    FILE *arq;
     int posCurso, codigo;
     int opcao, confirmacao;
     Curso curso;
@@ -423,53 +444,41 @@ void alteraCurso(void)
     gotoxy(1,1);
     if(posCurso)
     {
-        if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+        if(obtemCursoArquivo(&curso, posCurso))
         {
-            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+            do
             {
-                if(fread(&curso, sizeof(Curso), 1, arq))
+                apresentaCurso(curso);
+                opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                gotoxy(1, 6);
+				switch(opcao)
+				{
+					case 1:
+						leValidaTexto(curso.nome, "Informe qual o novo nome do curso", "Novo nome do curso", 3, TAM_NOME_CURSO);
+						break;
+					case 2:
+						curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
+						break;
+					case 3:
+						curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
+						break;
+				}
+            }
+            while(opcao != 0 && opcao != 4 && opcao != 5);
+            
+            if(opcao == 4)
+            {
+                confirmacao = confirmaEscolha(55, 1);
+                clrscr();
+                if(confirmacao == 1)
                 {
-                    do
-                    {
-                        apresentaCurso(curso);
-                        opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
-                        gotoxy(1, 6);
-    					switch(opcao)
-    					{
-    						case 1:
-    							leValidaTexto(curso.nome, "Informe qual o novo nome do curso", "Novo nome do curso", 3, TAM_NOME_CURSO);
-    							break;
-    						case 2:
-    							curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
-    							break;
-    						case 3:
-    							curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
-    							break;
-    					}
-                    }
-                    while(opcao != 0 && opcao != 4 && opcao != 5);
-                    
-                    if(opcao == 4)
-                    {
-                        confirmacao = confirmaEscolha(55, 1);
-                        clrscr();
-                        if(confirmacao == 1)
-                        {
-                            alteraDadosCurso(curso, posCurso);
-                        }
-                        else
-                            printf("Os dados nao foram alterados!");
-                    }
-                    else
-                        printf("Os dados nao foram alterados!");
+                    alteraDadosCurso(curso, posCurso);
                 }
                 else
-                    printf("Os dados do curso nao puderam ser lidos!");
+                    printf("Os dados nao foram alterados!");
             }
             else
-                printf("Os dados do curso nao puderam ser lidos!");
-                
-            fclose(arq);
+                printf("Os dados nao foram alterados!");
         }
         else
             printf("O curso nao pode ser recuperado!");
@@ -512,7 +521,6 @@ void alteraDadosCurso(Curso curso, int posCurso)
 void excluiCurso(void)
 {
     Curso curso;
-    FILE *arq = NULL;
     int posCurso, codigo;
     char confirmacao;
     
@@ -524,35 +532,20 @@ void excluiCurso(void)
     
     if(posCurso)
     {
-        if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+        if(obtemCursoArquivo(&curso, posCurso))
         {
-            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
+            apresentaCurso(curso);
+            confirmacao = confirmaEscolha(55, 1);
+            clrscr();
+            if(confirmacao == 1)
             {
-                if(fread(&curso, sizeof(Curso), 1, arq))
-                {
-                    apresentaCurso(curso);
-                    confirmacao = confirmaEscolha(55, 1);
-                    clrscr();
-                    if(confirmacao == 1)
-                    {
-                        fclose(arq);
-                        arq = NULL;
-                        excluiDadosCurso(posCurso);
-                    }
-                    else
-                        printf("Os dados nao foram excluidos!");
-                }
-                else
-                    printf("O curso nao pode ser lido!");
+                excluiDadosCurso(posCurso);
             }
             else
-                printf("O curso nao pode ser encontrado!");
+                printf("Os dados nao foram excluidos!");
         }
         else
             printf("O arquivo de curso nao pode ser aberto!");
-        
-        if(arq != NULL)
-            fclose(arq);
     }
 }
 
