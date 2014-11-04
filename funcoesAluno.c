@@ -640,3 +640,4 @@ int verificaCPFAluno(const char *cpf)
     }
     return flag;
 }
+
