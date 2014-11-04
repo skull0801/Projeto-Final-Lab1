@@ -20,5 +20,6 @@ void ordenaCursosPorNome(Curso *cursos, int qtdeCursos);
 void alteraCurso(void);
 void alteraDadosCurso(Curso curso, int posCurso);
 void apresentaCurso(Curso curso);
+int obtemCursoArquivo(Curso *curso, int posCurso);
 
 #endif
