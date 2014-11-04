@@ -56,13 +56,13 @@ int main(void)
     // Instrucoes
     do
     {
-        opcao = menuVertical(opcoesMenuPrincipal, 5, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+        opcao = menuVertical(opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
         switch(opcao)
         {
             case 1:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuAlunos, 6, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -97,7 +97,7 @@ int main(void)
             case 2:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuCursos, 6, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -113,7 +113,6 @@ int main(void)
                             break;
                         case 3:
                             excluiCurso();
-                            getch();
                             clrscr();
                             break;
                         case 4:
@@ -122,9 +121,7 @@ int main(void)
                             clrscr();
                             break;
                         case 5:
-                            listaDadosCursos();
-                            getch();
-                            clrscr();
+                            apresentaDadosCursos();
                             break;
                     }
                 }
@@ -134,7 +131,7 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuMatriculas, 3, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuMatriculas, 3, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -156,14 +153,14 @@ int main(void)
             case 4:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuRelatorios, 7, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
                         case 1:
                             do
                             {
-                                subSubOpcao = menuVertical(opcoesPesquisaChave, 4, BRANCO, MARROM, 1, 10, 5, 1, PRETO, CINZA_C);
+                                subSubOpcao = menuVertical(opcoesPesquisaChave, 4, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                                 gotoxy(1,1);
                                 switch(subSubOpcao)
                                 {
