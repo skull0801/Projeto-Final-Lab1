@@ -1,22 +1,25 @@
-// Prototipos para funcoes de cursos
-#ifndef FUNCOESCURSO_H
-#define FUNCOESCURSO_H
+// Prototipos para funcoes de alunos
+#ifndef FUNCOESALUNO_H
+#define FUNCOESALUNO_H
 #include "dados.h"
 
-void cadastraCurso(void);
-void leDadosCurso(Curso *curso);
-void gravaDadosCurso(Curso *curso);
-void listaDadosCursos();
-void excluiCurso(void);
-void excluiDadosCurso(int posCurso);
-void pesquisaCurso(void);
-int pesquisaCursoCodigo(int codCursoBusca);
-void pesquisaApresentaCursoCodigo(void);
-void pesquisaApresentaCursoNome(void);
-int achaProximoCodCurso();
-void ordenaCursosPeloNome(Curso *cursos, int qtdeCursos);
-void alteraCurso(void);
-void alteraDadosCurso(Curso curso, int posCurso);
-void apresentaCurso(Curso curso);
+void cadastraAluno(void);
+void leDadosAluno(Aluno *aluno);
+void gravaDadosAluno(Aluno *aluno);
+void listaDadosAlunos(void);
+void apresentaAluno(Aluno aluno);
+void pesquisaAluno(void);
+int apresentaTodosAlunos(void);
+int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos);
+Aluno * obtemDadosAlunosArquivo(int * qtdAlunos);
+void ordenaAlunosPorNome(Aluno *alunos, int qtdAlunos);
+int pesquisaAlunoMatricula(int matriculaBusca);
+// void pesquisaAlunoNome(char *nomeBusca);
+void alteraAluno(void);
+void alteraDadosAluno(Aluno aluno, int posAluno);
+void excluiAluno(void);
+void excluiDadosAluno(int posAluno);
+int validaCPF(const char *cpf);
+int verificaCPFAluno(const char *cpf);
 
 #endif
