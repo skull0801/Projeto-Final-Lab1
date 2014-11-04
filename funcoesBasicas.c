@@ -167,13 +167,10 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
     
     selecao = selecaoInicial - 1;
     
+    textbackground(corFundoAtual);
+    
     for(contador=0;contador<qtdOpcoes;contador++)
     {
-        if(contador == selecao)                 // Define a cor da selecao
-            textbackground(corSelecao);
-        else
-            textbackground(corFundoAtual);
-            
         gotoxy(coluna, linha+contador);
         printf(opcoes[contador]);
         
@@ -181,7 +178,11 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
             tamMaiorOpcao = strlen(opcoes[contador]); // Inicializa tamMaiorOpcao com o primeiro tamanho
         else if(strlen(opcoes[contador]) > tamMaiorOpcao)
             tamMaiorOpcao = strlen(opcoes[contador]); // Verifica o tamanho do maior texto escrito
-    }
+    }            
+    
+    gotoxy(coluna, linha+selecao);                  // Seleciona
+    textbackground(corSelecao);                     // a posicao
+    printf("%-*s", tamMaiorOpcao, opcoes[selecao]); // atual
     
     if(moldura)
         desenhaMoldura(linha-(offset), coluna-(offset), linha+contador+(offset-1), coluna+tamMaiorOpcao+(offset-1), corFundoAtual, corLetra);  // Desenha moldura se necessario
@@ -191,7 +192,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
         do
         {
             tecla = toupper(getch());
-            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada ÃƒÂ© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
+            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada ÃƒÆ’Ã‚Â© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
                 val = 1;                                                                               // 27 - esc, 13 - enter
             else
                 val = 0;
@@ -214,13 +215,13 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
         textcolor(corLetra);
         if(tecla != 13 && tecla != 27) // Se o usuario pressionou algo diferente de enter ou esc, fazer a mudanca necessaria
         {
-            gotoxy(coluna, linha+ultimaSelecao); // Deseleciona
-            textbackground(corFundoAtual);       // a ultima
-            printf(opcoes[ultimaSelecao]);       // opcao
+            gotoxy(coluna, linha+ultimaSelecao);                        // Deseleciona
+            textbackground(corFundoAtual);                              // a ultima
+            printf("%-*s", tamMaiorOpcao, opcoes[ultimaSelecao]);       // opcao
             
-            gotoxy(coluna, linha+selecao);       // Seleciona
-            textbackground(corSelecao);          // a posicao
-            printf(opcoes[selecao]);             // atual
+            gotoxy(coluna, linha+selecao);                              // Seleciona
+            textbackground(corSelecao);                                 // a posicao
+            printf("%-*s", tamMaiorOpcao, opcoes[selecao]);             // atual
             
             fflush(stdin); // Limpa o buffer do teclado
         }
