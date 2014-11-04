@@ -132,7 +132,7 @@ void strToLower(char *string)
 //***********************************************************************************************************************
 // Objetivo: Fazer um menu e lidar com as escolhas do usuario
 // Parametros: opcoes - Opcoes do menu
-//             qtdOpcoes - quantidade de opÃ§Ãµes
+//             qtdOpcoes - quantidade de opcoes
 //             corL - cor da letra do menu
 //             corS - cor da selecaoda opcao do menu
 //             moldura - indicador se havera moldura 
@@ -146,7 +146,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
          int selecaoInicial, int corFundoAtual, int corLetraAtual)
 {
     int contador;
-    int val; // Indica se a tecla pressionada Ã© relevante ao menu
+    int val; // Indica se a tecla pressionada e relevante ao menu
     int tecla; // Registra a tecla que o usuario pressionou
     int tamMaiorOpcao; // Registra o tamanho da maior opcao escrita
     int selecao; // Registra o item selecionado no momento
@@ -184,14 +184,14 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
     }
     
     if(moldura)
-        desenhaMoldura(linha-(offset), coluna-(offset), linha+contador+(offset-1), coluna+tamMaiorOpcao+(offset-1), corFundoAtual, corLetraAtual);  // Desenha moldura se necessario
+        desenhaMoldura(linha-(offset), coluna-(offset), linha+contador+(offset-1), coluna+tamMaiorOpcao+(offset-1), corFundoAtual, corLetra);  // Desenha moldura se necessario
     
     do
     {
         do
         {
             tecla = toupper(getch());
-            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada Ã© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
+            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada ÃƒÂ© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
                 val = 1;                                                                               // 27 - esc, 13 - enter
             else
                 val = 0;
