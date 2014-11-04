@@ -111,85 +111,94 @@ void listaDadosAlunos()
 }
 
 //***********************************************************************************************************************
-// Objetivo: Apresentar todos os alunos de um arquivo em forma de menu
+// Objetivo: Apresentar todos os alunos
 // Parametros: Nenhum
-// Retorno: Matricula do aluno selecionado (0 se nenhum foi selecionado)
-int apresentaDadosAlunos(void)
+// Retorno: Matricula do aluno selecionado
+int apresentaTodosAlunos(void)
 {
     Aluno *alunos;
-    int qtdAlunos, selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
+    int qtdAlunos, matriculaSelecionada = 0;
+    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos))!= NULL)
+    {
+        matriculaSelecionada = apresentaDadosAlunos(alunos, qtdAlunos);
+        free(alunos);
+    }
+    return matriculaSelecionada;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Apresentar os alunos fornecidos
+// Parametros: Ponteiro para alunos (ja alocados), quantidade de alunos
+// Retorno: Matricula do aluno selecionado (0 se nenhum foi selecionado)   (NAO DESALOCA MEMORIA)
+int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
+{
+    int selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
     int matriculaSelecao = 0;
     char ** linhasTabela, matriculaTexto[7];
-    
-    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos)) != NULL)
+    if(qtdAlunos > 0)
     {
-        if(qtdAlunos != 0)
+        
+        ordenaAlunosPorNome(alunos, qtdAlunos);
+        
+        linhasTabela = (char**) malloc(sizeof(char*) * qtdAlunos);
+        if(linhasTabela != NULL)
         {
-            
-            ordenaAlunosPorNome(alunos, qtdAlunos);
-            
-            linhasTabela = (char**) malloc(sizeof(char*) * qtdAlunos);
-            if(linhasTabela != NULL)
+            for(contador=0;contador<qtdAlunos;contador++)
             {
-                for(contador=0;contador<qtdAlunos;contador++)
+                linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
+                if(linhasTabela[contador] != NULL)
                 {
-                    linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
-                    if(linhasTabela[contador] != NULL)
-                    {
-                        sprintf(linhasTabela[contador], "%06d - %-25.20s - %12s", alunos[contador].matricula, alunos[contador].nome, alunos[contador].cpf);
-                        qtdLinhasAlocada++;
-                    }
-                    else
-                    {
-                        flag = 1;
-                        printf("A memoria para uma das linhas nao pode ser alocada");
-                        break;
-                    }
+                    sprintf(linhasTabela[contador], "%06d - %-25.20s - %12s", alunos[contador].matricula, alunos[contador].nome, alunos[contador].cpf);
+                    qtdLinhasAlocada++;
                 }
-            }
-            else
-            {
-                flag = 1;
-                printf("A memoria para tabela nao pode ser alocada!");
-            }
-            
-            free(alunos);
-            
-            if(!flag)
-            {
-                for(contador=0;contador<qtdAlunos;contador+=10)
+                else
                 {
-                    qtdItens = qtdAlunos - contador > 10 ? 10 : qtdAlunos - contador;
-                    
-                    selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
-                    
-                    if(selecao != 0)
-                    {
-                        strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
-                        matriculaTexto[6] = '\0';
-                        matriculaSelecao = atoi(matriculaTexto);
-                        break;
-                    }
-                    else if(contador+10<qtdAlunos)
-                    {
-                        if(confirmaEscolha(20, 5))
-                            break;
-                    }
+                    flag = 1;
+                    printf("A memoria para uma das linhas nao pode ser alocada");
+                    break;
                 }
-            }
-            
-            if(linhasTabela != NULL)
-            {
-                for(contador=0;contador<qtdLinhasAlocada;contador++)
-                    free(linhasTabela[contador]);
-                free(linhasTabela);
             }
         }
         else
         {
-            printf("Nao existem alunos cadastrados!");
-            getch();
+            flag = 1;
+            printf("A memoria para tabela nao pode ser alocada!");
         }
+        
+        if(!flag)
+        {
+            for(contador=0;contador<qtdAlunos;contador+=10)
+            {
+                qtdItens = qtdAlunos - contador > 10 ? 10 : qtdAlunos - contador;
+                
+                selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                
+                if(selecao != 0)
+                {
+                    strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
+                    matriculaTexto[6] = '\0';
+                    matriculaSelecao = atoi(matriculaTexto);
+                    break;
+                }
+                else if(contador+10<qtdAlunos)
+                {
+                    if(confirmaEscolha(20, 5))
+                        break;
+                }
+            }
+        }
+        
+        if(linhasTabela != NULL)
+        {
+            for(contador=0;contador<qtdLinhasAlocada;contador++)
+                free(linhasTabela[contador]);
+            free(linhasTabela);
+        }
+    }
+    else
+    {
+        printf("Nao existem alunos cadastrados!");
+        getch();
     }
     return matriculaSelecao;
 }
@@ -258,8 +267,8 @@ Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanÃ§as devem ser salvas
-// ParÃ¢metros: nenhum
+// Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudanÃƒÂ§as devem ser salvas
+// ParÃƒÂ¢metros: nenhum
 // Retorno: nenhum
 void alteraAluno(void)
 {
@@ -273,7 +282,7 @@ void alteraAluno(void)
                                "Cancelar Mudancas"};
     Aluno aluno;
     
-    matricula = apresentaDadosAlunos();
+    matricula = apresentaTodosAlunos();
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
@@ -373,7 +382,7 @@ void excluiAluno()
     int posAluno, matricula;
     int confirmacao;
     
-    matricula = apresentaDadosAlunos();
+    matricula = apresentaTodosAlunos();
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
