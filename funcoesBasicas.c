@@ -303,7 +303,7 @@ int confirmaEscolha(int coluna, int linha)
     
     gotoxy(coluna, linha);
     printf("Voce tem certeza?");
-    resposta = menuVertical(opcoesConfirma, 2, BRANCO, VERMELHO, 1, coluna+6, linha+3, 2, PRETO, CINZA_E);
+    resposta = menuVertical(opcoesConfirma, 2, BRANCO, AZUL_C, 1, coluna+6, linha+3, 2, PRETO, CINZA_E);
     if(resposta != 1)
         resposta = 0;
     return resposta;
