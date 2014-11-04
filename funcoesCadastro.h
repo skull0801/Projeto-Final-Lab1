@@ -6,6 +6,8 @@
 void cadastraAlunoEmCurso();
 void listaDadosCadastro();
 void gravaDadosMatricula(Cadastro matricula);
-int verificaAlunoRepetidoCadastrando(Curso curso, Aluno aluno);
+void apresentaAlunosMatriculadosEmUmCurso();
+int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula);
+Cadastro * obtemDadosCadastroMatriculas(int *qtdeMatriculados);
 
 #endif
