@@ -58,7 +58,7 @@ void listaDadosCadastro()
     char situacaoAluno[9], situacaoPagamento[16];
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
-        printf("%-18s%-19s%-19s%-10s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
+        printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
         while(!feof(arq))
             if(fread(&matricula, sizeof(Cadastro), 1, arq))
             {
@@ -78,7 +78,7 @@ void listaDadosCadastro()
                         sprintf(situacaoPagamento,"Totalmente paga");
                         break;
                 }
-                printf("\n%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
+                printf("\n%-18d%-19d%-19s%-16s",matricula.codigoCurso, matricula.matriculaAluno, situacaoAluno, situacaoPagamento);
             }
             fclose(arq);
     }
@@ -135,6 +135,30 @@ int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula)
 }
 
 //***********************************************************************************************************************
+//  Objetivo: Apresentar os dados para a pesquisa de alunos matriculados em um curso
+//  Parametros: Nenhum
+//  Retorno: Nenhum
+void pesquisaAlunosMatriculadosEmUmCurso()
+{
+    int codigoCurso, indicador;
+    char *situacaoAluno[] = {"Cursando",
+                            "Concluido",
+                            "Ambos"};
+    do
+    {
+        codigoCurso = apresentaDadosCursos();
+    }
+    while(codigoCurso == 0);
+    
+    do
+    {
+        indicador = menuVertical(situacaoAluno, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    }
+    while(indicador == 0);
+    apresentaAlunosMatriculadosEmUmCurso(codigoCurso, indicador);
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Apresentar os todos os alunos matriculados em um curso
 //  Parametros: Codigo do curso a ser apresentado e o indicador( 1-Cursando, 2-Concluido e 3-Ambos)
 //  Retorno: Nenhum
@@ -143,6 +167,7 @@ void apresentaAlunosMatriculadosEmUmCurso(int codCurso, int indicador)
     FILE *arq;
     Cadastro matricula;
     int flag, qtdeApresentados = 0;
+    char situacaoAluno[9], situacaoPagamento[16];
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
         while(!feof(arq))
@@ -166,19 +191,24 @@ void apresentaAlunosMatriculadosEmUmCurso(int codCurso, int indicador)
                     }
                     if(flag == 1)
                     {
-                       qtdeApresentados++;
-                        printf("\n%-18d%-19d",matricula.codigoCurso, matricula.matriculaAluno);
+                        qtdeApresentados++;
                         if(matricula.situacaoAluno == '1')
-                            printf("%-19s","Cursando");          
+                            sprintf(situacaoAluno,"Cursando");          
                         else
-                           printf("%-19s","Concluiu");
-                        if(matricula.situacaoPagamento == '1')
-                            printf("%-19s","Regular");
-                        else
-                            if(matricula.situacaoPagamento == '2')
-                                printf("%-19s","Atrasada");
-                            else
-                                printf("%-19s","Totalmente paga"); 
+                            sprintf(situacaoAluno,"Concluiu");
+                        switch(matricula.situacaoPagamento)
+                        {
+                            case '1':
+                                sprintf(situacaoPagamento,"Regular");
+                                break;
+                            case '2':
+                                sprintf(situacaoPagamento,"Atrasada");
+                                break;
+                            case '3':
+                                sprintf(situacaoPagamento,"Totalmente paga");
+                                break;
+                        }
+                        printf("\n%-18d%-19d%-19s%-16s",matricula.codigoCurso, matricula.matriculaAluno, situacaoAluno, situacaoPagamento);
                     }
                 }    
     }
