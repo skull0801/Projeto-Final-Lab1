@@ -322,7 +322,7 @@ char * leStringEmCampo(int limite)
     {
         if(sizeof(char)*(contador+2)>maxAlocado)
         {
-            stringAux = (char *)realloc(string, sizeof(char)*(contador+2));
+            stringAux = (char *)realloc(string, sizeof(char)*(contador+1));
             maxAlocado = sizeof(char)*(contador+2);
         }
         if(stringAux != NULL)
