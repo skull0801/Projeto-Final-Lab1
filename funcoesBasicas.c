@@ -317,14 +317,10 @@ int confirmaEscolha(int coluna, int linha)
 char * leStringEmCampo(int limite)
 {
     char *string = NULL, *stringAux, caractere;
-    int contador = 0, maxAlocado = 0;
+    int contador = 0, qtdCaracteres = 0;
     do
     {
-        if(sizeof(char)*(contador+2)>maxAlocado)
-        {
-            stringAux = (char *)realloc(string, sizeof(char)*(contador+1));
-            maxAlocado = sizeof(char)*(contador+2);
-        }
+        stringAux = (char *)realloc(string, sizeof(char)*(qtdCaracteres+1));
         if(stringAux != NULL)
         {
             string = stringAux;
@@ -332,29 +328,29 @@ char * leStringEmCampo(int limite)
             caractere = getch();
             if(caractere==8)
             {
-                if(contador>0)
+                if(qtdCaracteres>0)
                 {
                     printf("\b \b");
-                    contador--;
+                    qtdCaracteres--;
                 }
             }
-            else if(contador<limite && caractere>=32 || caractere == 13)
+            else if(qtdCaracteres<limite && caractere>=32 || caractere == 13)
             {
-                string[contador++] = caractere;
+                string[qtdCaracteres++] = caractere;
                 putc(caractere, stdout);
             }
         }
         else
             break;
+        contador = qtdCaracteres-1 < 0 ? 0 : qtdCaracteres-1;
     }
-    while(string[contador-1]!=13);
+    while(string[contador]!=13);
     if(stringAux == NULL)
     {
         free(string);
         string = NULL;
     }
     if(string != NULL)
-        string[contador-1] = '\0';
+        string[contador] = '\0';
     return string;
 }
-
