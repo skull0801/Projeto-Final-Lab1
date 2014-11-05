@@ -312,15 +312,19 @@ int confirmaEscolha(int coluna, int linha)
 
 //***********************************************************************************************************************
 // Objetivo: Ler uma string com limite
-// Parâmetros: tamanho maximo
-// Retorno: Endereço para a string alocada dinamicamente
+// Parametros: tamanho maximo
+// Retorno: Endereco para a string alocada dinamicamente
 char * leStringEmCampo(int limite)
 {
     char *string = NULL, *stringAux, caractere;
-    int contador = 0;
+    int contador = 0, maxAlocado = 0;
     do
     {
-        stringAux = (char *)realloc(string, sizeof(char)*(contador+1));
+        if(sizeof(char)*(contador+2)>maxAlocado)
+        {
+            stringAux = (char *)realloc(string, sizeof(char)*(contador+2));
+            maxAlocado = sizeof(char)*(contador+2);
+        }
         if(stringAux != NULL)
         {
             string = stringAux;
@@ -353,3 +357,4 @@ char * leStringEmCampo(int limite)
         string[contador-1] = '\0';
     return string;
 }
+
