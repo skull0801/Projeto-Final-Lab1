@@ -14,5 +14,6 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
 void desenhaMoldura(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo, int corLetra);
 void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo);
 int confirmaEscolha(int coluna, int linha);
+char * leStringEmCampo(int limite);
 
 #endif

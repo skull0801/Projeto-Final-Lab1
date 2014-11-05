@@ -309,3 +309,47 @@ int confirmaEscolha(int coluna, int linha)
         resposta = 0;
     return resposta;
 }
+
+//***********************************************************************************************************************
+// Objetivo: Ler uma string com limite
+// Parâmetros: tamanho maximo
+// Retorno: Endereço para a string alocada dinamicamente
+char * leStringEmCampo(int limite)
+{
+    char *string = NULL, *stringAux, caractere;
+    int contador = 0;
+    do
+    {
+        stringAux = (char *)realloc(string, sizeof(char)*(contador+1));
+        if(stringAux != NULL)
+        {
+            string = stringAux;
+            fflush(stdin);
+            caractere = getch();
+            if(caractere==8)
+            {
+                if(contador>0)
+                {
+                    printf("\b \b");
+                    contador--;
+                }
+            }
+            else if(contador<limite && caractere>=32 || caractere == 13)
+            {
+                string[contador++] = caractere;
+                putc(caractere, stdout);
+            }
+        }
+        else
+            break;
+    }
+    while(string[contador-1]!=13);
+    if(stringAux == NULL)
+    {
+        free(string);
+        string = NULL;
+    }
+    if(string != NULL)
+        string[contador-1] = '\0';
+    return string;
+}
