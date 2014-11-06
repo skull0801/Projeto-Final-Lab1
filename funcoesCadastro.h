@@ -11,8 +11,10 @@ int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula);
 void apresentaAlunosMatriculadosEmUmCurso();
 void excluiMatriculaAluno(int matricula, int codCurso);
 void apresentarTodosAlunosCadastrados();
-void alteraDadosCadastro();
+void alteraCadastro();
 int obtemCadastroArquivo(Cadastro *matricula, int posCadastro);
 Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador);
+void alteraDadosCadastro(Cadastro matricula, int posCadastro);
+void apresentaCadastro(Cadastro cadastro);
 
 #endif
