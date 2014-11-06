@@ -37,6 +37,7 @@ int main(void)
                                 
     char *opcoesMenuMatriculas[] = {"Matricular Aluno em um Curso",
                                     "Apresentar Matriculas Existentes",
+                                    "Apresentar todos os alunos matriculados",
                                     "Excluir a matricula de um aluno em um curso",
                                     "Voltar para Menu Principal"};
                                     
@@ -132,7 +133,7 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuMatriculas, 4, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuMatriculas, 5, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -142,17 +143,23 @@ int main(void)
                             clrscr();
                             break;
                         case 2:
-                            pesquisaAlunosMatriculadosEmUmCurso();
-                            getch();
+                            apresentaAlunosMatriculadosEmUmCurso();
                             clrscr();
                             break;
                         case 3:
+                            apresentarTodosAlunosCadastrados();
+                            getch();
+                            clrscr();
+                            break;
+                        case 4:
                             excluiMatriculaAlunoEmUmCurso();
                             getch();
+                            clrscr();
                             break;
+                        
                     }
                 }
-                while(subOpcao != 0 && subOpcao != 4);
+                while(subOpcao != 0 && subOpcao != 5);
                 
                 break;
             case 4:
@@ -184,14 +191,8 @@ int main(void)
                             while(subSubOpcao != 0 && subSubOpcao != 4);
                             
                             break;
-                        case 2:
-                            pesquisaApresentaAlunoNome();
-                            getch();
-                            clrscr();
-                            break;
                         case 3:
-                            pesquisaAlunosMatriculadosEmUmCurso();
-                            getch();
+                            apresentaAlunosMatriculadosEmUmCurso();
                             clrscr();
                             break;
                         case 4:
