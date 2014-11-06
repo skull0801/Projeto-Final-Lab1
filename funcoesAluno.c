@@ -36,7 +36,7 @@ void leDadosAluno(Aluno *aluno)
     
     do
     {
-        leValidaTexto(aluno->cpf, "Informe o cpf do aluno", "CPF", 11, TAM_CPF);
+        leValidaTexto(aluno->cpf, "Informe o cpf do aluno", "CPF", TAM_CPF-1, TAM_CPF);
         cpfValida = validaCPF(aluno->cpf);
         cpfExiste = verificaCPFAluno(aluno->cpf);
         if(!cpfValida)
@@ -573,7 +573,6 @@ void pesquisaApresentaAlunoNome()
 	leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
 	
     strToLower(nomeBusca);
-    printf("%-50s%-10s%-15s\n","Nome","Matricula", "CPF");
     
     if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
     {
@@ -605,8 +604,7 @@ void pesquisaApresentaAlunoNome()
     if(qtdLidos)
     {
         ordenaAlunosPorNome(alunos, qtdLidos);
-        for(contador = 0; contador < qtdLidos; contador++)
-                printf("%-50s%-10d%-15s\n", alunos[contador].nome, alunos[contador].matricula, alunos[contador].cpf);
+        apresentaDadosAlunos(alunos, qtdLidos);
         free(alunos);
     }
     else
