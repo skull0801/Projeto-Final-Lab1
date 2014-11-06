@@ -184,6 +184,11 @@ int main(void)
                             while(subSubOpcao != 0 && subSubOpcao != 4);
                             
                             break;
+                        case 2:
+                            pesquisaApresentaAlunoNome();
+                            getch();
+                            clrscr();
+                            break;
                         case 3:
                             pesquisaAlunosMatriculadosEmUmCurso();
                             getch();
