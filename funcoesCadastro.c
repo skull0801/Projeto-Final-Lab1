@@ -127,14 +127,19 @@ int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula)
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
         while(!feof(arq))
+        {
             if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            {
                 if(matricula.matriculaAluno == alunoMatricula)
-                    if(matricula.codigoCurso == codCurso) 
-                        if(matricula.situacaoAluno == '1')
-                        {
-                            flag =1;
-                            break;
-                        }
+                {
+                    if(matricula.codigoCurso == codCurso)
+                    {
+                        flag =1;
+                        break;
+                    }
+                }
+            }
+        }
         fclose(arq);
     }
     return flag;
@@ -423,13 +428,22 @@ void apresentarTodosAlunosCadastrados()
 //  Objetivo: Alterar dados do cadastro
 //  Parametros: Nenhum
 //  Retorno: Nenhum
-void alteraDadosCadastro()
+void alteraCadastro()
 {
     FILE *arq;
-    Cadastro matricula, cadastros;
-    int flag = 0, codigoCurso;
+    Cadastro cadastro;
+    Aluno *alunos;
+    int flag = 0, codigoCurso, qtdeAlunos, matriculaAluno, opcao, opcaoSituacao, posCadastro, escolha;
+    char *opcoesSituacaoAluno[] = {"Cursando",
+                                   "Concluiu"};
+                                   
+    char *opcaoSituacaoPagamento[] = {"Regular",
+                                      "Atrasada",
+                                      "Totalmente Paga"};
+                                      
     char *opcoesAlteracao[] = {"Alterar Situacao aluno",
                                "Alterar Situacao da mensalidade",
+                               "Salvar alteracoes",
                                "Cancelar Mudancas"};
     do
     {
@@ -437,6 +451,65 @@ void alteraDadosCadastro()
     }
     while(codigoCurso == 0);
     
+    if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdeAlunos, 3)) != NULL)
+    {
+        do
+        {
+            matriculaAluno = apresentaDadosAlunos(alunos, qtdeAlunos);
+        }
+        while(matriculaAluno == 0);
+        posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
+        if(posCadastro)
+        {
+            if(obtemCadastroArquivo(&cadastro, posCadastro))
+            {
+                do
+                {
+                    clrscr();
+                    apresentaCadastro(cadastro);
+                    opcao = menuVertical(opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
+                    
+                    switch(opcao)
+                    {
+                        case 1:
+                            do
+                            {
+                                opcaoSituacao = menuVertical(opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
+                            }
+                            while(!opcaoSituacao);
+                            
+                            cadastro.situacaoAluno = opcaoSituacao + '0';
+                            break; 
+                        case 2:
+                            do
+                            {
+                                opcaoSituacao = menuVertical(opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
+                            }
+                            while(!opcaoSituacao);
+                            
+                            cadastro.situacaoPagamento = opcaoSituacao + '0';
+                            break;
+                    }
+                }
+                while(opcao == 1 || opcao == 2);
+                if(opcao == 3)
+                {
+                    escolha = confirmaEscolha(55,5);
+                    if(escolha)
+                        alteraDadosCadastro(cadastro, posCadastro);
+                    else
+                        puts("Os dados nao foram alterados!");
+                }
+                else
+                    puts("Os dados nao foram alterados!");
+            }
+            else
+                puts("A matricula nao pode ser recuperada!");
+            
+           
+        }
+        free(alunos);
+    }
 }
 
 //***********************************************************************************************************************
@@ -459,4 +532,41 @@ int obtemCadastroArquivo(Cadastro *matricula, int posCadastro)
         fclose(arq);
     }
     return flag;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Alterar os dados de um aluno
+// Parametros: O Cadastro para alterar e a posicao do aluno no arquivo
+// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
+void alteraDadosCadastro(Cadastro matricula, int posCadastro)
+{
+    FILE *arq;
+    int flag = 0;
+    if(( arq = fopen(ARQ_MATRICULAS,"rb+")) != NULL)
+    {
+        if(!fseek(arq, sizeof(Cadastro)*(posCadastro - 1), 0))
+        {
+            if(fwrite(&matricula, sizeof(Cadastro), 1, arq))
+            {
+                puts("Os dados foram alterados com sucesso!");   
+            }
+            else
+            {
+                puts("Os dados nao puderam ser alterados!");   
+            }
+        }
+        fclose(arq);
+    }
+}
+
+//  Objetivo: Apresentar os dados de um cadastro
+//  Paramentos: O cadastro
+//  Retorno: Nenhum
+void apresentaCadastro(Cadastro cadastro)
+{
+    gotoxy(1,1);
+    printf("Matricula Aluno: %d\n", cadastro.matriculaAluno);
+    printf("Codigo do Curso: %d\n", cadastro.codigoCurso);
+    printf("Situacao Financeira: %s\n", cadastro.situacaoPagamento == '1' ? "Regular" : (cadastro.situacaoPagamento == '2' ? "Atrasado" : "Totalmente Pago" ));
+    printf("Situacao do Aluno: %s", cadastro.situacaoAluno == '1' ? "Cursando" : "Concluido");
 }
