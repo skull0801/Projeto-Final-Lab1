@@ -8,6 +8,11 @@ void listaDadosCadastro();
 void gravaDadosMatricula(Cadastro matricula);
 void apresentaAlunosMatriculadosEmUmCurso();
 int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula);
-void apresentaAlunosMatriculadosEmUmCurso(int codCurso, int indicador);
+void apresentaAlunosMatriculadosEmUmCurso();
+void excluiMatriculaAluno(int matricula, int codCurso);
+void apresentarTodosAlunosCadastrados();
+void alteraDadosCadastro();
+int obtemCadastroArquivo(Cadastro *matricula, int posCadastro);
+Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador);
 
 #endif
