@@ -39,6 +39,7 @@ int main(void)
                                     "Apresentar Matriculas Existentes",
                                     "Apresentar todos os alunos matriculados",
                                     "Excluir a matricula de um aluno em um curso",
+                                    "Alterar os dados de um cadastro",
                                     "Voltar para Menu Principal"};
                                     
     char *opcoesMenuRelatorios[] = {"Pesquisa por Chave dos Dados",
@@ -133,7 +134,7 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuMatriculas, 5, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuMatriculas, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -156,10 +157,14 @@ int main(void)
                             getch();
                             clrscr();
                             break;
-                        
+                        case 5:
+                            alteraCadastro();
+                            getch();
+                            clrscr();
+                            break;
                     }
                 }
-                while(subOpcao != 0 && subOpcao != 5);
+                while(subOpcao != 0 && subOpcao != 6);
                 
                 break;
             case 4:
