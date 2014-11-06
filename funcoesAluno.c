@@ -468,10 +468,10 @@ void excluiDadosAluno(int posAluno)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Pesquisar por um ou mais alunos
+// Objetivo: Pesquisar um aluno por matricula e apresentar
 // Parametros: nenhum
 // Retorno: nenhum
-void pesquisaAluno(void)
+void pesquisaApresentaAlunoMatricula(void)
 {
     FILE *arq;
     Aluno aluno;
@@ -532,6 +532,88 @@ int pesquisaAlunoMatricula(int matriculaBusca)
     if(!flag)
         pos = 0;
     return pos;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Pesquisar por um ou mais alunos
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaAluno(void)
+{
+    int opcao;
+    char *opcoesPesquisa[] = {"Pesquisa por Matricula",
+                              "Pesquisa por Nome",
+                              "Voltar"};
+    
+    opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    clrscr();
+    
+    switch(opcao)
+    {
+        case 1:
+            pesquisaApresentaAlunoMatricula();
+            break;
+        case 2:
+			pesquisaApresentaAlunoNome();
+			break;
+    }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
+//  Parametros: nenhum
+//  Retorno: nenhum
+void pesquisaApresentaAlunoNome()
+{
+    FILE *arq;
+    Aluno aluno, *alunos = NULL, *alunosAux;
+    int qtdLidos = 0, contador;
+    char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
+    
+	leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
+	
+    strToLower(nomeBusca);
+    printf("%-50s%-10s%-15s\n","Nome","Matricula", "CPF");
+    
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&aluno, sizeof(Aluno), 1, arq))
+            {
+                strcpy(copiaNome, aluno.nome);
+                strToLower(copiaNome);
+                if(strstr(copiaNome, nomeBusca))
+                {
+                    alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
+                    if(alunosAux != NULL)
+                    {
+                        alunos = alunosAux;
+                        alunos[qtdLidos] = aluno;
+                        qtdLidos++;
+                    }
+                    else
+                        break;
+                }
+            }
+            else
+                break;
+        }
+        fclose(arq);
+    }
+    
+    if(qtdLidos)
+    {
+        ordenaAlunosPorNome(alunos, qtdLidos);
+        for(contador = 0; contador < qtdLidos; contador++)
+                printf("%-50s%-10d%-15s\n", alunos[contador].nome, alunos[contador].matricula, alunos[contador].cpf);
+        free(alunos);
+    }
+    else
+    {
+        clrscr();
+        puts("Nao houve nenhuma correspondencia!");   
+    }
 }
 
 //***********************************************************************************************************************
