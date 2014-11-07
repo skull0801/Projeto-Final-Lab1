@@ -148,7 +148,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
                 linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA+1));
                 if(linhasTabela[contador] != NULL)
                 {
-                    sprintf(linhasTabela[contador], "%06d %-23.20s%5d %-10s%3.3s.%3.3s.%3.3s-%2.2s     %02d/%02d/%04d", alunos[contador].matricula, alunos[contador].nome, alunos[contador].idade,
+                    sprintf(linhasTabela[contador], "%06d %-24.22s%5d %-10s%3.3s.%3.3s.%3.3s-%2.2s     %02d/%02d/%04d", alunos[contador].matricula, alunos[contador].nome, alunos[contador].idade,
                             alunos[contador].sexo == 'M' ? "MASCULINO" : "FEMININO", alunos[contador].cpf, alunos[contador].cpf+3, alunos[contador].cpf+6, alunos[contador].cpf+9, 
                             alunos[contador].dataIngresso.dia, alunos[contador].dataIngresso.mes, alunos[contador].dataIngresso.ano);
                     qtdLinhasAlocada++;
@@ -169,11 +169,11 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
         
         if(!flag)
         {
-            for(contador=0;contador<qtdAlunos;contador+=14)
+            for(contador=0;contador<qtdAlunos;contador+=LINHAS_TABELA)
             {
-                qtdItens = qtdAlunos - contador > 14 ? 14 : qtdAlunos - contador;
+                qtdItens = qtdAlunos - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdAlunos - contador;
                 gotoxy(3, 2);
-                printf("%-6s %-23.20s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
+                printf("%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
                 
                 selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 1, 5, 1, PRETO, CINZA_C);
                 
@@ -184,7 +184,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
                     matriculaSelecao = atoi(matriculaTexto);
                     break;
                 }
-                else if(contador+14<qtdAlunos)
+                else if(contador+LINHAS_TABELA<qtdAlunos)
                 {
                     if(!confirmaEscolha(20, 5, "Deseja continuar?"))
                         break;
@@ -203,6 +203,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
     {
         gotoxy(1,1);
         printf("Nao existem alunos cadastrados!");
+        getch();
     }
     limpaJanela(2, 3, 2, 80, PRETO);
     return matriculaSelecao;
