@@ -71,227 +71,22 @@ void gravaDadosAluno(Aluno *aluno)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Listar todos os alunos cadastrados
-// Parametros: Nenhum
-// Retorno: nenhum
-void listaDadosAlunos()
-{
-    FILE *arq;
-    Aluno aluno;
-    char dataIngresso[11], sexo[10], cpf[15];
-    int qtdeApresentados = 0;
-    printf("%-27s%-12s%-5s%-10s%-12s%-10s\n", "Nome", "CPF", "Idade", "Sexo", "Data Ing.", "Matricula");
-    if((arq = fopen(ARQ_ALUNOS,"rb")) != NULL)
-    {
-        while(!feof(arq))
-            if(fread(&aluno, sizeof(Aluno), 1, arq))
-            {
-                if(aluno.sexo=='M')
-                    sprintf(sexo, "MASCULINO");
-                else
-                    sprintf(sexo, "FEMININO");
-                sprintf(dataIngresso, "%02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
-                
-                printf("%-27.25s", aluno.nome);
-                printf("%-12s", aluno.cpf);
-                printf("%-5d", aluno.idade);
-                printf("%-10s", sexo);
-                printf("%-12s", dataIngresso);
-                printf("%-10d\n", aluno.matricula);
-                
-                qtdeApresentados++;
-            }
-        fclose(arq);
-    }
-    if(!qtdeApresentados)
-    {
-        clrscr();
-        puts("Nao ha nenhum aluno cadastrado ate o momento!");    
-    }
-}
-
-//***********************************************************************************************************************
-// Objetivo: Apresentar todos os alunos
-// Parametros: Nenhum
-// Retorno: Matricula do aluno selecionado
-int apresentaTodosAlunos(void)
-{
-    Aluno *alunos;
-    int qtdAlunos, matriculaSelecionada = 0;
-    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos))!= NULL)
-    {
-        matriculaSelecionada = apresentaDadosAlunos(alunos, qtdAlunos);
-        free(alunos);
-    }
-    return matriculaSelecionada;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Apresentar os alunos fornecidos
-// Parametros: Ponteiro para alunos (ja alocados), quantidade de alunos
-// Retorno: Matricula do aluno selecionado (0 se nenhum foi selecionado)   (NAO DESALOCA MEMORIA)
-int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
-{
-    int selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
-    int matriculaSelecao = 0;
-    char ** linhasTabela, matriculaTexto[7];
-    if(qtdAlunos > 0)
-    {
-        
-        ordenaAlunosPorNome(alunos, qtdAlunos);
-        
-        linhasTabela = (char**) malloc(sizeof(char*) * qtdAlunos);
-        if(linhasTabela != NULL)
-        {
-            for(contador=0;contador<qtdAlunos;contador++)
-            {
-                linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA+1));
-                if(linhasTabela[contador] != NULL)
-                {
-                    sprintf(linhasTabela[contador], "%06d %-24.22s%5d %-10s%3.3s.%3.3s.%3.3s-%2.2s     %02d/%02d/%04d", alunos[contador].matricula, alunos[contador].nome, alunos[contador].idade,
-                            alunos[contador].sexo == 'M' ? "MASCULINO" : "FEMININO", alunos[contador].cpf, alunos[contador].cpf+3, alunos[contador].cpf+6, alunos[contador].cpf+9, 
-                            alunos[contador].dataIngresso.dia, alunos[contador].dataIngresso.mes, alunos[contador].dataIngresso.ano);
-                    qtdLinhasAlocada++;
-                }
-                else
-                {
-                    flag = 1;
-                    printf("A memoria para uma das linhas nao pode ser alocada");
-                    break;
-                }
-            }
-        }
-        else
-        {
-            flag = 1;
-            printf("A memoria para tabela nao pode ser alocada!");
-        }
-        
-        if(!flag)
-        {
-            for(contador=0;contador<qtdAlunos;contador+=LINHAS_TABELA)
-            {
-                qtdItens = qtdAlunos - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdAlunos - contador;
-                gotoxy(3, 2);
-                printf("%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
-                
-                selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 1, 5, 1, PRETO, CINZA_C);
-                
-                if(selecao != 0)
-                {
-                    strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
-                    matriculaTexto[6] = '\0';
-                    matriculaSelecao = atoi(matriculaTexto);
-                    break;
-                }
-                else if(contador+LINHAS_TABELA<qtdAlunos)
-                {
-                    if(!confirmaEscolha(20, 5, "Deseja continuar?"))
-                        break;
-                }
-            }
-        }
-        
-        if(linhasTabela != NULL)
-        {
-            for(contador=0;contador<qtdLinhasAlocada;contador++)
-                free(linhasTabela[contador]);
-            free(linhasTabela);
-        }
-    }
-    else
-    {
-        gotoxy(1,1);
-        printf("Nao existem alunos cadastrados!");
-        getch();
-    }
-    limpaJanela(2, 3, 2, 80, PRETO);
-    return matriculaSelecao;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Ordenar os alunos de um vetor por nome
-// Parametros: Referencia ao vetor de alunos, e quantidade de alunos
-// Retorno: nenhum
-void ordenaAlunosPorNome(Aluno *alunos, int qtdAlunos)
-{
-    Aluno alunoAux;
-    int contador, auxiliar;
-    for(auxiliar = 0; auxiliar < qtdAlunos-1; auxiliar++)
-    {
-        for(contador = auxiliar+1; contador < qtdAlunos; contador++)
-        {
-            if(stricmp(alunos[auxiliar].nome, alunos[contador].nome) > 0)
-            {
-                alunoAux = alunos[auxiliar];
-                alunos[auxiliar] = alunos[contador];
-                alunos[contador] = alunoAux;
-            }
-        }
-    }
-}
-
-//***********************************************************************************************************************
-// Objetivo: Obter todos os alunos do arquivo
-// Parametros: Referencia a quantidade de alunos (valor sera dado pela funcao)
-// Retorno: Ponteiro para memoria alocada na qual os alunos estao
-Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
-{
-    FILE *arq;
-    Aluno *alunos = NULL;
-    
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        if(!fseek(arq, 0, SEEK_END))
-        {
-            *qtdAlunos = (ftell(arq)/sizeof(Aluno));
-            
-            alunos = malloc(sizeof(Aluno)*(*qtdAlunos));
-            
-            if(alunos != NULL)
-            {
-                rewind(arq);
-                if(fread(alunos, sizeof(Aluno), *qtdAlunos, arq) != *qtdAlunos)
-                {
-                    printf("Erro ao recuperar os dados de alunos!");
-                    free(alunos);
-                    alunos = NULL;
-                }
-            }
-            else
-                printf("Erro ao alocar memoria para alunos!");
-        }
-        else
-            printf("Erro ao obter quantidade de alunos.");
-            
-        fclose(arq);
-    }
-    else
-        printf("Erro ao abrir o arquivo de alunos.");
-        
-    return alunos;
-}
-
-//***********************************************************************************************************************
 // Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudancas devem ser salvas
 // Parametros: nenhum
 // Retorno: nenhum
 void alteraAluno(void)
 {
-    int posAluno, matricula;
-    int opcao, confirmacao;
+    Aluno aluno;
+    int posAluno, matricula, opcao, confirmacao, flag = 0;
     char *opcoesAlteracao[] = {"Alterar Nome",
                                "Alterar Idade",
                                "Alterar Sexo",
                                "Salvar Mudancas",
                                "Cancelar Mudancas"};
-    Aluno aluno;
     
     matricula = apresentaTodosAlunos();
     
     posAluno = pesquisaAlunoMatricula(matricula);
-    
-    gotoxy(1,1);
     
     if(posAluno)
     {
@@ -320,10 +115,11 @@ void alteraAluno(void)
             if(opcao == 4)
             {
                 confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
-                clrscr();
+                gotoxy(1, 8);
                 if(confirmacao == 1)
                 {
                     alteraDadosAluno(aluno, posAluno);
+                    flag = 1;
                 }
                 else
                     printf("Os dados nao foram alterados!");
@@ -332,8 +128,9 @@ void alteraAluno(void)
                 printf("Os dados nao foram alterados!");
         }
         else
-            printf("O aluno nao pode ser recuperado!");
+            printf("O aluno nao pode ser recuperado do arquivo!\n");
     }
+    getch();
 }
 
 //***********************************************************************************************************************
@@ -366,28 +163,6 @@ void alteraDadosAluno(Aluno aluno, int posAluno)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Encontrar um aluno no arquivo
-// Parametros: Ponteiro para aluno, e posicao do aluno no arquivo
-// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
-int obtemAlunoArquivo(Aluno *aluno, int posAluno)
-{
-    FILE *arq;
-    int flag = 0;
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
-        {
-            if(fread(aluno, sizeof(Aluno), 1, arq))
-            {
-                flag = 1;
-            }
-        }
-        fclose(arq);
-    }
-    return flag;
-}
-
-//***********************************************************************************************************************
 // Objetivo: Ler o codigo de um aluno, buscar pelo mesmo, e confirmar se o usuario deseja excluir o aluno, caso queira, excluir
 // Parametros: Nenhum
 // Retorno: Nenhum
@@ -401,14 +176,13 @@ void excluiAluno()
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
-    gotoxy(1,1);
     if(posAluno)
     {
         if(obtemAlunoArquivo(&aluno, posAluno))
         {
             apresentaAluno(aluno);
             confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
-            clrscr();
+            gotoxy(1,8);
             if(confirmacao == 1)
             {
                 if(!verificaAlunoCadastrado(matricula))
@@ -421,9 +195,8 @@ void excluiAluno()
         }
         else
             printf("O aluno nao pode ser recuperado!");
+        getch();
     }
-    else
-        printf("O aluno nao foi encontrado!");
 }
 
 //***********************************************************************************************************************
@@ -433,7 +206,7 @@ void excluiAluno()
 void excluiDadosAluno(int posAluno)
 {
     FILE *arq, *arqTemp;
-    int qtdCopiados = 0;
+    int qtdLidos = 0;
     Aluno aluno;
     
     if(posAluno)
@@ -446,9 +219,10 @@ void excluiDadosAluno(int posAluno)
                 {
                     if(fread(&aluno, sizeof(Aluno), 1, arq))
                     {
-                        qtdCopiados++;
-                        if(posAluno != qtdCopiados)
-                            fwrite(&aluno, sizeof(Aluno), 1, arqTemp);
+                        qtdLidos++;
+                        if(posAluno != qtdLidos)
+                            if(!fwrite(&aluno, sizeof(Aluno), 1, arqTemp))
+                                printf("Erro na remocao do aluno!");
                     }
                 }
                 
@@ -479,41 +253,136 @@ void excluiDadosAluno(int posAluno)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Pesquisar um aluno por matricula e apresentar
-// Parametros: nenhum
+// Objetivo: Apresentar os dados de um aluno
+// Parametros: Um aluno
 // Retorno: nenhum
-void pesquisaApresentaAlunoMatricula(void)
+void apresentaAluno(Aluno aluno)
 {
-    FILE *arq;
-    Aluno aluno;
-    int matricula, posAluno;
-    
-    matricula = leValidaInteiro("Informe a matricula do aluno a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-    
-    posAluno = pesquisaAlunoMatricula(matricula);
-    
-    if(posAluno)
+    gotoxy(1,1);
+    printf("Nome: %s\n", aluno.nome);
+    printf("Matricula: %d\n", aluno.matricula);
+    printf("CPF: %s\n", aluno.cpf);
+    printf("Idade: %d\nSexo: %s\n", aluno.idade, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
+    printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
+}
+
+//***********************************************************************************************************************
+// Objetivo: Apresentar todos os alunos
+// Parametros: Nenhum
+// Retorno: Matricula do aluno selecionado
+int apresentaTodosAlunos(void)
+{
+    Aluno *alunos;
+    int qtdAlunos = 0, matriculaSelecionada = 0;
+    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos))!= NULL)
     {
-        if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-        {
-            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
-            {
-                if(fread(&aluno, sizeof(Aluno), 1, arq))
-                {
-                    apresentaAluno(aluno);
-                }
-                else
-                    printf("O aluno nao pode ser lido!");
-            }
-            else
-                printf("O aluno nao pode ser recuperado!");
-            fclose(arq);
-        }
-        else
-            printf("O arquivo de alunos nao pode ser aberto!");
+        matriculaSelecionada = apresentaDadosAlunos(alunos, qtdAlunos);
+        free(alunos);
     }
     else
-        printf("O aluno nao foi encontrado!");
+        getch();
+    return matriculaSelecionada;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Apresentar os alunos fornecidos
+// Parametros: Ponteiro para alunos (ja alocados), quantidade de alunos
+// Retorno: Matricula do aluno selecionado (0 se nenhum foi selecionado)   (NAO DESALOCA MEMORIA)
+int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
+{
+    int selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
+    int matriculaSelecao = 0;
+    char ** linhasTabela, matriculaTexto[7];
+    if(qtdAlunos > 0)
+    {
+        qsort(alunos, qtdAlunos, sizeof(Aluno), comparaAlunos);
+        
+        linhasTabela = (char**) malloc(sizeof(char*) * qtdAlunos);
+        
+        if(linhasTabela != NULL)
+        {
+            for(contador=0;contador<qtdAlunos;contador++)
+            {
+                linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA+1));
+                if(linhasTabela[contador] != NULL)
+                {
+                    sprintf(linhasTabela[contador], "%06d %-24.22s%5d %-10s%3.3s.%3.3s.%3.3s-%2.2s     %02d/%02d/%04d", alunos[contador].matricula, alunos[contador].nome, alunos[contador].idade,
+                            alunos[contador].sexo == 'M' ? "MASCULINO" : "FEMININO", alunos[contador].cpf, alunos[contador].cpf+3, alunos[contador].cpf+6, alunos[contador].cpf+9, 
+                            alunos[contador].dataIngresso.dia, alunos[contador].dataIngresso.mes, alunos[contador].dataIngresso.ano);
+                    qtdLinhasAlocada++;
+                }
+                else
+                {
+                    flag = 1;
+                    printf("A memoria para uma das linhas da tabela nao pode ser alocada");
+                    break;
+                }
+            }
+        }
+        else
+        {
+            flag = 1;
+            printf("A memoria para tabela nao pode ser alocada!");
+        }
+        
+        if(!flag)
+        {
+            for(contador=0;contador<qtdAlunos;contador+=LINHAS_TABELA)
+            {
+                qtdItens = qtdAlunos - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdAlunos - contador;
+                gotoxy(COLUNA_TABELA_ALUNOS+2, LINHA_TABELA_ALUNOS-3);
+                printf("%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
+                
+                selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
+                
+                if(selecao != 0)
+                {
+                    strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
+                    matriculaTexto[6] = '\0';
+                    matriculaSelecao = atoi(matriculaTexto);
+                    break;
+                }
+                else if(contador+LINHAS_TABELA<qtdAlunos)
+                {
+                    if(!confirmaEscolha(20, 5, "Deseja continuar?"))
+                        break;
+                }
+            }
+        }
+        
+        if(linhasTabela != NULL)
+        {
+            for(contador=0;contador<qtdLinhasAlocada;contador++)
+                free(linhasTabela[contador]);
+            free(linhasTabela);
+        }
+    }
+    limpaJanela(2, 3, 2, 80, PRETO);
+    return matriculaSelecao;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Pesquisar por um ou mais alunos
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaAluno(void)
+{
+    int opcao;
+    char *opcoesPesquisa[] = {"Pesquisa por Matricula",
+                              "Pesquisa por Nome",
+                              "Voltar"};
+    
+    opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    
+    switch(opcao)
+    {
+        case 1:
+            pesquisaApresentaAlunoMatricula();
+            break;
+        case 2:
+			pesquisaApresentaAlunoNome();
+			break;
+    }
 }
 
 //***********************************************************************************************************************
@@ -547,31 +416,6 @@ int pesquisaAlunoMatricula(int matriculaBusca)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Pesquisar por um ou mais alunos
-// Parametros: nenhum
-// Retorno: nenhum
-void pesquisaAluno(void)
-{
-    int opcao;
-    char *opcoesPesquisa[] = {"Pesquisa por Matricula",
-                              "Pesquisa por Nome",
-                              "Voltar"};
-    
-    opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
-    clrscr();
-    
-    switch(opcao)
-    {
-        case 1:
-            pesquisaApresentaAlunoMatricula();
-            break;
-        case 2:
-			pesquisaApresentaAlunoNome();
-			break;
-    }
-}
-
-//***********************************************************************************************************************
 //  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
 //  Parametros: nenhum
 //  Retorno: nenhum
@@ -579,7 +423,7 @@ void pesquisaApresentaAlunoNome()
 {
     FILE *arq;
     Aluno aluno, *alunos = NULL, *alunosAux;
-    int qtdLidos = 0, contador;
+    int qtdLidos = 0, flag = 0, contador;
     char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
     
 	leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
@@ -604,39 +448,124 @@ void pesquisaApresentaAlunoNome()
                         qtdLidos++;
                     }
                     else
+                    {
+                        printf("Houve erro na alocacao de memoria!");
+                        flag = 1;
                         break;
+                    }
                 }
             }
-            else
-                break;
         }
         fclose(arq);
     }
     
-    if(qtdLidos)
+    if(!flag)
     {
-        ordenaAlunosPorNome(alunos, qtdLidos);
-        apresentaDadosAlunos(alunos, qtdLidos);
-        free(alunos);
+        if(qtdLidos)
+        {
+            apresentaDadosAlunos(alunos, qtdLidos);
+            free(alunos);
+        }
+        else
+        {
+            printf("Nao houve nenhuma correspondencia!");
+            getch();
+        }
     }
     else
-    {
-        clrscr();
-        puts("Nao houve nenhuma correspondencia!");   
-    }
+        getch();
 }
 
 //***********************************************************************************************************************
-// Objetivo: Apresentar os dados de um aluno
-// Parametros: Um aluno
+// Objetivo: Pesquisar um aluno por matricula e apresentar
+// Parametros: nenhum
 // Retorno: nenhum
-void apresentaAluno(Aluno aluno)
+void pesquisaApresentaAlunoMatricula(void)
 {
-    printf("Nome: %s\n", aluno.nome);
-    printf("Matricula: %d\n", aluno.matricula);
-    printf("CPF: %s\n", aluno.cpf);
-    printf("Idade: %d\nSexo: %s\n", aluno.idade, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
-    printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
+    FILE *arq;
+    Aluno aluno;
+    int matricula, posAluno;
+    
+    matricula = leValidaInteiro("Informe a matricula do aluno a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    
+    posAluno = pesquisaAlunoMatricula(matricula);
+    
+    if(obtemAlunoArquivo(&aluno, posAluno))
+    {
+        apresentaAluno(aluno);
+    }
+    else
+        printf("O aluno nao foi encontrado!");
+    getch();
+}
+
+//***********************************************************************************************************************
+// Objetivo: Obter todos os alunos do arquivo
+// Parametros: Referencia a quantidade de alunos (valor sera dado pela funcao)
+// Retorno: Ponteiro para memoria alocada na qual os alunos estao
+Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
+{
+    FILE *arq;
+    Aluno *alunos = NULL;
+    
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        if(!fseek(arq, 0, SEEK_END))
+        {
+            *qtdAlunos = (ftell(arq)/sizeof(Aluno));
+            
+            if(*qtdAlunos>0)
+            {
+                alunos = malloc(sizeof(Aluno)*(*qtdAlunos));
+                
+                if(alunos != NULL)
+                {
+                    rewind(arq);
+                    if(fread(alunos, sizeof(Aluno), *qtdAlunos, arq) != *qtdAlunos)
+                    {
+                        printf("Erro ao recuperar os dados de alunos!");
+                        free(alunos);
+                        alunos = NULL;
+                        *qtdAlunos = 0;
+                    }
+                }
+                else
+                    printf("Erro ao alocar memoria para alunos!");
+            }
+            else
+                printf("Nao existem alunos cadastrados!");
+        }
+        else
+            printf("Erro ao obter quantidade de alunos.");
+            
+        fclose(arq);
+    }
+    else
+        printf("Erro ao abrir o arquivo de alunos.");
+        
+    return alunos;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Encontrar um aluno no arquivo
+// Parametros: Ponteiro para aluno, e posicao do aluno no arquivo
+// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
+int obtemAlunoArquivo(Aluno *aluno, int posAluno)
+{
+    FILE *arq;
+    int flag = 0;
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
+        {
+            if(fread(aluno, sizeof(Aluno), 1, arq))
+            {
+                flag = 1;
+            }
+        }
+        fclose(arq);
+    }
+    return flag;
 }
 
 //***********************************************************************************************************************
@@ -732,5 +661,17 @@ int verificaCPFAluno(const char *cpf)
         fclose(arq);
     }
     return flag;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Compara dois alunos (por nome)
+// Parametros: Ponteiro para os dois alunos
+// Retorno: resultado da comparacao dos dois nomes(inteiro)
+int comparaAlunos(const void *p1, const void *p2)
+{
+    Aluno *aluno1, *aluno2;
+    aluno1 = (Aluno *) p1;
+    aluno2 = (Aluno *) p2;
+    return stricmp(aluno1->nome, aluno2->nome);
 }
 
