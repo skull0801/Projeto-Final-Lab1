@@ -243,13 +243,11 @@ void apresentaAlunosMatriculadosEmUmCurso()
     
     if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdAlunos, indicador)) != NULL)
     {
-        ordenaAlunosPorNome(alunos, qtdAlunos);
         apresentaDadosAlunos(alunos, qtdAlunos);
         free(alunos);
     }
     if(qtdAlunos == 0)
     {
-        gotoxy(1,1);
         puts("Nao ha nenhum aluno cadastrado ate o momento neste curso!");
     }      
 }
@@ -350,7 +348,6 @@ void excluiMatriculaAlunoEmUmCurso()
     }
     else
     {
-        gotoxy(1,1);
         puts("Nao ha nenhum aluno cadastrado no curso!");
     }
 }
@@ -390,13 +387,11 @@ void excluiMatriculaAluno(int matriculaAExcluir, int codCurso)
                             
                         else
                         {
-                            gotoxy(1,1);
                             printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
                         }
                     }
                     else
                     {
-                        gotoxy(1,1);
                         printf("O arquivo antigo nao pode ser excluido, logo a matricula nao foi excluida!");
                     }
         }
@@ -648,7 +643,6 @@ void alteraCadastro()
     }
     else
     {
-        gotoxy(1,1);
         puts("Nao ha nenhum aluno cadastrado neste curso ate o momento!");
     }
 }
