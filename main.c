@@ -59,7 +59,6 @@ int main(void)
                                    "Listar Todos as Matriculas",
                                    "Voltar"};
     
-    
     // Instrucoes
     do
     {
@@ -70,33 +69,22 @@ int main(void)
                 do
                 {
                     subOpcao = menuVertical(opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
-                    gotoxy(1,1);
                     switch(subOpcao)
                     {
                         case 1:
                             cadastraAluno();
-                            getch();
-                            clrscr();
                             break;
                         case 2:
                             alteraAluno();
-                            getch();
-                            clrscr();
                             break;
                         case 3:
                             excluiAluno();
-                            getch();
-                            clrscr();
                             break;
                         case 4:
                             pesquisaAluno();
-                            getch();
-                            clrscr();
                             break;
                         case 5:
                             apresentaTodosAlunos();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }
@@ -107,7 +95,6 @@ int main(void)
                 do
                 {
                     subOpcao = menuVertical(opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
-                    gotoxy(1,1);
                     switch(subOpcao)
                     {
                         case 1:
@@ -144,7 +131,6 @@ int main(void)
                 do
                 {
                     subOpcao = menuVertical(opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
-                    gotoxy(1,1);
                     switch(subOpcao)
                     {
                         case 1:
@@ -186,19 +172,16 @@ int main(void)
                 do
                 {
                     subOpcao = menuVertical(opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
-                    gotoxy(1,1);
                     switch(subOpcao)
                     {
                         case 1:
                             do
                             {
                                 subSubOpcao = menuVertical(opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
-                                gotoxy(1,1);
                                 switch(subSubOpcao)
                                 {
                                     case 1:
                                         pesquisaApresentaAlunoMatricula();
-                                        getch();
                                         clrscr();
                                         break;
                                     case 2:
@@ -213,7 +196,6 @@ int main(void)
                                         break;
                                     case 4:
                                         apresentaTodosAlunos();
-                                        getch();
                                         clrscr();
                                         break;
                                     case 5:
