@@ -14,7 +14,11 @@ void cadastraCurso(void)
 {
     Curso curso;
     leDadosCurso(&curso);
-    gravaDadosCurso(&curso);
+    if(curso.codigo != 0)
+		gravaDadosCurso(&curso);
+	else
+		printf("O curso nao pode ser gravado!");
+	getch();
 }
 
 //***********************************************************************************************************************
@@ -52,20 +56,25 @@ void gravaDadosCurso(Curso *curso)
 //  Retorno: proximo codigo valido
 int achaProximoCodCurso()
 {
-    int codigo = CODIGO_MIN;
-    Curso curso;
-    FILE *arq;
-    if(( arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+    int codigo = CODIGO_MIN, qtdCursos = 0;
+    Curso *cursos;
+    if((cursos = obtemDadosCursosArquivo(&qtdCursos)) != NULL)
     {
-        while(!feof(arq))
-            if(fread(&curso, sizeof(Curso), 1, arq))
-            {
-                if(codigo != curso.codigo)
-                    break;
-                codigo++;
-            }
-        fclose(arq);
+    	if(qtdCursos>0)
+    	{
+			qsort(cursos, qtdCursos, sizeof(Curso), comparaCursos);
+			
+			for(;codigo-CODIGO_MIN<qtdCursos;codigo++)
+			{
+				if(codigo != cursos[codigo-CODIGO_MIN].codigo)
+				{
+					break;
+				}
+			}
+		}
     }
+    else
+    	codigo = 0;
     return codigo;
 }
 
@@ -96,6 +105,18 @@ void listaDadosCursos()
         clrscr();
         puts("Nao ha nenhum curso cadastrado ate o momento!");    
     }
+}
+
+//***********************************************************************************************************************
+// Objetivo: Compara dois cursos (por codigo)
+// Parametros: Ponteiro para os dois alunos
+// Retorno: resultado da comparacao dos dois nomes(inteiro)
+int comparaCursos(const void *p1, const void *p2)
+{
+    Curso *curso1, *curso2;
+    curso1 = (Curso *) p1;
+    curso2 = (Curso *) p2;
+    return curso1->codigo - curso2->codigo;
 }
 
 //***********************************************************************************************************************
