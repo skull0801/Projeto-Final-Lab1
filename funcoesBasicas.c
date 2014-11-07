@@ -295,15 +295,15 @@ void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int coluna
 
 //***********************************************************************************************************************
 // Objetivo: Confirmar uma escolha do usuario
-// Parametros: Coluna e linha onde a confirmacao deve comecar
+// Parametros: Coluna e linha onde a confirmacao deve comecar, e referencia ao titulo
 // Retorno: 1 para confirma, 0 para nao confirma
-int confirmaEscolha(int coluna, int linha)
+int confirmaEscolha(int coluna, int linha, char *titulo)
 {
     char *opcoesConfirma[] = {"Sim", "Nao"};
     int resposta;
     
     gotoxy(coluna, linha);
-    printf("Voce tem certeza?");
+    printf("%-*.*s", 80-coluna, 80-coluna, titulo);
     resposta = menuVertical(opcoesConfirma, 2, BRANCO, AZUL_C, 1, coluna+6, linha+3, 2, PRETO, CINZA_E);
     if(resposta != 1)
         resposta = 0;
@@ -311,46 +311,23 @@ int confirmaEscolha(int coluna, int linha)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Ler uma string com limite
-// Parametros: tamanho maximo
-// Retorno: Endereco para a string alocada dinamicamente
-char * leStringEmCampo(int limite)
+// Objetivo: Verifica se um arquivo esta vazio
+// Parametros: Nome do Arquivo
+// Retorno: 1 se esta vazio ou nao existe e 0 se existe e nao esta vazio
+int verificaArquivoVazio(char *nomeArquivo)
 {
-    char *string = NULL, *stringAux, caractere;
-    int contador = 0, qtdCaracteres = 0;
-    do
+    int flag = 1;
+    FILE *arq;
+    if((arq = fopen(nomeArquivo, "rb")) != NULL)
     {
-        stringAux = (char *)realloc(string, sizeof(char)*(qtdCaracteres+1));
-        if(stringAux != NULL)
+        if(!fseek(arq, 0, SEEK_END))
         {
-            string = stringAux;
-            fflush(stdin);
-            caractere = getch();
-            if(caractere==8)
+            if(ftell(arq)>0)
             {
-                if(qtdCaracteres>0)
-                {
-                    printf("\b \b");
-                    qtdCaracteres--;
-                }
-            }
-            else if(qtdCaracteres<limite && caractere>=32 || caractere == 13)
-            {
-                string[qtdCaracteres++] = caractere;
-                putc(caractere, stdout);
+                flag = 0;
             }
         }
-        else
-            break;
-        contador = qtdCaracteres-1 < 0 ? 0 : qtdCaracteres-1;
+        fclose(arq);
     }
-    while(string[contador]!=13);
-    if(stringAux == NULL)
-    {
-        free(string);
-        string = NULL;
-    }
-    if(string != NULL)
-        string[contador] = '\0';
-    return string;
+    return flag;
 }
