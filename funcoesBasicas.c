@@ -192,7 +192,7 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
         do
         {
             tecla = toupper(getch());
-            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada ÃƒÆ’Ã‚Â© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
+            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
                 val = 1;                                                                               // 27 - esc, 13 - enter
             else
                 val = 0;
@@ -291,6 +291,7 @@ void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int coluna
             printf(" ");
         }
     }
+    gotoxy(1,1);
 }
 
 //***********************************************************************************************************************
