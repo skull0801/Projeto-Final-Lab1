@@ -6,6 +6,7 @@
 #define TAM_NOME_CURSO 51
 #define TAM_CPF 12
 #define TAM_TEXTO_TABELA 75
+#define LINHAS_TABELA 15
 #define CODIGO_MIN 1001
 #define CODIGO_MAX 99999
 #define MATRICULA_MIN 1
