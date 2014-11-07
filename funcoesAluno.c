@@ -15,6 +15,8 @@ void cadastraAluno(void)
     Aluno aluno;
     leDadosAluno(&aluno);
     gravaDadosAluno(&aluno);
+    getch();
+    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -131,6 +133,7 @@ void alteraAluno(void)
             printf("O aluno nao pode ser recuperado do arquivo!\n");
     }
     getch();
+    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -196,6 +199,7 @@ void excluiAluno()
         else
             printf("O aluno nao pode ser recuperado!");
         getch();
+        clrscr();
     }
 }
 
@@ -281,6 +285,7 @@ int apresentaTodosAlunos(void)
     }
     else
         getch();
+    clrscr();
     return matriculaSelecionada;
 }
 
@@ -474,6 +479,7 @@ void pesquisaApresentaAlunoNome()
     }
     else
         getch();
+    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -497,6 +503,7 @@ void pesquisaApresentaAlunoMatricula(void)
     else
         printf("O aluno nao foi encontrado!");
     getch();
+    clrscr();
 }
 
 //***********************************************************************************************************************
