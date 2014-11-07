@@ -16,9 +16,7 @@ void cadastraCurso(void)
     leDadosCurso(&curso);
     if(curso.codigo != 0)
 		gravaDadosCurso(&curso);
-	else
-		printf("O curso nao pode ser gravado!");
-	getch();
+	clrscr();
 }
 
 //***********************************************************************************************************************
@@ -27,10 +25,18 @@ void cadastraCurso(void)
 //  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
 void leDadosCurso(Curso *curso)
 {
-    leValidaTexto(curso->nome, "Informe o nome do curso", "Curso", 3, TAM_NOME_CURSO);
-    curso->cargaHoraria = leValidaInteiro("Informe a carga horaria", "Carga Horaria", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
-    curso->mensalidade = leValidaReal("Informe o valor da mensalidade","Mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
     curso->codigo = achaProximoCodCurso();
+    if(curso->codigo != 0)
+    {
+	    leValidaTexto(curso->nome, "Informe o nome do curso", "Curso", 3, TAM_NOME_CURSO);
+	    curso->cargaHoraria = leValidaInteiro("Informe a carga horaria", "Carga Horaria", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
+	    curso->mensalidade = leValidaReal("Informe o valor da mensalidade","Mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
+	}
+	else
+	{
+		printf("Nao foi possivel realizar o cadastro!");
+		getch();
+	}
 }
 
 //***********************************************************************************************************************
@@ -62,7 +68,7 @@ int achaProximoCodCurso()
     {
     	if(qtdCursos>0)
     	{
-			qsort(cursos, qtdCursos, sizeof(Curso), comparaCursos);
+			qsort(cursos, qtdCursos, sizeof(Curso), comparaCursosCodigo);
 			
 			for(;codigo-CODIGO_MIN<qtdCursos;codigo++)
 			{
@@ -79,44 +85,27 @@ int achaProximoCodCurso()
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Listar os dados de todos os cursos
-//  Parametros: nenhum
-//  Retorno: Nenhum
-void listaDadosCursos()
+// Objetivo: Compara dois cursos (por codigo)
+// Parametros: Ponteiro para os dois alunos
+// Retorno: resultado da comparacao dos dois nomes(inteiro)
+int comparaCursosCodigo(const void *p1, const void *p2)
 {
-    FILE *arq;
-    Curso curso;
-    int qtdeApresentados = 0;
-    printf("%-50s%-7s%-7s%-10s\n","Nome","Codigo","Horas","Mensalidade");
-    if((arq = fopen(ARQ_CURSOS,"rb")) != NULL)
-    {
-        while(!feof(arq))
-        {
-            if(fread(&curso, sizeof(Curso), 1, arq))
-            {
-                printf("%-50s%-7d%-7d%-10.2f\n",curso.nome,curso.codigo,curso.cargaHoraria,curso.mensalidade);
-                qtdeApresentados++;
-            }
-        }
-        fclose(arq);
-    }
-    if(!qtdeApresentados)
-    {
-        clrscr();
-        puts("Nao ha nenhum curso cadastrado ate o momento!");    
-    }
+    Curso *curso1, *curso2;
+    curso1 = (Curso *) p1;
+    curso2 = (Curso *) p2;
+    return curso1->codigo - curso2->codigo;
 }
 
 //***********************************************************************************************************************
 // Objetivo: Compara dois cursos (por codigo)
 // Parametros: Ponteiro para os dois alunos
 // Retorno: resultado da comparacao dos dois nomes(inteiro)
-int comparaCursos(const void *p1, const void *p2)
+int comparaCursosNome(const void *p1, const void *p2)
 {
     Curso *curso1, *curso2;
     curso1 = (Curso *) p1;
     curso2 = (Curso *) p2;
-    return curso1->codigo - curso2->codigo;
+    return stricmp(curso1->nome, curso2->nome);
 }
 
 //***********************************************************************************************************************
@@ -187,8 +176,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
     char ** linhasTabela, codigoTexto[7];
     if(qtdCursos > 0)
     {
-        
-        ordenaCursosPorNome(cursos, qtdCursos);
+        qsort(cursos, qtdCursos, sizeof(Curso), comparaCursosNome);
         
         linhasTabela = (char**) malloc(sizeof(char*) * qtdCursos);
         if(linhasTabela != NULL)
