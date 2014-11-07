@@ -444,7 +444,6 @@ void alteraCurso(void)
     
     posCurso = pesquisaCursoCodigo(codigo);
     
-    gotoxy(1,1);
     if(posCurso)
     {
         if(obtemCursoArquivo(&curso, posCurso))
@@ -531,8 +530,6 @@ void excluiCurso(void)
     
     posCurso = pesquisaCursoCodigo(codigo);
     
-    gotoxy(1,1);
-    
     if(posCurso)
     {
         if(obtemCursoArquivo(&curso, posCurso))
@@ -613,6 +610,7 @@ void excluiDadosCurso(int posCurso)
 // Retorno: Nenhum
 void apresentaCurso(Curso curso)
 {
+    gotoxy(1,1);
     printf("Nome do Curso: %s\n", curso.nome);
     printf("Codigo: %d\n", curso.codigo);
     printf("Carga Horaria: %d\n", curso.cargaHoraria);
