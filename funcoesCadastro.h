@@ -16,5 +16,7 @@ int obtemCadastroArquivo(Cadastro *matricula, int posCadastro);
 Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador);
 void alteraDadosCadastro(Cadastro matricula, int posCadastro);
 void apresentaCadastro(Cadastro cadastro);
+int verificaAlunoCadastrado(int matriculaAluno);
+int verificaCursoAlunoCadastrado(int codigoCurso);
 
 #endif

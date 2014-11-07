@@ -295,17 +295,39 @@ void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int coluna
 
 //***********************************************************************************************************************
 // Objetivo: Confirmar uma escolha do usuario
-// Parametros: Coluna e linha onde a confirmacao deve comecar
+// Parametros: Coluna e linha onde a confirmacao deve comecar, e referencia ao titulo
 // Retorno: 1 para confirma, 0 para nao confirma
-int confirmaEscolha(int coluna, int linha)
+int confirmaEscolha(int coluna, int linha, char *titulo)
 {
     char *opcoesConfirma[] = {"Sim", "Nao"};
     int resposta;
     
     gotoxy(coluna, linha);
-    printf("Voce tem certeza?");
+    printf("%-*.*s", 80-coluna, 80-coluna, titulo);
     resposta = menuVertical(opcoesConfirma, 2, BRANCO, AZUL_C, 1, coluna+6, linha+3, 2, PRETO, CINZA_E);
     if(resposta != 1)
         resposta = 0;
     return resposta;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Verifica se um arquivo esta vazio
+// Parametros: Nome do Arquivo
+// Retorno: 1 se esta vazio ou nao existe e 0 se existe e nao esta vazio
+int verificaArquivoVazio(char *nomeArquivo)
+{
+    int flag = 1;
+    FILE *arq;
+    if((arq = fopen(nomeArquivo, "rb")) != NULL)
+    {
+        if(!fseek(arq, 0, SEEK_END))
+        {
+            if(ftell(arq)>0)
+            {
+                flag = 0;
+            }
+        }
+        fclose(arq);
+    }
+    return flag;
 }

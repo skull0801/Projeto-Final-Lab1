@@ -182,7 +182,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
                 }
                 else if(contador+10<qtdAlunos)
                 {
-                    if(confirmaEscolha(20, 5))
+                    if(!confirmaEscolha(20, 5, "Deseja continuar?"))
                         break;
                 }
             }
@@ -313,7 +313,7 @@ void alteraAluno(void)
             
             if(opcao == 4)
             {
-                confirmacao = confirmaEscolha(55, 1);
+                confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
                 clrscr();
                 if(confirmacao == 1)
                 {
@@ -401,10 +401,15 @@ void excluiAluno()
         if(obtemAlunoArquivo(&aluno, posAluno))
         {
             apresentaAluno(aluno);
-            confirmacao = confirmaEscolha(55, 1);
+            confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
             clrscr();
             if(confirmacao == 1)
-                excluiDadosAluno(posAluno);
+            {
+                if(!verificaAlunoCadastrado(matricula))
+                    excluiDadosAluno(posAluno);
+                else
+                    printf("O aluno esta cadastrado em ao menos um curso!");
+            }
             else
                 printf("Os dados nao foram excluidos!");
         }
@@ -496,6 +501,7 @@ void pesquisaApresentaAlunoMatricula(void)
             }
             else
                 printf("O aluno nao pode ser recuperado!");
+            fclose(arq);
         }
         else
             printf("O arquivo de alunos nao pode ser aberto!");
@@ -642,6 +648,7 @@ int validaCPF(const char *cpf)
                         "77777777777",
                         "88888888888",
                         "99999999999"};
+                        
     int flag = 1, soma, contador, auxDig, digVeri[2], digitos[11];
     
     if(strlen(cpf) != 11)
