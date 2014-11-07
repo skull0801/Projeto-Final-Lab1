@@ -36,14 +36,11 @@ int main(void)
                                 "Voltar para Menu Principal"};
                                 
     char *opcoesMenuMatriculas[] = {"Matricular Aluno em um Curso",
-                                    "Alterar os Dados de uma Matricula",
-                                    "Excluir uma Matricula",
-                                    "Pesquisar uma Matricula",
-                                    "Apresentar Alunos Matriculados em um Curso",
-                                    "Apresentar Todas as Matriculas Existentes",
+                                    "Apresentar Matriculas Existentes",
+                                    "Excluir a matricula de um aluno em um curso",
                                     "Voltar para Menu Principal"};
                                     
-    char *opcoesMenuRelatorios[] = {"Pesquisa por Chave ou Todos",
+    char *opcoesMenuRelatorios[] = {"Pesquisa por Chave dos Dados",
                                     "Pesquisa de Alunos por Nome",
                                     "Listar Alunos de um Curso",
                                     "Pesquisar Cursos por Nome",
@@ -54,9 +51,6 @@ int main(void)
     char *opcoesPesquisaChave[] = {"Pesquisar Alunos por Matricula",
                                    "Pesquisar Curso por Codigo",
                                    "Pesquisar Matricula de Aluno em Curso",
-                                   "Listar Todos os Alunos",
-                                   "Listar Todos os Cursos",
-                                   "Listar Todos as Matriculas",
                                    "Voltar"};
     
     
@@ -95,8 +89,6 @@ int main(void)
                             break;
                         case 5:
                             apresentaTodosAlunos();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }
@@ -122,7 +114,6 @@ int main(void)
                             break;
                         case 3:
                             excluiCurso();
-                            getch();
                             clrscr();
                             break;
                         case 4:
@@ -132,8 +123,6 @@ int main(void)
                             break;
                         case 5:
                             apresentaTodosCursos();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }
@@ -143,7 +132,7 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical(opcoesMenuMatriculas, 4, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     gotoxy(1,1);
                     switch(subOpcao)
                     {
@@ -153,33 +142,17 @@ int main(void)
                             clrscr();
                             break;
                         case 2:
-                            alteraCadastro();
+                            pesquisaAlunosMatriculadosEmUmCurso();
                             getch();
                             clrscr();
                             break;
                         case 3:
                             excluiMatriculaAlunoEmUmCurso();
                             getch();
-                            clrscr();
-                            break;
-                        case 4:
-                            pesquisaApresentaCadastro();
-                            getch();
-                            clrscr();
-                            break;
-                        case 5:
-                            apresentaAlunosMatriculadosEmUmCurso();
-                            getch();
-                            clrscr();
-                            break;
-                        case 6:
-                            apresentarTodosAlunosCadastrados();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }
-                while(subOpcao != 0 && subOpcao != 7);
+                while(subOpcao != 0 && subOpcao != 4);
                 
                 break;
             case 4:
@@ -192,12 +165,12 @@ int main(void)
                         case 1:
                             do
                             {
-                                subSubOpcao = menuVertical(opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                                subSubOpcao = menuVertical(opcoesPesquisaChave, 4, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                                 gotoxy(1,1);
                                 switch(subSubOpcao)
                                 {
                                     case 1:
-                                        pesquisaApresentaAlunoMatricula();
+                                        pesquisaAluno();
                                         getch();
                                         clrscr();
                                         break;
@@ -206,36 +179,14 @@ int main(void)
                                         getch();
                                         clrscr();
                                         break;
-                                    case 3:
-                                        pesquisaApresentaCadastro();
-                                        getch();
-                                        clrscr();
-                                        break;
-                                    case 4:
-                                        apresentaTodosAlunos();
-                                        getch();
-                                        clrscr();
-                                        break;
-                                    case 5:
-                                        apresentaTodosCursos();
-                                        getch();
-                                        clrscr();
-                                        break;
-                                    case 6:
-                                        apresentarTodosAlunosCadastrados();
-                                        getch();
-                                        clrscr();
-                                        break;
                                 }
                             }
-                            while(subSubOpcao != 0 && subSubOpcao != 7);
-                            break;
-                        case 2:
-                            pesquisaApresentaAlunoNome();
-                            clrscr();
+                            while(subSubOpcao != 0 && subSubOpcao != 4);
+                            
                             break;
                         case 3:
-                            apresentaAlunosMatriculadosEmUmCurso();
+                            pesquisaAlunosMatriculadosEmUmCurso();
+                            getch();
                             clrscr();
                             break;
                         case 4:

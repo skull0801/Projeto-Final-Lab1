@@ -82,13 +82,11 @@ void listaDadosCursos()
     if((arq = fopen(ARQ_CURSOS,"rb")) != NULL)
     {
         while(!feof(arq))
-        {
             if(fread(&curso, sizeof(Curso), 1, arq))
             {
                 printf("%-50s%-7d%-7d%-10.2f\n",curso.nome,curso.codigo,curso.cargaHoraria,curso.mensalidade);
                 qtdeApresentados++;
             }
-        }
         fclose(arq);
     }
     if(!qtdeApresentados)
@@ -211,7 +209,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
                 }
                 else if(contador+10<qtdCursos)
                 {
-                    if(!confirmaEscolha(20, 5, "Deseja continuar?"))
+                    if(confirmaEscolha(20, 5))
                         break;
                 }
             }
@@ -261,7 +259,6 @@ void pesquisaApresentaCursoCodigo(void)
             }
             else
                 printf("O curso nao pode ser encontrado!");
-            fclose(arq);
         }
         else
             printf("O arquivo de cursos nao pode ser aberto!");
@@ -471,7 +468,7 @@ void alteraCurso(void)
             
             if(opcao == 4)
             {
-                confirmacao = confirmaEscolha(55, 1, "Tem certeza?");
+                confirmacao = confirmaEscolha(55, 1);
                 clrscr();
                 if(confirmacao == 1)
                 {
@@ -538,14 +535,11 @@ void excluiCurso(void)
         if(obtemCursoArquivo(&curso, posCurso))
         {
             apresentaCurso(curso);
-            confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
+            confirmacao = confirmaEscolha(55, 1);
             clrscr();
             if(confirmacao == 1)
             {
-                if(!verificaCursoAlunoCadastrado(codigo))
-                    excluiDadosCurso(posCurso);
-                else
-                    printf("O curso tem ao menos um aluno cadastrado no mesmo!");
+                excluiDadosCurso(posCurso);
             }
             else
                 printf("Os dados nao foram excluidos!");
@@ -597,10 +591,7 @@ void excluiDadosCurso(int posCurso)
                     puts("O arquivo nao pode ser removido");
             }
             else
-            {
-                fclose(arq);
                 puts("O arquivo temporario nao pode ser criado!");
-            }
         }
         else
             puts("O curso nao foi encontrado!");
