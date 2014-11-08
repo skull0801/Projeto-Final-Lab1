@@ -3,26 +3,37 @@
 #define FUNCOESCURSO_H
 #include "dados.h"
 
+// Cadastro
 void cadastraCurso(void);
 void leDadosCurso(Curso *curso);
 void gravaDadosCurso(Curso *curso);
-void listaDadosCursos();
+
+// Alteracao
+void alteraCurso(void);
+
+// Exclusao
 void excluiCurso(void);
-void excluiDadosCurso(int posCurso);
+
+// Pesquisa
 void pesquisaCurso(void);
-int pesquisaCursoCodigo(int codCursoBusca);
 void pesquisaApresentaCursoCodigo(void);
 void pesquisaApresentaCursoNome(void);
-int achaProximoCodCurso();
+int pesquisaCursoCodigo(int codCursoBusca);
+
+// Apresentacao
+void apresentaCurso(Curso curso);
 int apresentaTodosCursos(void);
 int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
-void ordenaCursosPorNome(Curso *cursos, int qtdeCursos);
-void alteraCurso(void);
-void alteraDadosCurso(Curso curso, int posCurso);
-void apresentaCurso(Curso curso);
+
+// Obtencao do arquivo
 int obtemCursoArquivo(Curso *curso, int posCurso);
 Curso * obtemDadosCursosArquivo(int * qtdCursos);
+
+// Comparacao
 int comparaCursosCodigo(const void *p1, const void *p2);
 int comparaCursosNome(const void *p1, const void *p2);
+
+// Codigo
+int achaProximoCodCurso(void);
 
 #endif

@@ -5,16 +5,14 @@
 
 // Cadastro
 void cadastraAluno(void);
-void leDadosAluno(Aluno *aluno);
+int leDadosAluno(Aluno *aluno);
 void gravaDadosAluno(Aluno *aluno);
 
 // Alteracao
 void alteraAluno(void);
-void alteraDadosAluno(Aluno aluno, int posAluno);
 
 // Exclusao
 void excluiAluno(void);
-void excluiDadosAluno(int posAluno);
 
 // Apresentacao
 void apresentaAluno(Aluno aluno);
@@ -37,5 +35,8 @@ int verificaCPFAluno(const char *cpf);
 
 // Comparacao
 int comparaAlunos(const void *p1, const void *p2);
+
+// Data
+void geraDataIngresso(Data *data);
 
 #endif

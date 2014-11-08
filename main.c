@@ -99,28 +99,18 @@ int main(void)
                     {
                         case 1:
                             cadastraCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 2:
                             alteraCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 3:
                             excluiCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 4:
                             pesquisaCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 5:
                             apresentaTodosCursos();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }

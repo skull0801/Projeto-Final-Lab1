@@ -1,6 +1,7 @@
 // Funcoes relacionadas aos dados de Cadastros
 
 #include <stdio.h>
+#include <conio.h>
 #include "dados.h"
 #include "cores.h"
 #include "funcoesBasicas.h"

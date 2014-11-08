@@ -1,7 +1,7 @@
 // Funcoes basicas
 
 #include <stdio.h>
-#include <time.h>
+#include <conio.h>
 #include "cores.h"
 #include "funcoesBasicas.h"
 
@@ -104,19 +104,53 @@ char leValidaChar(const char *titulo, const char *escolhas)
     return caractere;
 }
 
+// POSSIVEIS ERROS COM ESTA FUNCAO! CUIDADO AO USAR!
 //***********************************************************************************************************************
-// Objetivo: Registra a data atual
-// Parametros: Referencia a uma estrutura de data para guardar a data atual
-// Retorno: nenhum
-void geraDataIngresso(Data *data)
+// Objetivo: Ler uma string com limite
+// Parâmetros: tamanho maximo
+// Retorno: Endereço para a string alocada dinamicamente
+char * leStringEmCampo(int limite)
 {
-    time_t tempoBruto;
-    struct tm *tempoAtual;
-    time(&tempoBruto);
-    tempoAtual = localtime(&tempoBruto);
-    data->dia = tempoAtual->tm_mday;
-    data->mes = tempoAtual->tm_mon+1;
-    data->ano = tempoAtual->tm_year+1900;
+    char *string = NULL, *stringAux, caractere;
+    int contador = 0, maxAlocado = 0;
+    do
+    {
+        if(sizeof(char)*(contador+2)>maxAlocado)
+        {
+            stringAux = (char *)realloc(string, sizeof(char)*(contador+2));
+            maxAlocado = sizeof(char)*(contador+2);
+        }
+        if(stringAux != NULL)
+        {
+            string = stringAux;
+            fflush(stdin);
+            caractere = getch();
+            if(caractere==8)
+            {
+                if(contador>0)
+                {
+                    printf("\b \b");
+                    contador--;
+                }
+            }
+            else if(contador<limite && caractere>=32 || caractere == 13)
+            {
+                string[contador++] = caractere;
+                putc(caractere, stdout);
+            }
+        }
+        else
+            break;
+    }
+    while(string[contador-1]!=13);
+    if(stringAux == NULL)
+    {
+        free(string);
+        string = NULL;
+    }
+    if(string != NULL)
+        string[contador-1] = '\0';
+    return string;
 }
 
 //***********************************************************************************************************************
@@ -248,7 +282,7 @@ int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra
     else
         limpaJanela(linha, coluna, linha+qtdOpcoes, coluna+tamMaiorOpcao, corFundoAtual);
         
-    limpaJanela(linhaTitulo, colunaTitulo, linhaTitulo, colunaTitulo+strlen(titulo), corFundoAtual); // Limpa titulo do menu
+    limpaJanela(linhaTitulo, colunaTitulo, linhaTitulo, colunaTitulo+tamTitulo, corFundoAtual); // Limpa titulo do menu
     
     return ultimaSelecao+1; // Retorna o item selecionado (Retorna 0 se foi pressionado esc)
 }
@@ -323,6 +357,81 @@ int confirmaEscolha(int coluna, int linha, char *titulo)
     if(resposta != 1)
         resposta = 0;
     return resposta;
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Alterar os dados de um arquivo em uma posicao
+//  Parametros: Nome do arquivo, Ponteiro void constante para o dado, Tamanho do dado, Posicao do dado no arquivo
+//  Retorno: 1 se o dado foi alterado, 0 se o dado nao foi alterado
+int alteraDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado, int posDado)
+{
+    FILE *arq;
+    int retorno = 0;
+
+    if((arq = fopen(nomeArquivo, "rb+")) != NULL)
+    {
+        if(!fseek(arq, tamanhoDado*(posDado-1), SEEK_SET))
+        {
+            if(fwrite(dado, tamanhoDado, 1, arq) == 1)
+                retorno = 1;
+        }
+        else
+            printf("O dado nao pode ser encontrado no arquivo!");
+
+        fclose(arq);
+    }
+    else
+        printf("O arquivo nao pode ser aberto para ser alterado!");
+    
+    return retorno;
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Excluir um dado de um arquivo
+//  Parametros: Nome do arquivo, Tamando do dado, Posicao do dado no arquivo
+//  Retorno: 1 se o dado foi excluido, 0 se o dado nao foi excluido
+int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
+{
+    FILE *arq, *arqTemp;
+    int qtdCopiados = 0, retorno = 0, flag = 0;
+    void *dado;
+    
+    if((arq = fopen(nomeArquivo,"rb")) != NULL)
+    {
+        if((arqTemp = fopen(ARQ_TEMP,"wb")) != NULL)
+        {
+            dado = malloc(tamanhoDado);
+            while(!feof(arq))
+            {
+                if((fread(dado, tamanhoDado, 1, arq)) == 1)
+                {
+                    qtdCopiados++;
+                    if(posDado != qtdCopiados)
+                        if(fwrite(dado, tamanhoDado, 1, arqTemp) != 1)
+                            flag = 1;
+                }
+            }
+            
+            fclose(arqTemp);
+            fclose(arq);
+            
+            if(remove(nomeArquivo) == 0)
+            {
+                if(rename(ARQ_TEMP,nomeArquivo) == 0)
+                    retorno = 1;
+            }
+            else
+                printf("O arquivo original nao pode ser removido!");
+        }
+        else
+        {
+            printf("O arquivo temporario nao pode ser criado!");
+            fclose(arq);
+        }
+    }
+    else
+        printf("O arquivo nao pode ser aberto!");
+    return retorno;
 }
 
 //***********************************************************************************************************************

@@ -1,6 +1,8 @@
 // Funcoes relacionadas aos dados de alunos
 
 #include <stdio.h>
+#include <conio.h>
+#include <time.h>
 #include "dados.h"
 #include "cores.h"
 #include "funcoesBasicas.h"
@@ -13,8 +15,10 @@
 void cadastraAluno(void)
 {
     Aluno aluno;
-    leDadosAluno(&aluno);
-    gravaDadosAluno(&aluno);
+    if(leDadosAluno(&aluno))
+        gravaDadosAluno(&aluno);
+    else
+        printf("\nO aluno nao foi cadastrado!");
     getch();
     clrscr();
 }
@@ -23,7 +27,7 @@ void cadastraAluno(void)
 //  Objetivo: Ler os dados de um aluno
 //  Parametros: Referencia ao aluno
 //  Retorno: Nenhum
-void leDadosAluno(Aluno *aluno)
+int leDadosAluno(Aluno *aluno)
 {
     int cpfExiste, cpfValida, flagMatricula;
     leValidaTexto(aluno->nome, "Informe o nome do aluno", "Nome do aluno", 3, TAM_NOME_ALUNO);
@@ -32,7 +36,12 @@ void leDadosAluno(Aluno *aluno)
         aluno->matricula = leValidaInteiro("Informe a matricula do aluno", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
         flagMatricula = pesquisaAlunoMatricula(aluno->matricula);
         if(flagMatricula)
-            printf("A matricula %d ja esta cadastrada!\n", aluno->matricula);
+        {
+            printf("A matricula %d ja esta cadastrada!\nPressione M para voltar ao menu!", aluno->matricula);
+            if(toupper(getch()) == 'M')
+                return 0;
+            clrscr();
+        }
     }
     while(flagMatricula);
     
@@ -45,12 +54,22 @@ void leDadosAluno(Aluno *aluno)
             printf("O CPF %s e invalido!\n", aluno->cpf);
         else if(cpfExiste)
             printf("O CPF %s ja esta cadastrado!\n", aluno->cpf);
+
+        if(!cpfValida || cpfExiste)
+        {
+            printf("Pressione M para voltar ao menu!");
+            if(toupper(getch()) == 'M')
+                return 0;
+            clrscr();
+        }
     }
     while(cpfExiste == 1 || cpfValida == 0);
     
     aluno->idade = leValidaInteiro("Informe a idade do aluno", "Idade", MIN_IDADE, MAX_IDADE);
     aluno->sexo = leValidaChar("Informe o sexo do aluno: ", "MF");
     geraDataIngresso(&(aluno->dataIngresso));
+    
+    return 1;
 }
 
 //***********************************************************************************************************************
@@ -79,7 +98,7 @@ void gravaDadosAluno(Aluno *aluno)
 void alteraAluno(void)
 {
     Aluno aluno;
-    int posAluno, matricula, opcao, confirmacao, flag = 0;
+    int posAluno = 0, matricula, opcao = 1, confirmacao;
     char *opcoesAlteracao[] = {"Alterar Nome",
                                "Alterar Idade",
                                "Alterar Sexo",
@@ -88,7 +107,8 @@ void alteraAluno(void)
     
     matricula = apresentaTodosAlunos();
     
-    posAluno = pesquisaAlunoMatricula(matricula);
+    if(matricula)
+        posAluno = pesquisaAlunoMatricula(matricula);
     
     if(posAluno)
     {
@@ -97,7 +117,7 @@ void alteraAluno(void)
             do
             {
                 apresentaAluno(aluno);
-                opcao = menuVertical("", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, opcao, PRETO, CINZA_E);
                 gotoxy(1, 8);
                 switch(opcao)
                 {
@@ -116,53 +136,25 @@ void alteraAluno(void)
             
             if(opcao == 4)
             {
-                confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
+                confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
                 gotoxy(1, 8);
                 if(confirmacao == 1)
-                {
-                    alteraDadosAluno(aluno, posAluno);
-                    flag = 1;
-                }
+                    if(alteraDadoArquivo(ARQ_ALUNOS, (void*) &aluno, sizeof(Aluno), posAluno))
+                        printf("O aluno foi alterado com sucesso!");
+                    else
+                        printf("O aluno nao foi alterado!");
                 else
-                    printf("Os dados nao foram alterados!");
+                    printf("O aluno nao foi alterado!");
             }
             else
-                printf("Os dados nao foram alterados!");
+                printf("O aluno nao foi alterado!");
         }
         else
-            printf("O aluno nao pode ser recuperado do arquivo!\n");
+            printf("O aluno nao pode ser recuperado do arquivo!");
+        
+        getch();
     }
-    getch();
     clrscr();
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Salvar alteracoes nos dados de um aluno
-//  Parametros: Dados do aluno, posicao do aluno no arquivo
-//  Retorno: nenhum
-void alteraDadosAluno(Aluno aluno, int posAluno)
-{
-    FILE *arq;
-    
-    if(posAluno)
-    {
-        if((arq = fopen(ARQ_ALUNOS, "rb+")) != NULL )
-        {
-            if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
-            {
-                if(fwrite(&aluno, sizeof(Aluno), 1, arq))
-                    printf("Os dados foram alterados com sucesso!");
-                else
-                    printf("Os dados nao puderam ser alterados!");
-            }
-            else
-                printf("O aluno nao pode ser recuperado!");
-                
-            fclose(arq);
-        }
-        else
-            printf("O arquivo nao pode ser aberto para ser alterado!");
-    }
 }
 
 //***********************************************************************************************************************
@@ -172,24 +164,27 @@ void alteraDadosAluno(Aluno aluno, int posAluno)
 void excluiAluno()
 {
     Aluno aluno;
-    int posAluno, matricula;
-    int confirmacao;
+    int posAluno = 0, matricula, confirmacao;
     
     matricula = apresentaTodosAlunos();
     
-    posAluno = pesquisaAlunoMatricula(matricula);
+    if(matricula)
+        posAluno = pesquisaAlunoMatricula(matricula);
     
     if(posAluno)
     {
         if(obtemAlunoArquivo(&aluno, posAluno))
         {
             apresentaAluno(aluno);
-            confirmacao = confirmaEscolha(55, 1, "Voce tem certeza?");
+            confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
             gotoxy(1,8);
             if(confirmacao == 1)
             {
                 if(!verificaAlunoCadastrado(matricula))
-                    excluiDadosAluno(posAluno);
+                    if(excluiDadoArquivo(ARQ_ALUNOS, sizeof(Aluno), posAluno))
+                        printf("O aluno foi excluido com sucesso!");
+                    else
+                        printf("O aluno nao pode ser excluido!");
                 else
                     printf("O aluno esta cadastrado em ao menos um curso!");
             }
@@ -200,59 +195,6 @@ void excluiAluno()
             printf("O aluno nao pode ser recuperado!");
         getch();
         clrscr();
-    }
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Excluir um aluno
-//  Parametros: Posicao do aluno a ser excluido
-//  Retorno: nenhum
-void excluiDadosAluno(int posAluno)
-{
-    FILE *arq, *arqTemp;
-    int qtdLidos = 0;
-    Aluno aluno;
-    
-    if(posAluno)
-    {
-        if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL )
-        {
-            if((arqTemp = fopen(ARQ_ALUNOS_TEMP, "wb")) != NULL)
-            {
-                while(!feof(arq))
-                {
-                    if(fread(&aluno, sizeof(Aluno), 1, arq))
-                    {
-                        qtdLidos++;
-                        if(posAluno != qtdLidos)
-                            if(!fwrite(&aluno, sizeof(Aluno), 1, arqTemp))
-                                printf("Erro na remocao do aluno!");
-                    }
-                }
-                
-                if(!fclose(arqTemp) && !fclose(arq))
-                {
-                    if(!remove(ARQ_ALUNOS))
-                    {
-                        if(!rename(ARQ_ALUNOS_TEMP, ARQ_ALUNOS))
-                            printf("O aluno foi excluido com sucesso!");
-                        else
-                            printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
-                    }
-                    else
-                        printf("O arquivo antigo nao pode ser excluido, logo o aluno nao foi excluido!");
-                }
-                else
-                    printf("Os arquivos nao puderam ser fechados para alteracao!");
-            }
-            else
-            {
-                printf("O arquivo para exclusao nao pode ser criado!");
-                fclose(arq);
-            }
-        }
-        else
-            printf("O arquivo nao pode ser aberto para remover o aluno!");
     }
 }
 
@@ -278,13 +220,14 @@ int apresentaTodosAlunos(void)
 {
     Aluno *alunos;
     int qtdAlunos = 0, matriculaSelecionada = 0;
-    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos))!= NULL)
+    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos)) != NULL)
     {
         matriculaSelecionada = apresentaDadosAlunos(alunos, qtdAlunos);
         free(alunos);
     }
     else
         getch();
+
     clrscr();
     return matriculaSelecionada;
 }
@@ -332,12 +275,18 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
         
         if(!flag)
         {
+            sprintf(titulo, "%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
+
             for(contador=0;contador<qtdAlunos;contador+=LINHAS_TABELA)
             {
                 qtdItens = qtdAlunos - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdAlunos - contador;
-                gotoxy(COLUNA_TABELA_ALUNOS+2, LINHA_TABELA_ALUNOS-3);
-                sprintf(titulo, "%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
                 
+                if(contador+LINHAS_TABELA<qtdAlunos)
+                {
+                    gotoxy(45, LINHA_TABELA_ALUNOS+qtdItens+3);
+                    printf("Pressione Esc para ver o restante!");
+                }
+
                 selecao = menuVertical(titulo, &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
                 
                 if(selecao != 0)
@@ -349,7 +298,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
                 }
                 else if(contador+LINHAS_TABELA<qtdAlunos)
                 {
-                    if(!confirmaEscolha(20, 5, "Deseja continuar?"))
+                    if(!confirmaEscolha(40, 12, "Deseja ver o restante dos alunos?"))
                         break;
                 }
             }
@@ -372,22 +321,26 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
 // Retorno: nenhum
 void pesquisaAluno(void)
 {
-    int opcao;
+    int opcao = 1;
     char *opcoesPesquisa[] = {"Pesquisa por Matricula",
                               "Pesquisa por Nome",
                               "Voltar"};
     
-    opcao = menuVertical("", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
-    
-    switch(opcao)
+    do
     {
-        case 1:
-            pesquisaApresentaAlunoMatricula();
-            break;
-        case 2:
-			pesquisaApresentaAlunoNome();
-			break;
+        opcao = menuVertical("Pesquisa de Aluno", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, opcao, PRETO, CINZA_C);
+        
+        switch(opcao)
+        {
+            case 1:
+                pesquisaApresentaAlunoMatricula();
+                break;
+            case 2:
+    			pesquisaApresentaAlunoNome();
+    			break;
+        }
     }
+    while(opcao != 0 && opcao != 3);
 }
 
 //***********************************************************************************************************************
@@ -399,6 +352,7 @@ int pesquisaAlunoMatricula(int matriculaBusca)
     FILE *arq;
     Aluno aluno;
     int pos = 0, flag = 0;
+
     if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
     {
         while(!feof(arq))
@@ -415,8 +369,10 @@ int pesquisaAlunoMatricula(int matriculaBusca)
         }
         fclose(arq);
     }
+
     if(!flag)
         pos = 0;
+
     return pos;
 }
 
@@ -428,10 +384,10 @@ void pesquisaApresentaAlunoNome()
 {
     FILE *arq;
     Aluno aluno, *alunos = NULL, *alunosAux;
-    int qtdLidos = 0, flag = 0, contador;
+    int qtdLidos = 0, flag = 0;
     char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
     
-	leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
+	leValidaTexto(nomeBusca, "Informe o nome a ser buscado", "Nome", 1, TAM_NOME_ALUNO);
 	
     strToLower(nomeBusca);
     
@@ -456,6 +412,8 @@ void pesquisaApresentaAlunoNome()
                     {
                         printf("Houve erro na alocacao de memoria!");
                         flag = 1;
+                        if(qtdLidos)
+                            free(alunos);
                         break;
                     }
                 }
@@ -492,7 +450,7 @@ void pesquisaApresentaAlunoMatricula(void)
     Aluno aluno;
     int matricula, posAluno;
     
-    matricula = leValidaInteiro("Informe a matricula do aluno a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    matricula = leValidaInteiro("Informe a matricula a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
@@ -563,13 +521,9 @@ int obtemAlunoArquivo(Aluno *aluno, int posAluno)
     int flag = 0;
     if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
     {
-        if(!fseek(arq, sizeof(Aluno)*(posAluno-1), 0))
-        {
+        if(!fseek(arq, sizeof(Aluno)*(posAluno-1), SEEK_SET))
             if(fread(aluno, sizeof(Aluno), 1, arq))
-            {
                 flag = 1;
-            }
-        }
         fclose(arq);
     }
     return flag;
@@ -680,5 +634,20 @@ int comparaAlunos(const void *p1, const void *p2)
     aluno1 = (Aluno *) p1;
     aluno2 = (Aluno *) p2;
     return stricmp(aluno1->nome, aluno2->nome);
+}
+
+//***********************************************************************************************************************
+// Objetivo: Registra a data atual
+// Parametros: Referencia a uma estrutura de data para guardar a data atual
+// Retorno: nenhum
+void geraDataIngresso(Data *data)
+{
+    time_t tempoBruto;
+    struct tm *tempoAtual;
+    time(&tempoBruto);
+    tempoAtual = localtime(&tempoBruto);
+    data->dia = tempoAtual->tm_mday;
+    data->mes = tempoAtual->tm_mon+1;
+    data->ano = tempoAtual->tm_year+1900;
 }
 

@@ -20,9 +20,8 @@
 #define MIN_IDADE 15
 #define MAX_IDADE 150
 #define ARQ_ALUNOS "alunos.b"
-#define ARQ_ALUNOS_TEMP "alTemp.b"
 #define ARQ_CURSOS "cursos.b"
-#define ARQ_CURSOS_TEMP "cursoTemp.b"
+#define ARQ_TEMP "temp.b"
 #define ARQ_MATRICULAS "matriculas.b"
 #define ARQ_MATRICULAS_TEMP "matriTemp.b"
 
