@@ -24,9 +24,6 @@ void apresentaCurso(Curso curso);
 int apresentaTodosCursos(void);
 int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
 
-// Obtencao do arquivo
-Curso * obtemDadosCursosArquivo(int * qtdCursos);
-
 // Comparacao
 int comparaCursosCodigo(const void *p1, const void *p2);
 int comparaCursosNome(const void *p1, const void *p2);

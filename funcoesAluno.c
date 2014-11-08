@@ -185,6 +185,155 @@ void excluiAluno()
 }
 
 //***********************************************************************************************************************
+// Objetivo: Pesquisar por um ou mais alunos
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaAluno(void)
+{
+    int opcao = 1;
+    char *opcoesPesquisa[] = {"Pesquisa por Matricula",
+                              "Pesquisa por Nome",
+                              "Voltar"};
+    
+    do
+    {
+        opcao = menuVertical("Pesquisa de Aluno", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, opcao, PRETO, CINZA_C);
+        
+        switch(opcao)
+        {
+            case 1:
+                pesquisaApresentaAlunoMatricula();
+                break;
+            case 2:
+                pesquisaApresentaAlunoNome();
+                break;
+        }
+    }
+    while(opcao != 0 && opcao != 3);
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Pesquisar um aluno dentro de um arquivo por matricula
+//  Parametros: matricula a ser pesquisada
+//  Retorno: numero positivo se encontrado (posicao do aluno no arquivo de 1 a n, sendo n o numero de alunos), 0 - codigo nao encontrado
+int pesquisaAlunoMatricula(int matriculaBusca)
+{
+    FILE *arq;
+    Aluno aluno;
+    int pos = 0, flag = 0;
+
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&aluno, sizeof(Aluno), 1, arq))
+            {
+                pos++;
+                if(matriculaBusca == aluno.matricula)
+                {
+                    flag = 1;
+                    break;
+                }
+            }
+        }
+        fclose(arq);
+    }
+
+    if(!flag)
+        pos = 0;
+
+    return pos;
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
+//  Parametros: nenhum
+//  Retorno: nenhum
+void pesquisaApresentaAlunoNome()
+{
+    FILE *arq;
+    Aluno aluno, *alunos = NULL, *alunosAux;
+    int qtdLidos = 0, flag = 0;
+    char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
+    
+    leValidaTexto(nomeBusca, "Informe o nome a ser buscado", "Nome", 1, TAM_NOME_ALUNO);
+    
+    strToLower(nomeBusca);
+    
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&aluno, sizeof(Aluno), 1, arq))
+            {
+                strcpy(copiaNome, aluno.nome);
+                strToLower(copiaNome);
+                if(strstr(copiaNome, nomeBusca))
+                {
+                    alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
+                    if(alunosAux != NULL)
+                    {
+                        alunos = alunosAux;
+                        alunos[qtdLidos] = aluno;
+                        qtdLidos++;
+                    }
+                    else
+                    {
+                        printf("Houve erro na alocacao de memoria!");
+                        flag = 1;
+                        if(qtdLidos)
+                            free(alunos);
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(arq);
+    }
+    
+    if(!flag)
+    {
+        if(qtdLidos)
+        {
+            apresentaDadosAlunos(alunos, qtdLidos);
+            free(alunos);
+        }
+        else
+        {
+            printf("Nao houve nenhuma correspondencia!");
+            getch();
+        }
+    }
+    else
+        getch();
+    clrscr();
+}
+
+//***********************************************************************************************************************
+// Objetivo: Pesquisar um aluno por matricula e apresentar
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaApresentaAlunoMatricula(void)
+{
+    FILE *arq;
+    Aluno aluno;
+    int matricula, posAluno;
+    
+    matricula = leValidaInteiro("Informe a matricula a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    
+    posAluno = pesquisaAlunoMatricula(matricula);
+    
+    if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
+    {
+        apresentaAluno(aluno);
+    }
+    else
+        printf("O aluno nao foi encontrado!");
+    getch();
+    clrscr();
+}
+
+//***********************************************************************************************************************
 // Objetivo: Apresentar os dados de um aluno
 // Parametros: Um aluno
 // Retorno: nenhum
@@ -206,7 +355,7 @@ int apresentaTodosAlunos(void)
 {
     Aluno *alunos;
     int qtdAlunos = 0, matriculaSelecionada = 0;
-    if((alunos = obtemDadosAlunosArquivo(&qtdAlunos)) != NULL)
+    if((alunos = (Aluno *) obtemDadosArquivo(ARQ_ALUNOS, sizeof(Aluno), &qtdAlunos)) != NULL)
     {
         matriculaSelecionada = apresentaDadosAlunos(alunos, qtdAlunos);
         free(alunos);
@@ -299,202 +448,6 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
     }
     limpaJanela(2, 3, 2, 80, PRETO);
     return matriculaSelecao;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Pesquisar por um ou mais alunos
-// Parametros: nenhum
-// Retorno: nenhum
-void pesquisaAluno(void)
-{
-    int opcao = 1;
-    char *opcoesPesquisa[] = {"Pesquisa por Matricula",
-                              "Pesquisa por Nome",
-                              "Voltar"};
-    
-    do
-    {
-        opcao = menuVertical("Pesquisa de Aluno", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, opcao, PRETO, CINZA_C);
-        
-        switch(opcao)
-        {
-            case 1:
-                pesquisaApresentaAlunoMatricula();
-                break;
-            case 2:
-    			pesquisaApresentaAlunoNome();
-    			break;
-        }
-    }
-    while(opcao != 0 && opcao != 3);
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Pesquisar um aluno dentro de um arquivo por matricula
-//  Parametros: matricula a ser pesquisada
-//  Retorno: numero positivo se encontrado (posicao do aluno no arquivo de 1 a n, sendo n o numero de alunos), 0 - codigo nao encontrado
-int pesquisaAlunoMatricula(int matriculaBusca)
-{
-    FILE *arq;
-    Aluno aluno;
-    int pos = 0, flag = 0;
-
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        while(!feof(arq))
-        {
-            if(fread(&aluno, sizeof(Aluno), 1, arq))
-            {
-                pos++;
-                if(matriculaBusca == aluno.matricula)
-                {
-                    flag = 1;
-                    break;
-                }
-            }
-        }
-        fclose(arq);
-    }
-
-    if(!flag)
-        pos = 0;
-
-    return pos;
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
-//  Parametros: nenhum
-//  Retorno: nenhum
-void pesquisaApresentaAlunoNome()
-{
-    FILE *arq;
-    Aluno aluno, *alunos = NULL, *alunosAux;
-    int qtdLidos = 0, flag = 0;
-    char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
-    
-	leValidaTexto(nomeBusca, "Informe o nome a ser buscado", "Nome", 1, TAM_NOME_ALUNO);
-	
-    strToLower(nomeBusca);
-    
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        while(!feof(arq))
-        {
-            if(fread(&aluno, sizeof(Aluno), 1, arq))
-            {
-                strcpy(copiaNome, aluno.nome);
-                strToLower(copiaNome);
-                if(strstr(copiaNome, nomeBusca))
-                {
-                    alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
-                    if(alunosAux != NULL)
-                    {
-                        alunos = alunosAux;
-                        alunos[qtdLidos] = aluno;
-                        qtdLidos++;
-                    }
-                    else
-                    {
-                        printf("Houve erro na alocacao de memoria!");
-                        flag = 1;
-                        if(qtdLidos)
-                            free(alunos);
-                        break;
-                    }
-                }
-            }
-        }
-        fclose(arq);
-    }
-    
-    if(!flag)
-    {
-        if(qtdLidos)
-        {
-            apresentaDadosAlunos(alunos, qtdLidos);
-            free(alunos);
-        }
-        else
-        {
-            printf("Nao houve nenhuma correspondencia!");
-            getch();
-        }
-    }
-    else
-        getch();
-    clrscr();
-}
-
-//***********************************************************************************************************************
-// Objetivo: Pesquisar um aluno por matricula e apresentar
-// Parametros: nenhum
-// Retorno: nenhum
-void pesquisaApresentaAlunoMatricula(void)
-{
-    FILE *arq;
-    Aluno aluno;
-    int matricula, posAluno;
-    
-    matricula = leValidaInteiro("Informe a matricula a pesquisar", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-    
-    posAluno = pesquisaAlunoMatricula(matricula);
-    
-    if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
-    {
-        apresentaAluno(aluno);
-    }
-    else
-        printf("O aluno nao foi encontrado!");
-    getch();
-    clrscr();
-}
-
-//***********************************************************************************************************************
-// Objetivo: Obter todos os alunos do arquivo
-// Parametros: Referencia a quantidade de alunos (valor sera dado pela funcao)
-// Retorno: Ponteiro para memoria alocada na qual os alunos estao
-Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
-{
-    FILE *arq;
-    Aluno *alunos = NULL;
-    
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        if(!fseek(arq, 0, SEEK_END))
-        {
-            *qtdAlunos = (ftell(arq)/sizeof(Aluno));
-            
-            if(*qtdAlunos>0)
-            {
-                alunos = malloc(sizeof(Aluno)*(*qtdAlunos));
-                
-                if(alunos != NULL)
-                {
-                    rewind(arq);
-                    if(fread(alunos, sizeof(Aluno), *qtdAlunos, arq) != *qtdAlunos)
-                    {
-                        printf("Erro ao recuperar os dados de alunos!");
-                        free(alunos);
-                        alunos = NULL;
-                        *qtdAlunos = 0;
-                    }
-                }
-                else
-                    printf("Erro ao alocar memoria para alunos!");
-            }
-            else
-                printf("Nao existem alunos cadastrados!");
-        }
-        else
-            printf("Erro ao obter quantidade de alunos.");
-            
-        fclose(arq);
-    }
-    else
-        printf("Erro ao abrir o arquivo de alunos.");
-        
-    return alunos;
 }
 
 //***********************************************************************************************************************

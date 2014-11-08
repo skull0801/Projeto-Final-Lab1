@@ -324,7 +324,7 @@ int apresentaTodosCursos(void)
 {
     Curso *cursos;
     int qtdCursos, codigoSelecionado = 0;
-    if((cursos = obtemDadosCursosArquivo(&qtdCursos))!= NULL)
+    if((cursos = (Curso *) obtemDadosArquivo(ARQ_CURSOS, sizeof(Curso), &qtdCursos))!= NULL)
     {
         codigoSelecionado = apresentaDadosCursos(cursos, qtdCursos);
         free(cursos);
@@ -410,47 +410,6 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Obter todos os cursos do arquivo
-// Parametros: Referencia a quantidade de cursos (valor sera dado pela funcao)
-// Retorno: Ponteiro para memoria alocada na qual os cursos estao
-Curso * obtemDadosCursosArquivo(int * qtdCursos)
-{
-    FILE *arq;
-    Curso *cursos = NULL;
-    
-    if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
-    {
-        if(!fseek(arq, 0, SEEK_END))
-        {
-            *qtdCursos = (ftell(arq)/sizeof(Curso));
-            
-            cursos = malloc(sizeof(Curso)*(*qtdCursos));
-            
-            if(cursos != NULL)
-            {
-                rewind(arq);
-                if(fread(cursos, sizeof(Curso), *qtdCursos, arq) != *qtdCursos)
-                {
-                    printf("Erro ao recuperar os dados de cursos!");
-                    free(cursos);
-                    cursos = NULL;
-                }
-            }
-            else
-                printf("Erro ao alocar memoria para cursos!");
-        }
-        else
-            printf("Erro ao obter quantidade de cursos.");
-            
-        fclose(arq);
-    }
-    else
-        printf("Erro ao abrir o arquivo de cursos.");
-        
-    return cursos;
-}
-
-//***********************************************************************************************************************
 // Objetivo: Compara dois cursos (por codigo)
 // Parametros: Ponteiro para os dois alunos
 // Retorno: resultado da comparacao dos dois nomes(inteiro)
@@ -482,7 +441,7 @@ int achaProximoCodCurso()
 {
     int codigo = CODIGO_MIN, qtdCursos = 0;
     Curso *cursos;
-    if((cursos = obtemDadosCursosArquivo(&qtdCursos)) != NULL)
+    if((cursos = (Curso *) obtemDadosArquivo(ARQ_CURSOS, sizeof(Curso), &qtdCursos)) != NULL)
     {
         if(qtdCursos>0)
         {

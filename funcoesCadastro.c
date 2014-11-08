@@ -13,7 +13,7 @@
 //  Objetivo: Matricular um aluno em um curso
 //  Parametros: Nenhum
 //  Retorno: Nenhum
-void cadastraAlunoEmCurso()
+void cadastraAlunoEmCurso(void)
 {
     FILE *arqMatriculas;
     int flag, opcao;
@@ -66,10 +66,189 @@ void cadastraAlunoEmCurso()
 }
 
 //***********************************************************************************************************************
+//  Objetivo: Alterar dados do cadastro
+//  Parametros: Nenhum
+//  Retorno: Nenhum
+void alteraCadastro(void)
+{
+    FILE *arq;
+    Cadastro cadastro;
+    Aluno *alunos;
+    int flag = 0, codigoCurso, qtdeAlunos, matriculaAluno, opcao, opcaoSituacao, posCadastro, escolha;
+    char *opcoesSituacaoAluno[] = {"Cursando",
+                                   "Concluiu"};
+                                   
+    char *opcaoSituacaoPagamento[] = {"Regular",
+                                      "Atrasada",
+                                      "Totalmente Paga"};
+                                      
+    char *opcoesAlteracao[] = {"Alterar Situacao aluno",
+                               "Alterar Situacao da mensalidade",
+                               "Salvar alteracoes",
+                               "Cancelar Mudancas"};
+
+    if(verificaArquivoVazio(ARQ_CURSOS))
+    {
+        printf("Nao existem cursos cadastrados!");
+        return;
+    }
+    
+    do
+    {
+        codigoCurso = apresentaTodosCursos();
+    }
+    while(codigoCurso == 0);
+    
+    if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdeAlunos, 3)) != NULL)
+    {
+        do
+        {
+            matriculaAluno = apresentaDadosAlunos(alunos, qtdeAlunos);
+        }
+        while(matriculaAluno == 0);
+        posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
+        if(posCadastro)
+        {
+            if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
+            {
+                do
+                {
+                    clrscr();
+                    apresentaCadastro(cadastro);
+                    opcao = menuVertical("O QUE DESEJA ALTERAR?", opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
+                    
+                    switch(opcao)
+                    {
+                        case 1:
+                            do
+                            {
+                                opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
+                            }
+                            while(!opcaoSituacao);
+                            
+                            cadastro.situacaoAluno = opcaoSituacao + '0';
+                            break; 
+                        case 2:
+                            do
+                            {
+                                opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
+                            }
+                            while(!opcaoSituacao);
+                            
+                            cadastro.situacaoPagamento = opcaoSituacao + '0';
+                            break;
+                    }
+                }
+                while(opcao == 1 || opcao == 2);
+                if(opcao == 3)
+                {
+                    escolha = confirmaEscolha(55,5, "Voce tem certeza?");
+                    if(escolha == 1)
+                    {
+                        if(alteraDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
+                            printf("A matricula foi alterada com sucesso!");
+                        else
+                            printf("A matricula nao foi alterada!");
+                    }
+                    else
+                        printf("A matricula nao foi alterada!");
+                }
+                else
+                    printf("A matricula nao foi alterada!");
+            }
+            else
+                puts("A matricula nao pode ser recuperada!");
+        }
+        free(alunos);
+    }
+    else
+    {
+        puts("Nao ha nenhum aluno cadastrado neste curso ate o momento!");
+    }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Excluir uma matricula de um aluno em um curso
+//  Parametros: Nenhum
+//  Retorno: Nenhum
+void excluiMatriculaAlunoEmUmCurso(void)
+{
+    int codigoCurso, matriculaASerExcluida, qtdAlunos;
+    FILE *arq;
+    Aluno *alunos;
+    
+    if(verificaArquivoVazio(ARQ_CURSOS))
+    {
+        printf("Nao existem cursos cadastrados!");
+        getch();
+        return;
+    }
+    
+    do
+    {
+        codigoCurso = apresentaTodosCursos();
+    }
+    while(codigoCurso == 0);
+    
+    if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdAlunos, 3)) != NULL)
+    {
+        matriculaASerExcluida = apresentaDadosAlunos(alunos, qtdAlunos);
+        excluiMatriculaAluno(matriculaASerExcluida, codigoCurso);
+        free(alunos);
+    }
+    else
+    {
+        puts("Nao ha nenhum aluno cadastrado no curso!");
+    }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Excluir uma matricula do arquivo
+//  Parametros: A posicao da matricula no Arquivo
+//  Retorno: Nenhum
+void excluiMatriculaAluno(int matriculaAExcluir, int codCurso)
+{
+    FILE *arq, *arqTemp;
+    int qtdeCopiados;
+    Cadastro matricula;
+
+    if(matriculaAExcluir && codCurso)
+    {
+        if((arq = fopen(ARQ_MATRICULAS, "rb")) != NULL )
+        {
+            if((arqTemp = fopen(ARQ_MATRICULAS_TEMP, "wb")) != NULL)
+            {
+                while(!feof(arq))
+                {
+                    if(fread(&matricula, sizeof(Cadastro), 1, arq))
+                    {
+                        qtdeCopiados++;
+                        if(matriculaAExcluir != matricula.matriculaAluno || codCurso!= matricula.codigoCurso)
+                            fwrite(&matricula, sizeof(Cadastro), 1, arqTemp);
+                    }
+                }
+            }
+            fclose(arqTemp);
+            fclose(arq);
+        }
+
+        if(!remove(ARQ_MATRICULAS))
+        {
+            if(!rename(ARQ_MATRICULAS_TEMP, ARQ_MATRICULAS))
+                printf("A matricula foi excluida com sucesso!");
+            else
+                printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
+        }
+        else
+            printf("O arquivo antigo nao pode ser excluido, logo a matricula nao foi excluida!");
+    }
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Listar todas as matriculas
 //  Parametros: Nenhum
 //  Retorno: Nenhum
-void listaDadosCadastro()
+void listaDadosCadastro(void)
 {
     FILE *arq;
     Cadastro matricula;
@@ -110,98 +289,138 @@ void listaDadosCadastro()
 }
 
 //***********************************************************************************************************************
-// Objetivo: Verificar se um aluno esta cadastrado em um curso
-// Parametros: Matricula do aluno
-// Retorno: 1 se aluno esta cadastrado, 0 se nao esta
-int verificaAlunoCadastrado(int matriculaAluno)
+// Objetivo: Pesquisar um cadastro especifico
+// Parametros: nenhum
+// Retorno: nenhum
+void pesquisaApresentaCadastro(void)
 {
-    int flag = 0;
-    Cadastro matricula;
-    FILE *arq;
+    int codigoCurso, matriculaAluno, posCadastro;
+    Cadastro cadastro;
     
-    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
+    codigoCurso = leValidaInteiro("Informe o codigo do curso", "Codigo", CODIGO_MIN, CODIGO_MAX);
+    
+    matriculaAluno = leValidaInteiro("Informe a matricula do aluno", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
+    
+    posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
+    
+    if(posCadastro)
     {
-        while(!feof(arq))
+        if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
         {
-            if(fread(&matricula, sizeof(Cadastro), 1, arq))
-            {
-                if(matricula.matriculaAluno == matriculaAluno)
-                {
-                    flag = 1;
-                    break;
-                }
-            }   
+            apresentaCadastro(cadastro);
         }
-        fclose(arq);   
+        else
+        {
+            printf("O cadastro nao pode ser recuperado!");
+        }
     }
-    
-    return flag;
+    else
+    {
+        printf("O cadastro nao foi encontrado!");
+    }
+}
+
+//  Objetivo: Apresentar os dados de um cadastro
+//  Paramentos: O cadastro
+//  Retorno: Nenhum
+void apresentaCadastro(Cadastro cadastro)
+{
+    gotoxy(1,1);
+    printf("Matricula Aluno: %d\n", cadastro.matriculaAluno);
+    printf("Codigo do Curso: %d\n", cadastro.codigoCurso);
+    printf("Situacao Financeira: %s\n", cadastro.situacaoPagamento == '1' ? "Regular" : (cadastro.situacaoPagamento == '2' ? "Atrasado" : "Totalmente Pago" ));
+    printf("Situacao do Aluno: %s", cadastro.situacaoAluno == '1' ? "Cursando" : "Concluido");
 }
 
 //***********************************************************************************************************************
-// Objetivo: Verificar se um curso tem um aluno cadastrado
-// Parametros: Codigo do curso
-// Retorno: 1 se curso tem aluno cadastrado, 0 se nao tem
-int verificaCursoAlunoCadastrado(int codigoCurso)
+//  Objetivo: Apresentar todos os alunos matriculados em todos os cursos
+//  Parametros: Nenhum
+//  Retorno: Nenhum
+void apresentarTodosAlunosCadastrados(void)
 {
-    int flag = 0;
-    Cadastro matricula;
     FILE *arq;
-    
+    Cadastro *matriculas, matricula, matriculaAux;
+    int qtdeMatriculas, contador, auxiliar, flag = 0;
+    char situacaoAluno[9], situacaoPagamento[16];
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
-        while(!feof(arq))
+        if(!fseek(arq, 0, SEEK_END))
         {
-            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            qtdeMatriculas = ftell(arq)/sizeof(Cadastro);
+            matriculas = (Cadastro*) malloc(sizeof(Cadastro)*qtdeMatriculas);
+            if(matriculas != NULL)
             {
-                if(matricula.codigoCurso == codigoCurso)
+                rewind(arq);
+                if(fread(matriculas, sizeof(Cadastro), qtdeMatriculas, arq) != qtdeMatriculas)
                 {
+                    puts("Nao consegui ler do arquivo!");
+                    free(matriculas);
+                    matriculas = NULL;
                     flag = 1;
-                    break;
                 }
-            }   
-        }
-        fclose(arq);   
-    }
-    
-    return flag;
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Verificar se o aluno ja esta cadastrado em um curso
-//  Parametros: O codigo do curso e a matricula do Aluno
-//  Retorno: Flag = 1 se o aluno ja estiver cadastrado ou flag = 0 se o aluno nao estiver cadastrado
-int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula)
-{
-    int flag = 0;
-    FILE *arq;
-    Cadastro matricula;
-    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
-    {
-        while(!feof(arq))
-        {
-            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            }
+            else
             {
-                if(matricula.matriculaAluno == alunoMatricula)
-                {
-                    if(matricula.codigoCurso == codCurso)
-                    {
-                        flag =1;
-                        break;
-                    }
-                }
+                puts("Nao foi possivel alocar a memoria!");
+                flag = 1;   
             }
         }
         fclose(arq);
     }
-    return flag;
+    else
+        flag = 1;
+    if(flag)
+        puts("Houve um erro, os dados dos alunos nao foram alocados!");
+    else
+    {
+        
+        for(contador = 0; contador < qtdeMatriculas-1; contador++)
+        {
+            for(auxiliar = contador+1; auxiliar < qtdeMatriculas; auxiliar++)
+            {
+                if(matriculas[contador].codigoCurso < matriculas[auxiliar].codigoCurso)
+                {
+                    matriculaAux = matriculas[auxiliar];
+                    matriculas[auxiliar] = matriculas[contador];                
+                    matriculas[contador] = matriculaAux;
+                }   
+            }   
+        }
+        printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
+        for(contador = 0; contador < qtdeMatriculas; contador++)
+        {
+            if(matriculas[contador].situacaoAluno == '1')
+                        sprintf(situacaoAluno,"Cursando");          
+                    else
+                        sprintf(situacaoAluno,"Concluiu");
+                    switch(matriculas[contador].situacaoPagamento)
+                    {
+                        case '1':
+                            sprintf(situacaoPagamento,"Regular");
+                            break;
+                        case '2':
+                            sprintf(situacaoPagamento,"Atrasada");
+                            break;
+                        case '3':
+                            sprintf(situacaoPagamento,"Totalmente paga");
+                            break;
+                    }
+                    printf("\n%-18d%-19d%-19s%-16s", 
+                           matriculas[contador].codigoCurso, matriculas[contador].matriculaAluno, situacaoAluno, situacaoPagamento);
+        }          
+    }
+    if(qtdeMatriculas == 0)
+    {
+        puts("Nao ha nenhum aluno matriculado neste curso!");
+        getch();
+    }
 }
 
 //***********************************************************************************************************************
 //  Objetivo: Apresentar os dados para a pesquisa de alunos matriculados em um curso
 //  Parametros: Nenhum
 //  Retorno: Nenhum
-void apresentaAlunosMatriculadosEmUmCurso()
+void apresentaAlunosMatriculadosEmUmCurso(void)
 {
     Aluno *alunos;
     int codigoCurso, indicador, qtdAlunos;
@@ -305,80 +524,91 @@ Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Excluir uma matricula de um aluno em um curso
-//  Parametros: Nenhum
-//  Retorno: Nenhum
-void excluiMatriculaAlunoEmUmCurso()
+// Objetivo: Verificar se um aluno esta cadastrado em um curso
+// Parametros: Matricula do aluno
+// Retorno: 1 se aluno esta cadastrado, 0 se nao esta
+int verificaAlunoCadastrado(int matriculaAluno)
 {
-    int codigoCurso, matriculaASerExcluida, qtdAlunos;
+    int flag = 0;
+    Cadastro matricula;
     FILE *arq;
-    Aluno *alunos;
     
-    if(verificaArquivoVazio(ARQ_CURSOS))
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
-        printf("Nao existem cursos cadastrados!");
-        getch();
-        return;
+        while(!feof(arq))
+        {
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            {
+                if(matricula.matriculaAluno == matriculaAluno)
+                {
+                    flag = 1;
+                    break;
+                }
+            }   
+        }
+        fclose(arq);   
     }
     
-    do
-    {
-        codigoCurso = apresentaTodosCursos();
-    }
-    while(codigoCurso == 0);
-    
-    if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdAlunos, 3)) != NULL)
-    {
-        matriculaASerExcluida = apresentaDadosAlunos(alunos, qtdAlunos);
-        excluiMatriculaAluno(matriculaASerExcluida, codigoCurso);
-        free(alunos);
-    }
-    else
-    {
-        puts("Nao ha nenhum aluno cadastrado no curso!");
-    }
+    return flag;
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Excluir uma matricula do arquivo
-//  Parametros: A posicao da matricula no Arquivo
-//  Retorno: Nenhum
-void excluiMatriculaAluno(int matriculaAExcluir, int codCurso)
+// Objetivo: Verificar se um curso tem um aluno cadastrado
+// Parametros: Codigo do curso
+// Retorno: 1 se curso tem aluno cadastrado, 0 se nao tem
+int verificaCursoAlunoCadastrado(int codigoCurso)
 {
-    FILE *arq, *arqTemp;
-    int qtdeCopiados;
+    int flag = 0;
     Cadastro matricula;
-
-    if(matriculaAExcluir && codCurso)
+    FILE *arq;
+    
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
-        if((arq = fopen(ARQ_MATRICULAS, "rb")) != NULL )
+        while(!feof(arq))
         {
-            if((arqTemp = fopen(ARQ_MATRICULAS_TEMP, "wb")) != NULL)
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
             {
-                while(!feof(arq))
+                if(matricula.codigoCurso == codigoCurso)
                 {
-                    if(fread(&matricula, sizeof(Cadastro), 1, arq))
+                    flag = 1;
+                    break;
+                }
+            }   
+        }
+        fclose(arq);   
+    }
+    
+    return flag;
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Verificar se o aluno ja esta cadastrado em um curso
+//  Parametros: O codigo do curso e a matricula do Aluno
+//  Retorno: Flag = 1 se o aluno ja estiver cadastrado ou flag = 0 se o aluno nao estiver cadastrado
+int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula)
+{
+    int flag = 0;
+    FILE *arq;
+    Cadastro matricula;
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            {
+                if(matricula.matriculaAluno == alunoMatricula)
+                {
+                    if(matricula.codigoCurso == codCurso)
                     {
-                        qtdeCopiados++;
-                        if(matriculaAExcluir != matricula.matriculaAluno || codCurso!= matricula.codigoCurso)
-                            fwrite(&matricula, sizeof(Cadastro), 1, arqTemp);
+                        flag =1;
+                        break;
                     }
                 }
             }
-            fclose(arqTemp);
-            fclose(arq);
         }
-
-        if(!remove(ARQ_MATRICULAS))
-        {
-            if(!rename(ARQ_MATRICULAS_TEMP, ARQ_MATRICULAS))
-                printf("A matricula foi excluida com sucesso!");
-            else
-                printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
-        }
-        else
-            printf("O arquivo antigo nao pode ser excluido, logo a matricula nao foi excluida!");
+        fclose(arq);
     }
+    return flag;
 }
 
 //***********************************************************************************************************************
@@ -414,234 +644,4 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
     if(!flag)
         posMatricula = 0;
     return posMatricula;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Pesquisar um cadastro especifico
-// Parametros: nenhum
-// Retorno: nenhum
-void pesquisaApresentaCadastro()
-{
-    int codigoCurso, matriculaAluno, posCadastro;
-    Cadastro cadastro;
-    
-    codigoCurso = leValidaInteiro("Informe o codigo do curso", "Codigo", CODIGO_MIN, CODIGO_MAX);
-    
-    matriculaAluno = leValidaInteiro("Informe a matricula do aluno", "Matricula", MATRICULA_MIN, MATRICULA_MAX);
-    
-    posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
-    
-    if(posCadastro)
-    {
-        if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-        {
-            apresentaCadastro(cadastro);
-        }
-        else
-        {
-            printf("O cadastro nao pode ser recuperado!");
-        }
-    }
-    else
-    {
-        printf("O cadastro nao foi encontrado!");
-    }
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Apresentar todos os alunos matriculados em todos os cursos
-//  Parametros: Nenhum
-//  Retorno: Nenhum
-void apresentarTodosAlunosCadastrados()
-{
-    FILE *arq;
-    Cadastro *matriculas, matricula, matriculaAux;
-    int qtdeMatriculas, contador, auxiliar, flag = 0;
-    char situacaoAluno[9], situacaoPagamento[16];
-    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
-    {
-        if(!fseek(arq, 0, SEEK_END))
-        {
-            qtdeMatriculas = ftell(arq)/sizeof(Cadastro);
-            matriculas = (Cadastro*) malloc(sizeof(Cadastro)*qtdeMatriculas);
-            if(matriculas != NULL)
-            {
-                rewind(arq);
-                if(fread(matriculas, sizeof(Cadastro), qtdeMatriculas, arq) != qtdeMatriculas)
-                {
-                    puts("Nao consegui ler do arquivo!");
-                    free(matriculas);
-                    matriculas = NULL;
-                    flag = 1;
-                }
-            }
-            else
-            {
-                puts("Nao foi possivel alocar a memoria!");
-                flag = 1;   
-            }
-        }
-        fclose(arq);
-    }
-    else
-        flag = 1;
-    if(flag)
-        puts("Houve um erro, os dados dos alunos nao foram alocados!");
-    else
-    {
-        
-        for(contador = 0; contador < qtdeMatriculas-1; contador++)
-        {
-            for(auxiliar = contador+1; auxiliar < qtdeMatriculas; auxiliar++)
-            {
-                if(matriculas[contador].codigoCurso < matriculas[auxiliar].codigoCurso)
-                {
-                    matriculaAux = matriculas[auxiliar];
-                    matriculas[auxiliar] = matriculas[contador];                
-                    matriculas[contador] = matriculaAux;
-                }   
-            }   
-        }
-        printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
-        for(contador = 0; contador < qtdeMatriculas; contador++)
-        {
-            if(matriculas[contador].situacaoAluno == '1')
-                        sprintf(situacaoAluno,"Cursando");          
-                    else
-                        sprintf(situacaoAluno,"Concluiu");
-                    switch(matriculas[contador].situacaoPagamento)
-                    {
-                        case '1':
-                            sprintf(situacaoPagamento,"Regular");
-                            break;
-                        case '2':
-                            sprintf(situacaoPagamento,"Atrasada");
-                            break;
-                        case '3':
-                            sprintf(situacaoPagamento,"Totalmente paga");
-                            break;
-                    }
-                    printf("\n%-18d%-19d%-19s%-16s", 
-                           matriculas[contador].codigoCurso, matriculas[contador].matriculaAluno, situacaoAluno, situacaoPagamento);
-        }          
-    }
-    if(qtdeMatriculas == 0)
-    {
-        puts("Nao ha nenhum aluno matriculado neste curso!");
-        getch();
-    }
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Alterar dados do cadastro
-//  Parametros: Nenhum
-//  Retorno: Nenhum
-void alteraCadastro()
-{
-    FILE *arq;
-    Cadastro cadastro;
-    Aluno *alunos;
-    int flag = 0, codigoCurso, qtdeAlunos, matriculaAluno, opcao, opcaoSituacao, posCadastro, escolha;
-    char *opcoesSituacaoAluno[] = {"Cursando",
-                                   "Concluiu"};
-                                   
-    char *opcaoSituacaoPagamento[] = {"Regular",
-                                      "Atrasada",
-                                      "Totalmente Paga"};
-                                      
-    char *opcoesAlteracao[] = {"Alterar Situacao aluno",
-                               "Alterar Situacao da mensalidade",
-                               "Salvar alteracoes",
-                               "Cancelar Mudancas"};
-
-    if(verificaArquivoVazio(ARQ_CURSOS))
-    {
-        printf("Nao existem cursos cadastrados!");
-        return;
-    }
-    
-    do
-    {
-        codigoCurso = apresentaTodosCursos();
-    }
-    while(codigoCurso == 0);
-    
-    if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdeAlunos, 3)) != NULL)
-    {
-        do
-        {
-            matriculaAluno = apresentaDadosAlunos(alunos, qtdeAlunos);
-        }
-        while(matriculaAluno == 0);
-        posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
-        if(posCadastro)
-        {
-            if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-            {
-                do
-                {
-                    clrscr();
-                    apresentaCadastro(cadastro);
-                    opcao = menuVertical("O QUE DESEJA ALTERAR?", opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
-                    
-                    switch(opcao)
-                    {
-                        case 1:
-                            do
-                            {
-                                opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
-                            }
-                            while(!opcaoSituacao);
-                            
-                            cadastro.situacaoAluno = opcaoSituacao + '0';
-                            break; 
-                        case 2:
-                            do
-                            {
-                                opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
-                            }
-                            while(!opcaoSituacao);
-                            
-                            cadastro.situacaoPagamento = opcaoSituacao + '0';
-                            break;
-                    }
-                }
-                while(opcao == 1 || opcao == 2);
-                if(opcao == 3)
-                {
-                    escolha = confirmaEscolha(55,5, "Voce tem certeza?");
-                    if(escolha == 1)
-                    {
-                        if(alteraDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-                            printf("A matricula foi alterada com sucesso!");
-                        else
-                            printf("A matricula nao foi alterada!");
-                    }
-                    else
-                        printf("A matricula nao foi alterada!");
-                }
-                else
-                    printf("A matricula nao foi alterada!");
-            }
-            else
-                puts("A matricula nao pode ser recuperada!");
-        }
-        free(alunos);
-    }
-    else
-    {
-        puts("Nao ha nenhum aluno cadastrado neste curso ate o momento!");
-    }
-}
-
-//  Objetivo: Apresentar os dados de um cadastro
-//  Paramentos: O cadastro
-//  Retorno: Nenhum
-void apresentaCadastro(Cadastro cadastro)
-{
-    gotoxy(1,1);
-    printf("Matricula Aluno: %d\n", cadastro.matriculaAluno);
-    printf("Codigo do Curso: %d\n", cadastro.codigoCurso);
-    printf("Situacao Financeira: %s\n", cadastro.situacaoPagamento == '1' ? "Regular" : (cadastro.situacaoPagamento == '2' ? "Atrasado" : "Totalmente Pago" ));
-    printf("Situacao do Aluno: %s", cadastro.situacaoAluno == '1' ? "Cursando" : "Concluido");
 }

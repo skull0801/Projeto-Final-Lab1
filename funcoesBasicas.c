@@ -476,6 +476,53 @@ int obtemDadoArquivo(const char *nomeArquivo, void *dado, int tamanhoDado, int p
 }
 
 //***********************************************************************************************************************
+// Objetivo: Obter todos os dados de arquivo
+// Parametros: Nome do arquivo, Tamanho do dado, Referencia a quantidade de dados (valor sera dado pela funcao)
+// Retorno: Ponteiro para memoria alocada na qual os dados estao
+void * obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados)
+{
+    FILE *arq;
+    void *dados = NULL;
+    
+    if((arq = fopen(nomeArquivo, "rb")) != NULL)
+    {
+        if(!fseek(arq, 0, SEEK_END))
+        {
+            *qtdDados = (ftell(arq)/tamanhoDado);
+            
+            if(*qtdDados>0)
+            {
+                dados = malloc(tamanhoDado*(*qtdDados));
+                
+                if(dados != NULL)
+                {
+                    rewind(arq);
+                    if(fread(dados, tamanhoDado, *qtdDados, arq) != *qtdDados)
+                    {
+                        printf("Erro ao recuperar os dados!");
+                        free(dados);
+                        dados = NULL;
+                        *qtdDados = 0;
+                    }
+                }
+                else
+                    printf("Erro ao alocar memoria para dados!");
+            }
+            else
+                printf("Nao existem dados no arquivo!");
+        }
+        else
+            printf("Erro ao obter quantidade de dados.");
+            
+        fclose(arq);
+    }
+    else
+        printf("Erro ao abrir o arquivo de dados.");
+        
+    return dados;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Verifica se um arquivo esta vazio
 // Parametros: Nome do Arquivo
 // Retorno: 1 se esta vazio ou nao existe e 0 se existe e nao esta vazio

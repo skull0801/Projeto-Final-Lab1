@@ -24,6 +24,7 @@ int gravaDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado)
 int alteraDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado, int posDado);
 int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado);
 int obtemDadoArquivo(const char *nomeArquivo, void *dado, int tamanhoDado, int posDado);
+void * obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados);
 int verificaArquivoVazio(char *nomeArquivo);
 
 #endif
