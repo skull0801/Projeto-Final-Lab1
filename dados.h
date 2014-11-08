@@ -7,8 +7,8 @@
 #define TAM_CPF 12
 #define TAM_TEXTO_TABELA 75
 #define LINHAS_TABELA 15
-#define COLUNA_TABELA_ALUNOS 1
 #define LINHA_TABELA_ALUNOS 5
+#define COLUNA_TABELA_ALUNOS 1
 #define CODIGO_MIN 1001
 #define CODIGO_MAX 99999
 #define MATRICULA_MIN 1
@@ -19,11 +19,10 @@
 #define MENSALIDADE_MAX 10000.0
 #define MIN_IDADE 15
 #define MAX_IDADE 150
+#define ARQ_TEMP "temp.b"
 #define ARQ_ALUNOS "alunos.b"
 #define ARQ_CURSOS "cursos.b"
-#define ARQ_TEMP "temp.b"
 #define ARQ_MATRICULAS "matriculas.b"
-#define ARQ_MATRICULAS_TEMP "matriTemp.b"
 
 // Estruturas
 // Data

@@ -1,6 +1,6 @@
 // Alunos : Marcus Vinicius Campos Fonseca e Lucas Lima da Silva
-// Matriculas: UC14101868, UC14102446
-// Implementacao: de algumas das funcionalidades do projeto final
+// Matriculas: UC14LINHA_MENU1868, UC14LINHA_MENU2446
+// Objetivo: Criar um sistema para facilitar o gerenciamento de alunos e cursos de uma escola de informatica
 
 #include <stdio.h>
 #include <conio.c>
@@ -11,10 +11,14 @@
 #include "funcoesBasicas.h"
 #include "funcoesCadastro.h"
 
+#define LINHA_MENU 10
+#define COLUNA_MENU 5
+
 int main(void)
 {
     // Declaracoes
-    int opcao, subOpcao, subSubOpcao;
+    int opcao = 1, subOpcao, subSubOpcao;
+    
     char *opcoesMenuPrincipal[] = {"Alunos",
                                    "Cursos",
                                    "Matriculas",
@@ -62,13 +66,14 @@ int main(void)
     // Instrucoes
     do
     {
-        opcao = menuVertical("MENU PRINCIPAL", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+        opcao = menuVertical("ESCOLA DE INFORMATICA", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, opcao, PRETO, CINZA_C);
+        subOpcao = 1;
         switch(opcao)
         {
             case 1:
                 do
                 {
-                    subOpcao = menuVertical("MENU ALUNOS", opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU ALUNOS", opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
@@ -94,7 +99,7 @@ int main(void)
             case 2:
                 do
                 {
-                    subOpcao = menuVertical("MENU CURSOS", opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU CURSOS", opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
@@ -120,38 +125,26 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical("MENU CADASTRO", opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU CADASTRO", opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
                             cadastraAlunoEmCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 2:
                             alteraCadastro();
-                            getch();
-                            clrscr();
                             break;
                         case 3:
                             excluiMatriculaAlunoEmUmCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 4:
                             pesquisaApresentaCadastro();
-                            getch();
-                            clrscr();
                             break;
                         case 5:
                             apresentaAlunosMatriculadosEmUmCurso();
-                            getch();
-                            clrscr();
                             break;
                         case 6:
                             apresentarTodosAlunosCadastrados();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }
@@ -161,42 +154,33 @@ int main(void)
             case 4:
                 do
                 {
-                    subOpcao = menuVertical("MENU RELATORIOS", opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU RELATORIOS", opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
+                    subSubOpcao = 1;
                     switch(subOpcao)
                     {
                         case 1:
                             do
                             {
-                                subSubOpcao = menuVertical("MENU RELATORIO 1", opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                                subSubOpcao = menuVertical("MENU RELATORIO 1", opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subSubOpcao, PRETO, CINZA_C);
                                 switch(subSubOpcao)
                                 {
                                     case 1:
                                         pesquisaApresentaAlunoMatricula();
-                                        clrscr();
                                         break;
                                     case 2:
                                         pesquisaApresentaCursoCodigo();
-                                        getch();
-                                        clrscr();
                                         break;
                                     case 3:
                                         pesquisaApresentaCadastro();
-                                        getch();
-                                        clrscr();
                                         break;
                                     case 4:
                                         apresentaTodosAlunos();
-                                        clrscr();
                                         break;
                                     case 5:
                                         apresentaTodosCursos();
-                                        getch();
-                                        clrscr();
                                         break;
                                     case 6:
                                         apresentarTodosAlunosCadastrados();
-                                        getch();
-                                        clrscr();
                                         break;
                                 }
                             }
@@ -204,16 +188,12 @@ int main(void)
                             break;
                         case 2:
                             pesquisaApresentaAlunoNome();
-                            clrscr();
                             break;
                         case 3:
                             apresentaAlunosMatriculadosEmUmCurso();
-                            clrscr();
                             break;
                         case 4:
                             pesquisaApresentaCursoNome();
-                            getch();
-                            clrscr();
                             break;
                     }
                 }

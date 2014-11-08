@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include "cores.h"
+#include "dados.h"
 #include "funcoesBasicas.h"
 
 //***********************************************************************************************************************
@@ -414,9 +415,9 @@ int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
     int qtdCopiados = 0, retorno = 0, flag = 0;
     void *dado;
     
-    if((arq = fopen(nomeArquivo,"rb")) != NULL)
+    if((arq = fopen(nomeArquivo, "rb")) != NULL)
     {
-        if((arqTemp = fopen(ARQ_TEMP,"wb")) != NULL)
+        if((arqTemp = fopen(ARQ_TEMP, "wb")) != NULL)
         {
             dado = malloc(tamanhoDado);
             while(!feof(arq))
@@ -435,7 +436,7 @@ int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
             
             if(remove(nomeArquivo) == 0)
             {
-                if(rename(ARQ_TEMP,nomeArquivo) == 0)
+                if(rename(ARQ_TEMP, nomeArquivo) == 0)
                     retorno = 1;
             }
             else

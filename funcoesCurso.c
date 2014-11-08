@@ -85,7 +85,7 @@ void alteraCurso(void)
                         curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
                         break;
                     case 3:
-                        curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN,CARGA_HORARIA_MAX);
+                        curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
                         break;
                 }
             }
@@ -94,7 +94,7 @@ void alteraCurso(void)
             if(opcao == 4)
             {
                 confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
-                gotoxy(1,8);
+                gotoxy(1,6);
                 if(confirmacao == 1)
                 {
                     if(alteraDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso), posCurso))
@@ -169,7 +169,7 @@ void pesquisaCurso(void)
                               "Pesquisa por Nome",
                               "Voltar"};
     
-    opcao = menuVertical("O QUE DESEJA FAZER?", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    opcao = menuVertical("Pesquisa de um Curso", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
     clrscr();
     
     switch(opcao)
@@ -187,11 +187,11 @@ void pesquisaCurso(void)
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
 //  Parametros: nome a ser pesquisado
 //  Retorno: nenhum
-void pesquisaApresentaCursoNome()
+void pesquisaApresentaCursoNome(void)
 {
     FILE *arq;
     Curso curso, *cursos = NULL, *cursosAux;
-    int qtdLidos = 0, contador;
+    int qtdLidos = 0, flag = 0;
     char copiaNome[TAM_NOME_CURSO], nomeBusca[TAM_NOME_CURSO];
     
     leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
@@ -216,25 +216,37 @@ void pesquisaApresentaCursoNome()
                         qtdLidos++;
                     }
                     else
+                    {
+                        printf("Erro ao alocar memoria para cursos!");
+                        flag = 1;
                         break;
+                    }
                 }
             }
-            else
-                break;
         }
         fclose(arq);
     }
     
-    if(qtdLidos)
+    if(!flag)
     {
-        apresentaDadosCursos(cursos, qtdLidos);
-        free(cursos);
+        if(qtdLidos)
+        {
+            apresentaDadosCursos(cursos, qtdLidos);
+            free(cursos);
+        }
+        else
+        {
+            puts("Nao houve nenhuma correspondencia!");
+            getch();
+        }
     }
     else
     {
-        clrscr();
-        puts("Nao houve nenhuma correspondencia!");   
+        if(qtdLidos)
+            free(cursos);
+        getch();
     }
+    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -253,26 +265,17 @@ void pesquisaApresentaCursoCodigo(void)
     
     if(posCurso)
     {
-        if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+        if(obtemDadoArquivo(ARQ_CURSOS, &curso, sizeof(Curso), posCurso))
         {
-            if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
-            {
-                if(fread(&curso, sizeof(Curso), 1, arq))
-                {
-                    apresentaCurso(curso);
-                }
-                else
-                    printf("O curso nao pode ser lido!");
-            }
-            else
-                printf("O curso nao pode ser encontrado!");
-            fclose(arq);
+            apresentaCurso(curso);
         }
         else
-            printf("O arquivo de cursos nao pode ser aberto!");
+            printf("O curso nao pode ser recuperado!");
     }
     else
         printf("O curso nao foi encontrado!");
+    getch();
+    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -287,6 +290,7 @@ int pesquisaCursoCodigo(int codCursoBusca)
     if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
     {
         while(!feof(arq))
+        {
             if(fread(&curso, sizeof(Curso), 1, arq))
             {
                 pos++;
@@ -296,6 +300,7 @@ int pesquisaCursoCodigo(int codCursoBusca)
                     break;
                 }
             }
+        }
         fclose(arq);
     }
     if(!flag)
@@ -335,7 +340,7 @@ int apresentaTodosCursos(void)
 //***********************************************************************************************************************
 // Objetivo: Apresentar os cursos fornecidos
 // Parametros: Ponteiro para cursos (ja alocados), quantidade de cursos
-// Retorno: Matricula do cur selecionado (0 se nenhum foi selecionado)   (NAO DESALOCA MEMORIA)
+// Retorno: Matricula do curso selecionado (0 se nenhum foi selecionado)   (NAO DESALOCA MEMORIA)
 int apresentaDadosCursos(Curso *cursos, int qtdCursos)
 {
     int selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
@@ -437,7 +442,7 @@ int comparaCursosNome(const void *p1, const void *p2)
 //  Objetivo: Encontrar o proximo codigo valido de um curso
 //  Parametros: Nenhum
 //  Retorno: proximo codigo valido
-int achaProximoCodCurso()
+int achaProximoCodCurso(void)
 {
     int codigo = CODIGO_MIN, qtdCursos = 0;
     Curso *cursos;

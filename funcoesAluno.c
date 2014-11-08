@@ -147,7 +147,7 @@ void alteraAluno(void)
 // Objetivo: Ler o codigo de um aluno, buscar pelo mesmo, e confirmar se o usuario deseja excluir o aluno, caso queira, excluir
 // Parametros: Nenhum
 // Retorno: Nenhum
-void excluiAluno()
+void excluiAluno(void)
 {
     Aluno aluno;
     int posAluno = 0, matricula, confirmacao;
@@ -249,7 +249,7 @@ int pesquisaAlunoMatricula(int matriculaBusca)
 //  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
 //  Parametros: nenhum
 //  Retorno: nenhum
-void pesquisaApresentaAlunoNome()
+void pesquisaApresentaAlunoNome(void)
 {
     FILE *arq;
     Aluno aluno, *alunos = NULL, *alunosAux;

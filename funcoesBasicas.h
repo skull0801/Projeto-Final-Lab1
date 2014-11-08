@@ -1,7 +1,6 @@
 // Prototipos para funcoes basicas
 #ifndef FUNCOESBASICAS_H
 #define FUNCOESBASICAS_H
-#include "dados.h"
 
 // Leitura de dados
 int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax);
