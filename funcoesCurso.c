@@ -185,8 +185,9 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
             {
                 linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
                 if(linhasTabela[contador] != NULL)
-                {
-                    sprintf(linhasTabela[contador], "%06d - %-25.20s - %5dh", cursos[contador].codigo, cursos[contador].nome, cursos[contador].cargaHoraria);
+                    {
+                    	sprintf(linhasTabela[contador], "%06d - %-25.20s -  %04dh - %-10.2f",
+                        cursos[contador].codigo, cursos[contador].nome, cursos[contador].cargaHoraria, cursos[contador].mensalidade);
                     qtdLinhasAlocada++;
                 }
                 else
