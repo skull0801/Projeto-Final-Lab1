@@ -152,7 +152,7 @@ int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra
     int tamMaiorOpcao; // Registra o tamanho da maior opcao escrita
     int selecao; // Registra o item selecionado no momento
     int ultimaSelecao; // Registra a ultima selecao do menu
-    int colunaTitulo, linhaTitulo; // Registram a posicao do titulo do menu
+    int colunaTitulo, linhaTitulo, tamTitulo; // Registram a posicao do titulo do menu
     int offset = 2; // Distancia entre moldura e texto do menu
     
     if(linha == 1 && moldura) // Verifica se necessita moldura e comeca na linha 1, se sim move a linha por 1 para nao causar erros ao fazer moldura
@@ -197,8 +197,10 @@ int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra
 
     // Escreve titulo do menu
     colunaTitulo = coluna+(tamMaiorOpcao/2)-(strlen(titulo)/2);
+    colunaTitulo = colunaTitulo > 0 ? colunaTitulo : 0;
+    tamTitulo = strlen(titulo)+colunaTitulo > 80 ? 80-colunaTitulo : strlen(titulo);
     gotoxy(colunaTitulo, linhaTitulo);
-    printf(titulo);
+    printf("%-*.*s", tamTitulo, tamTitulo, titulo);
     
     do
     {
