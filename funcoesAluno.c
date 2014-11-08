@@ -16,7 +16,12 @@ void cadastraAluno(void)
 {
     Aluno aluno;
     if(leDadosAluno(&aluno))
-        gravaDadosAluno(&aluno);
+    {
+        if(gravaDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno)))
+            printf("O aluno foi salvo com sucesso!");
+        else
+            printf("O aluno nao pode ser salvo!");
+    }
     else
         printf("\nO aluno nao foi cadastrado!");
     getch();
@@ -73,25 +78,6 @@ int leDadosAluno(Aluno *aluno)
 }
 
 //***********************************************************************************************************************
-// Objetivo: Gravar os dados de um aluno
-// Parametros: Referencia ao aluno
-// Retorno: nenhum
-void gravaDadosAluno(Aluno *aluno)
-{
-    FILE *arq;
-    if((arq = fopen(ARQ_ALUNOS,"ab")) != NULL)
-    {
-        if(fwrite(aluno, sizeof(Aluno), 1, arq))
-            puts("Os dados foram gravados com sucesso!");
-        else
-            puts("Os dados nao puderam ser gravados!");
-        fclose(arq);
-    }
-    else
-        puts("Os dados nao puderam ser gravados!");
-}
-
-//***********************************************************************************************************************
 // Objetivo: Recuperar um aluno de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudancas devem ser salvas
 // Parametros: nenhum
 // Retorno: nenhum
@@ -112,7 +98,7 @@ void alteraAluno(void)
     
     if(posAluno)
     {
-        if(obtemAlunoArquivo(&aluno, posAluno))
+        if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
             do
             {
@@ -173,7 +159,7 @@ void excluiAluno()
     
     if(posAluno)
     {
-        if(obtemAlunoArquivo(&aluno, posAluno))
+        if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
             apresentaAluno(aluno);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
@@ -454,7 +440,7 @@ void pesquisaApresentaAlunoMatricula(void)
     
     posAluno = pesquisaAlunoMatricula(matricula);
     
-    if(obtemAlunoArquivo(&aluno, posAluno))
+    if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
     {
         apresentaAluno(aluno);
     }
@@ -509,24 +495,6 @@ Aluno * obtemDadosAlunosArquivo(int * qtdAlunos)
         printf("Erro ao abrir o arquivo de alunos.");
         
     return alunos;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Encontrar um aluno no arquivo
-// Parametros: Ponteiro para aluno, e posicao do aluno no arquivo
-// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
-int obtemAlunoArquivo(Aluno *aluno, int posAluno)
-{
-    FILE *arq;
-    int flag = 0;
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        if(!fseek(arq, sizeof(Aluno)*(posAluno-1), SEEK_SET))
-            if(fread(aluno, sizeof(Aluno), 1, arq))
-                flag = 1;
-        fclose(arq);
-    }
-    return flag;
 }
 
 //***********************************************************************************************************************

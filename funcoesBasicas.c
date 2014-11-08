@@ -360,8 +360,26 @@ int confirmaEscolha(int coluna, int linha, char *titulo)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Gravar dado em arquivo
+// Parametros: Nome do arquivo, Ponteiro void para o dado, Tamando do dado
+// Retorno: 1 se o dado foi gravado, 0 se o dado nao foi gravado
+int gravaDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado)
+{
+    FILE *arq;
+    int retorno = 0;
+
+    if((arq = fopen(nomeArquivo,"ab")) != NULL)
+    {
+        if(fwrite(dado, tamanhoDado, 1, arq) == 1)
+            retorno = 1;
+        fclose(arq);
+    }
+    return retorno;
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Alterar os dados de um arquivo em uma posicao
-//  Parametros: Nome do arquivo, Ponteiro void constante para o dado, Tamanho do dado, Posicao do dado no arquivo
+//  Parametros: Nome do arquivo, Ponteiro void para o dado, Tamanho do dado, Posicao do dado no arquivo
 //  Retorno: 1 se o dado foi alterado, 0 se o dado nao foi alterado
 int alteraDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado, int posDado)
 {
@@ -432,6 +450,29 @@ int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
     else
         printf("O arquivo nao pode ser aberto!");
     return retorno;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Obter um dado de um arquivo em certa posicao
+// Parametros: Nome do arquivo, ponteiro para aonde os dados serao guardados, tamanho do dado, posicao do dado no arquivo
+// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
+int obtemDadoArquivo(const char *nomeArquivo, void *dado, int tamanhoDado, int posDado)
+{
+    FILE *arq;
+    int flag = 0;
+
+    if((arq = fopen(nomeArquivo, "rb")) != NULL)
+    {
+        if(!fseek(arq, tamanhoDado*(posDado-1), 0))
+        {
+            if(fread(dado, tamanhoDado, 1, arq))
+            {
+                flag = 1;
+            }
+        }
+        fclose(arq);
+    }
+    return flag;
 }
 
 //***********************************************************************************************************************

@@ -16,7 +16,14 @@ void cadastraCurso(void)
     Curso curso;
     leDadosCurso(&curso);
     if(curso.codigo != 0)
-		gravaDadosCurso(&curso);
+    {
+		if(gravaDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso)))
+            printf("O curso foi salvo com sucesso!");
+        else
+            printf("O curso nao pode ser salvo!");
+    }
+    else
+        printf("O curso nao pode ser cadastrado!");
     getch();
     clrscr();
 }
@@ -41,23 +48,6 @@ void leDadosCurso(Curso *curso)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Gravar os dados de um curso num arquivo
-//  Parametros: Referencia a um curso
-//  Retorno: Nenhum
-void gravaDadosCurso(Curso *curso)
-{
-    FILE *arq;
-    if((arq = fopen(ARQ_CURSOS,"ab")) != NULL)
-    {
-        if(fwrite(curso, sizeof(Curso), 1, arq))
-            puts("Os dados foram gravados com sucesso!");
-        else
-            puts("Os dados nao puderam ser gravados!");
-        fclose(arq);
-    }
-}
-
-//***********************************************************************************************************************
 // Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudancas devem ser salvas
 // Parametros: nenhum
 // Retorno: nenhum
@@ -79,7 +69,7 @@ void alteraCurso(void)
     
     if(posCurso)
     {
-        if(obtemCursoArquivo(&curso, posCurso))
+        if(obtemDadoArquivo(ARQ_CURSOS, (void *) &curso, sizeof(Curso), posCurso))
         {
             do
             {
@@ -142,7 +132,7 @@ void excluiCurso(void)
     
     if(posCurso)
     {
-        if(obtemCursoArquivo(&curso, posCurso))
+        if(obtemDadoArquivo(ARQ_CURSOS, (void *) &curso, sizeof(Curso), posCurso))
         {
             apresentaCurso(curso);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
@@ -417,28 +407,6 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
         getch();
     }
     return codigoSelecionado;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Encontrar um curso no arquivo
-// Parametros: Ponteiro para curso, e posicao do curso no arquivo
-// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
-int obtemCursoArquivo(Curso *curso, int posCurso)
-{
-    FILE *arq;
-    int flag = 0;
-    if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
-    {
-        if(!fseek(arq, sizeof(Curso)*(posCurso-1), 0))
-        {
-            if(fread(curso, sizeof(Curso), 1, arq))
-            {
-                flag = 1;
-            }
-        }
-        fclose(arq);
-    }
-    return flag;
 }
 
 //***********************************************************************************************************************

@@ -56,7 +56,10 @@ void cadastraAlunoEmCurso()
         while(!opcao);
         
         matricula.situacaoPagamento = opcao + '0';
-        gravaDadosMatricula(matricula);
+        if(gravaDadoArquivo(ARQ_MATRICULAS, (void*) &matricula, sizeof(Cadastro)))
+            printf("O aluno foi matriculado com sucesso!");
+        else
+            printf("O aluno nao pode ser matriculado!");
     }
     else
         puts("O aluno ja esta matriculado nesse curso!");
@@ -103,23 +106,6 @@ void listaDadosCadastro()
         clrscr();
         puts("Nao ha nenhum aluno matriculado ate o momento");
         return;
-    }
-}
-
-//***********************************************************************************************************************
-//  Objetivo: Gravar os dados de uma matricula(Cadastro)
-//  Parametros: A matricula
-//  Retorno: Nenhum
-void gravaDadosMatricula(Cadastro matricula)
-{
-    FILE *arq;
-    if((arq = fopen(ARQ_MATRICULAS,"ab")) != NULL)
-    {
-        if(fwrite(&matricula, sizeof(Cadastro), 1, arq))
-            puts("Dados cadastrados com sucesso!");
-        else
-            puts("Os dados nao foram gravados!");
-        fclose(arq);
     }
 }
 
@@ -281,7 +267,7 @@ Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador)
                         posMatricula = pesquisaAlunoMatricula(matricula.matriculaAluno);
                         if(posMatricula)
                         {
-                            if(obtemAlunoArquivo(&alunos[*qtdAlunos], posMatricula))
+                            if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &alunos[*qtdAlunos], sizeof(Aluno), posMatricula))
                             {
                                 (*qtdAlunos)++;
                             }
@@ -360,9 +346,10 @@ void excluiMatriculaAlunoEmUmCurso()
 void excluiMatriculaAluno(int matriculaAExcluir, int codCurso)
 {
     FILE *arq, *arqTemp;
-    int qtdeCopiadados;
+    int qtdeCopiados;
     Cadastro matricula;
-    if(matriculaAExcluir)
+
+    if(matriculaAExcluir && codCurso)
     {
         if((arq = fopen(ARQ_MATRICULAS, "rb")) != NULL )
         {
@@ -372,7 +359,7 @@ void excluiMatriculaAluno(int matriculaAExcluir, int codCurso)
                 {
                     if(fread(&matricula, sizeof(Cadastro), 1, arq))
                     {
-                        qtdeCopiadados++;
+                        qtdeCopiados++;
                         if(matriculaAExcluir != matricula.matriculaAluno || codCurso!= matricula.codigoCurso)
                             fwrite(&matricula, sizeof(Cadastro), 1, arqTemp);
                     }
@@ -381,21 +368,17 @@ void excluiMatriculaAluno(int matriculaAExcluir, int codCurso)
             fclose(arqTemp);
             fclose(arq);
         }
-                if(!remove(ARQ_MATRICULAS))
-                    {
-                        if(!rename(ARQ_MATRICULAS_TEMP, ARQ_MATRICULAS))
-                            printf("A matricula foi excluida com sucesso!");
-                            
-                        else
-                        {
-                            printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
-                        }
-                    }
-                    else
-                    {
-                        printf("O arquivo antigo nao pode ser excluido, logo a matricula nao foi excluida!");
-                    }
+
+        if(!remove(ARQ_MATRICULAS))
+        {
+            if(!rename(ARQ_MATRICULAS_TEMP, ARQ_MATRICULAS))
+                printf("A matricula foi excluida com sucesso!");
+            else
+                printf("O novo arquivo nao pode ser renomeado, todos os dados foram perdidos!");
         }
+        else
+            printf("O arquivo antigo nao pode ser excluido, logo a matricula nao foi excluida!");
+    }
 }
 
 //***********************************************************************************************************************
@@ -450,7 +433,7 @@ void pesquisaApresentaCadastro()
     
     if(posCadastro)
     {
-        if(obtemCadastroArquivo(&cadastro, posCadastro))
+        if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
         {
             apresentaCadastro(cadastro);
         }
@@ -593,7 +576,7 @@ void alteraCadastro()
         posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
         if(posCadastro)
         {
-            if(obtemCadastroArquivo(&cadastro, posCadastro))
+            if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
             {
                 do
                 {
@@ -627,71 +610,27 @@ void alteraCadastro()
                 if(opcao == 3)
                 {
                     escolha = confirmaEscolha(55,5, "Voce tem certeza?");
-                    if(escolha)
-                        alteraDadosCadastro(cadastro, posCadastro);
+                    if(escolha == 1)
+                    {
+                        if(alteraDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
+                            printf("A matricula foi alterada com sucesso!");
+                        else
+                            printf("A matricula nao foi alterada!");
+                    }
                     else
-                        puts("Os dados nao foram alterados!");
+                        printf("A matricula nao foi alterada!");
                 }
                 else
-                    puts("Os dados nao foram alterados!");
+                    printf("A matricula nao foi alterada!");
             }
             else
                 puts("A matricula nao pode ser recuperada!");
-            
-           
         }
         free(alunos);
     }
     else
     {
         puts("Nao ha nenhum aluno cadastrado neste curso ate o momento!");
-    }
-}
-
-//***********************************************************************************************************************
-// Objetivo: Encontrar um cadastro no arquivo
-// Parametros: Ponteiro para cadastro, e posicao do cadastro no arquivo
-// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
-int obtemCadastroArquivo(Cadastro *matricula, int posCadastro)
-{
-    FILE *arq;
-    int flag = 0;
-    if((arq = fopen(ARQ_MATRICULAS, "rb")) != NULL)
-    {
-        if(!fseek(arq, sizeof(Cadastro)*(posCadastro-1), 0))
-        {
-            if(fread(matricula, sizeof(Cadastro), 1, arq))
-            {
-                flag = 1;
-            }
-        }
-        fclose(arq);
-    }
-    return flag;
-}
-
-//***********************************************************************************************************************
-// Objetivo: Alterar os dados de um aluno
-// Parametros: O Cadastro para alterar e a posicao do aluno no arquivo
-// Retorno: 1 para sucesso, e 0 caso nao tenha encontrado
-void alteraDadosCadastro(Cadastro matricula, int posCadastro)
-{
-    FILE *arq;
-    int flag = 0;
-    if(( arq = fopen(ARQ_MATRICULAS,"rb+")) != NULL)
-    {
-        if(!fseek(arq, sizeof(Cadastro)*(posCadastro - 1), 0))
-        {
-            if(fwrite(&matricula, sizeof(Cadastro), 1, arq))
-            {
-                puts("Os dados foram alterados com sucesso!");   
-            }
-            else
-            {
-                puts("Os dados nao puderam ser alterados!");   
-            }
-        }
-        fclose(arq);
     }
 }
 

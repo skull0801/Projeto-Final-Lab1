@@ -6,7 +6,6 @@
 // Cadastro
 void cadastraCurso(void);
 void leDadosCurso(Curso *curso);
-void gravaDadosCurso(Curso *curso);
 
 // Alteracao
 void alteraCurso(void);
@@ -26,7 +25,6 @@ int apresentaTodosCursos(void);
 int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
 
 // Obtencao do arquivo
-int obtemCursoArquivo(Curso *curso, int posCurso);
 Curso * obtemDadosCursosArquivo(int * qtdCursos);
 
 // Comparacao

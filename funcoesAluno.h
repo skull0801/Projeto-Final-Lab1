@@ -6,7 +6,6 @@
 // Cadastro
 void cadastraAluno(void);
 int leDadosAluno(Aluno *aluno);
-void gravaDadosAluno(Aluno *aluno);
 
 // Alteracao
 void alteraAluno(void);
