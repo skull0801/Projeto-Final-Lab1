@@ -62,13 +62,13 @@ int main(void)
     // Instrucoes
     do
     {
-        opcao = menuVertical(opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+        opcao = menuVertical("MENU PRINCIPAL", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
         switch(opcao)
         {
             case 1:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU ALUNOS", opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
@@ -94,7 +94,7 @@ int main(void)
             case 2:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU CURSOS", opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
@@ -130,7 +130,7 @@ int main(void)
             case 3:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU CADASTRO", opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
@@ -171,13 +171,13 @@ int main(void)
             case 4:
                 do
                 {
-                    subOpcao = menuVertical(opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                    subOpcao = menuVertical("MENU RELATORIOS", opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                     switch(subOpcao)
                     {
                         case 1:
                             do
                             {
-                                subSubOpcao = menuVertical(opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                                subSubOpcao = menuVertical("MENU RELATORIO 1", opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                                 switch(subSubOpcao)
                                 {
                                     case 1:

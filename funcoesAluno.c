@@ -97,7 +97,7 @@ void alteraAluno(void)
             do
             {
                 apresentaAluno(aluno);
-                opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                opcao = menuVertical("", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
                 gotoxy(1, 8);
                 switch(opcao)
                 {
@@ -297,7 +297,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
 {
     int selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
     int matriculaSelecao = 0;
-    char ** linhasTabela, matriculaTexto[7];
+    char ** linhasTabela, matriculaTexto[7], titulo[TAM_TEXTO_TABELA+1];
     if(qtdAlunos > 0)
     {
         qsort(alunos, qtdAlunos, sizeof(Aluno), comparaAlunos);
@@ -336,9 +336,9 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
             {
                 qtdItens = qtdAlunos - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdAlunos - contador;
                 gotoxy(COLUNA_TABELA_ALUNOS+2, LINHA_TABELA_ALUNOS-3);
-                printf("%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
+                sprintf(titulo, "%-6s %-24.22s%-5.5s %-10s%-19s%-12s", "Matr.", "Nome", "Idade", "Sexo", "CPF", "D. Ingresso");
                 
-                selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
+                selecao = menuVertical(titulo, &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
                 
                 if(selecao != 0)
                 {
@@ -377,7 +377,7 @@ void pesquisaAluno(void)
                               "Pesquisa por Nome",
                               "Voltar"};
     
-    opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    opcao = menuVertical("", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
     
     switch(opcao)
     {

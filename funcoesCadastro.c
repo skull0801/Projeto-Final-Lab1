@@ -44,13 +44,13 @@ void cadastraAlunoEmCurso()
     {
         do
         {
-            opcao = menuVertical(opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+            opcao = menuVertical("QUAL A SITUACAO DO ALUNO?", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
         }
         while(!opcao);
         matricula.situacaoAluno = opcao + '0';
         do
         {
-            opcao = menuVertical(opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+            opcao = menuVertical("QUAL A SITUACAO DO ALUNO?", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
         }
         while(!opcao);
         
@@ -237,7 +237,7 @@ void apresentaAlunosMatriculadosEmUmCurso()
     
     do
     {
-        indicador = menuVertical(situacaoAluno, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+        indicador = menuVertical("QUE SITUACAO DESEJA?", situacaoAluno, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
     }
     while(indicador == 0);
     
@@ -598,14 +598,14 @@ void alteraCadastro()
                 {
                     clrscr();
                     apresentaCadastro(cadastro);
-                    opcao = menuVertical(opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
+                    opcao = menuVertical("O QUE DESEJA ALTERAR?", opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
                     
                     switch(opcao)
                     {
                         case 1:
                             do
                             {
-                                opcaoSituacao = menuVertical(opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
+                                opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
                             }
                             while(!opcaoSituacao);
                             
@@ -614,7 +614,7 @@ void alteraCadastro()
                         case 2:
                             do
                             {
-                                opcaoSituacao = menuVertical(opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
+                                opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
                             }
                             while(!opcaoSituacao);
                             

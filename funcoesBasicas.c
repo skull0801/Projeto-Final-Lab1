@@ -131,7 +131,8 @@ void strToLower(char *string)
 
 //***********************************************************************************************************************
 // Objetivo: Fazer um menu e lidar com as escolhas do usuario
-// Parametros: opcoes - Opcoes do menu
+// Parametros: titulo - Titulo do menu
+//             opcoes - Opcoes do menu
 //             qtdOpcoes - quantidade de opcoes
 //             corL - cor da letra do menu
 //             corS - cor da selecaoda opcao do menu
@@ -142,7 +143,7 @@ void strToLower(char *string)
 //             corFundoAtual - cor do fundo antes da chamada do menu
 //             corLetraAtual - cor da letra antes da chamada do menu
 // Retorno: Indice escolhido pelo usuario, de 1 a n, ou 0 caso esc seja pressionado
-int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, int moldura, int coluna, int linha, 
+int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, int moldura, int coluna, int linha, 
          int selecaoInicial, int corFundoAtual, int corLetraAtual)
 {
     int contador;
@@ -151,12 +152,16 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
     int tamMaiorOpcao; // Registra o tamanho da maior opcao escrita
     int selecao; // Registra o item selecionado no momento
     int ultimaSelecao; // Registra a ultima selecao do menu
+    int colunaTitulo, linhaTitulo; // Registram a posicao do titulo do menu
     int offset = 2; // Distancia entre moldura e texto do menu
     
     if(linha == 1 && moldura) // Verifica se necessita moldura e comeca na linha 1, se sim move a linha por 1 para nao causar erros ao fazer moldura
         linha += offset;
     if(coluna == 1 && moldura) // Faz o mesmo que para linha com coluna
         coluna += offset;
+    
+    linha+=1; // Cria espaco para titulo
+    linhaTitulo = linha-1;
         
     textcolor(corLetra); // Define a cor das letras do menu
     
@@ -185,14 +190,22 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
     printf("%-*s", tamMaiorOpcao, opcoes[selecao]); // atual
     
     if(moldura)
+    {
         desenhaMoldura(linha-(offset), coluna-(offset), linha+contador+(offset-1), coluna+tamMaiorOpcao+(offset-1), corFundoAtual, corLetra);  // Desenha moldura se necessario
+        linhaTitulo -= 2;
+    }
+
+    // Escreve titulo do menu
+    colunaTitulo = coluna+(tamMaiorOpcao/2)-(strlen(titulo)/2);
+    gotoxy(colunaTitulo, linhaTitulo);
+    printf(titulo);
     
     do
     {
         do
         {
             tecla = toupper(getch());
-            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
+            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada e relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
                 val = 1;                                                                               // 27 - esc, 13 - enter
             else
                 val = 0;
@@ -232,6 +245,8 @@ int menuVertical(char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, in
         limpaJanela(linha-(offset), coluna-(offset), linha+qtdOpcoes+(offset-1), coluna+tamMaiorOpcao+(offset-1), corFundoAtual);
     else
         limpaJanela(linha, coluna, linha+qtdOpcoes, coluna+tamMaiorOpcao, corFundoAtual);
+        
+    limpaJanela(linhaTitulo, colunaTitulo, linhaTitulo, colunaTitulo+strlen(titulo), corFundoAtual); // Limpa titulo do menu
     
     return ultimaSelecao+1; // Retorna o item selecionado (Retorna 0 se foi pressionado esc)
 }
@@ -302,10 +317,7 @@ int confirmaEscolha(int coluna, int linha, char *titulo)
 {
     char *opcoesConfirma[] = {"Sim", "Nao"};
     int resposta;
-    
-    gotoxy(coluna, linha);
-    printf("%-*.*s", 80-coluna, 80-coluna, titulo);
-    resposta = menuVertical(opcoesConfirma, 2, BRANCO, AZUL_C, 1, coluna+6, linha+3, 2, PRETO, CINZA_E);
+    resposta = menuVertical(titulo, opcoesConfirma, 2, BRANCO, AZUL_C, 1, coluna, linha, 2, PRETO, CINZA_E);
     if(resposta != 1)
         resposta = 0;
     return resposta;

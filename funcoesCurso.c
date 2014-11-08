@@ -209,7 +209,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
             {
                 qtdItens = qtdCursos - contador > 10 ? 10 : qtdCursos - contador;
                 
-                selecao = menuVertical(&linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                selecao = menuVertical("CURSOS", &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
                 
                 if(selecao != 0)
                 {
@@ -290,7 +290,7 @@ void pesquisaCurso(void)
                               "Pesquisa por Nome",
                               "Voltar"};
     
-    opcao = menuVertical(opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    opcao = menuVertical("O QUE DESEJA FAZER?", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
     clrscr();
     
     switch(opcao)
@@ -460,7 +460,7 @@ void alteraCurso(void)
             do
             {
                 apresentaCurso(curso);
-                opcao = menuVertical(opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
+                opcao = menuVertical("O QUE DESEJA FAZER?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, 1, PRETO, CINZA_E);
                 gotoxy(1, 6);
 				switch(opcao)
 				{

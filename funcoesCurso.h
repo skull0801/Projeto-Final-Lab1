@@ -22,6 +22,7 @@ void alteraDadosCurso(Curso curso, int posCurso);
 void apresentaCurso(Curso curso);
 int obtemCursoArquivo(Curso *curso, int posCurso);
 Curso * obtemDadosCursosArquivo(int * qtdCursos);
-int comparaCursos(const void *p1, const void *p2);
+int comparaCursosCodigo(const void *p1, const void *p2);
+int comparaCursosNome(const void *p1, const void *p2);
 
 #endif
