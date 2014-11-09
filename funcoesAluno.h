@@ -16,7 +16,7 @@ void excluiAluno(void);
 // Pesquisa
 void pesquisaAluno(void);
 int pesquisaAlunoMatricula(int matriculaBusca);
-void pesquisaApresentaAlunoNome(void);
+int pesquisaApresentaAlunoNome(void);
 void pesquisaApresentaAlunoMatricula(void);
 
 // Apresentacao
