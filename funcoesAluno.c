@@ -103,7 +103,7 @@ void alteraAluno(void)
             do
             {
                 apresentaAluno(aluno);
-                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, opcao, PRETO, CINZA_E);
+                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 10, opcao, PRETO, CINZA_E);
                 gotoxy(1, 8);
                 switch(opcao)
                 {
@@ -341,10 +341,32 @@ void pesquisaApresentaAlunoMatricula(void)
 void apresentaAluno(Aluno aluno)
 {
     gotoxy(1,1);
-    printf("Nome: %s\n", aluno.nome);
-    printf("Matricula: %d\n", aluno.matricula);
-    printf("CPF: %s\n", aluno.cpf);
-    printf("Idade: %d\nSexo: %s\n", aluno.idade, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
+    printf("Nome: %-*.*s\n", TAM_NOME_ALUNO, TAM_NOME_ALUNO, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
+    
+    printf("Matricula: ");
+    if(aluno.matricula)
+        printf("%06d\n", aluno.matricula);
+    else
+        printf("%-*.*s\n", 10, 10, "[Ex. 010]");
+
+    printf("CPF: ");
+    if(strlen(aluno.cpf))
+        printf("%-*.*s\n", TAM_CPF-1, TAM_CPF-1, aluno.cpf);
+    else
+        printf("%-*.*s\n", 20, 20, "[Ex. 14851693729]");
+
+    printf("Idade: ");
+    if(aluno.idade)
+        printf("%d\n", aluno.idade);
+    else
+        printf("%-*.*s\n", 10, 10, "[Ex. 23]");
+
+    printf("Sexo: ");
+    if(aluno.sexo)
+        printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
+    else
+        printf("%-*.*s\n", 15, 15, "[Ex. MASCULINO]");
+
     printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
 }
 

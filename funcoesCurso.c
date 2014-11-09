@@ -74,7 +74,7 @@ void alteraCurso(void)
             do
             {
                 apresentaCurso(curso);
-                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 1, opcao, PRETO, CINZA_E);
+                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 10, opcao, PRETO, CINZA_E);
                 gotoxy(1, 6);
                 switch(opcao)
                 {
