@@ -91,7 +91,7 @@ void alteraAluno(void)
                                "Salvar Mudancas",
                                "Cancelar Mudancas"};
     
-    matricula = apresentaTodosAlunos();
+    matricula = pesquisaApresentaAlunoNome();
     
     if(matricula)
         posAluno = pesquisaAlunoMatricula(matricula);
@@ -152,7 +152,7 @@ void excluiAluno(void)
     Aluno aluno;
     int posAluno = 0, matricula, confirmacao;
     
-    matricula = apresentaTodosAlunos();
+    matricula = pesquisaApresentaAlunoNome();
     
     if(matricula)
         posAluno = pesquisaAlunoMatricula(matricula);
@@ -248,15 +248,15 @@ int pesquisaAlunoMatricula(int matriculaBusca)
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
 //  Parametros: nenhum
-//  Retorno: nenhum
-void pesquisaApresentaAlunoNome(void)
+//  Retorno: a matricula do aluno escolhido
+int pesquisaApresentaAlunoNome(void)
 {
     FILE *arq;
     Aluno aluno, *alunos = NULL, *alunosAux;
-    int qtdLidos = 0, flag = 0;
+    int qtdLidos = 0, flag = 0, matriculaEscolhida;
     char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
     
-    leValidaTexto(nomeBusca, "Informe o nome a ser buscado", "Nome", 1, TAM_NOME_ALUNO);
+    leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
     
     strToLower(nomeBusca);
     
@@ -295,7 +295,7 @@ void pesquisaApresentaAlunoNome(void)
     {
         if(qtdLidos)
         {
-            apresentaDadosAlunos(alunos, qtdLidos);
+            matriculaEscolhida = apresentaDadosAlunos(alunos, qtdLidos);
             free(alunos);
         }
         else
@@ -307,6 +307,7 @@ void pesquisaApresentaAlunoNome(void)
     else
         getch();
     clrscr();
+    return matriculaEscolhida;
 }
 
 //***********************************************************************************************************************
