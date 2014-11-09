@@ -546,21 +546,22 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
 int validaCPF(const char *cpf)
 {
     char *cpfsInvalidos[] = {"11111111111",
-                        "22222222222",
-                        "33333333333",
-                        "44444444444",
-                        "55555555555",
-                        "66666666666",
-                        "77777777777",
-                        "88888888888",
-                        "99999999999"};
+                             "22222222222",
+                             "33333333333",
+                             "44444444444",
+                             "55555555555",
+                             "66666666666",
+                             "77777777777",
+                             "88888888888",
+                             "99999999999",
+                             "00000000000"};
                         
     int flag = 1, soma, contador, auxDig, digVeri[2], digitos[11];
     
     if(strlen(cpf) != 11)
         return 0;
     
-    for(contador=0;contador<9;contador++)
+    for(contador=0;contador<10;contador++)
     {
         if(strcmp(cpf, cpfsInvalidos[contador])==0)
         {
