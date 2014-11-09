@@ -21,6 +21,7 @@ void apresentarTodosAlunosCadastrados(void);
 void apresentaAlunosMatriculadosEmUmCurso(void);
 
 Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador);
+Aluno *obtemAlunosPorSituacaoPagamento(int *qtdAlunos, int indicador);
 
 // Verificacao
 int verificaAlunoCadastrado(int matriculaAluno);

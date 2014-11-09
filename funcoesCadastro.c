@@ -95,53 +95,58 @@ void alteraCadastro(void)
     
     codigoCurso = apresentaTodosCursos();
     
-    if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdeAlunos, 3)) != NULL)
+    if(codigoCurso)
     {
-        matriculaAluno = apresentaDadosAlunos(alunos, qtdeAlunos);
-
-        posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
-
-        if(posCadastro)
+        if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdeAlunos, 3)) != NULL)
         {
-            if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-            {
-                do
-                {
-                    clrscr();
-                    apresentaCadastro(cadastro);
-                    opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
-                    
-                    switch(opcao)
-                    {
-                        case 1:
-                            do
-                            {
-                                opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
-                            }
-                            while(!opcaoSituacao);
-                            
-                            cadastro.situacaoAluno = opcaoSituacao + '0';
-                            break; 
-                        case 2:
-                            do
-                            {
-                                opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
-                            }
-                            while(!opcaoSituacao);
-                            
-                            cadastro.situacaoPagamento = opcaoSituacao + '0';
-                            break;
-                    }
-                }
-                while(opcao == 1 || opcao == 2);
+            matriculaAluno = apresentaDadosAlunos(alunos, qtdeAlunos);
 
-                if(opcao == 3)
+            posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
+
+            if(posCadastro)
+            {
+                if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
                 {
-                    escolha = confirmaEscolha(55,5, "Realmente deseja salvar?");
-                    if(escolha == 1)
+                    do
                     {
-                        if(alteraDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-                            printf("A matricula foi alterada com sucesso!");
+                        clrscr();
+                        apresentaCadastro(cadastro);
+                        opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
+                        
+                        switch(opcao)
+                        {
+                            case 1:
+                                do
+                                {
+                                    opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
+                                }
+                                while(!opcaoSituacao);
+                                
+                                cadastro.situacaoAluno = opcaoSituacao + '0';
+                                break; 
+                            case 2:
+                                do
+                                {
+                                    opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
+                                }
+                                while(!opcaoSituacao);
+                                
+                                cadastro.situacaoPagamento = opcaoSituacao + '0';
+                                break;
+                        }
+                    }
+                    while(opcao == 1 || opcao == 2);
+
+                    if(opcao == 3)
+                    {
+                        escolha = confirmaEscolha(55,5, "Realmente deseja salvar?");
+                        if(escolha == 1)
+                        {
+                            if(alteraDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
+                                printf("A matricula foi alterada com sucesso!");
+                            else
+                                printf("A matricula nao foi alterada!");
+                        }
                         else
                             printf("A matricula nao foi alterada!");
                     }
@@ -149,16 +154,20 @@ void alteraCadastro(void)
                         printf("A matricula nao foi alterada!");
                 }
                 else
-                    printf("A matricula nao foi alterada!");
+                    puts("A matricula nao pode ser recuperada!");
+                getch();
             }
-            else
-                puts("A matricula nao pode ser recuperada!");
-
-            getch();
-            clrscr();
+            free(alunos);
         }
-        free(alunos);
+        else
+        {
+            printf("O curso nao tem alunos cadastrados!");
+            getch();
+        }
     }
+    else if(verificaArquivoVazio(ARQ_CURSOS))
+        getch();
+    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -393,14 +402,14 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
     Aluno *alunos;
     int codigoCurso, indicador, qtdAlunos;
     char *situacaoAluno[] = {"Cursando",
-                            "Concluido",
-                            "Ambos"};
+                             "Concluido",
+                             "Ambos"};
     
     codigoCurso = apresentaTodosCursos();
     
     if(codigoCurso)
     {
-        indicador = menuVertical("QUE SITUACAO DESEJA?", situacaoAluno, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+        indicador = menuVertical("Qual a situacao de curso que deseja?", situacaoAluno, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
         
         if(indicador)
         {
@@ -416,6 +425,36 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
             }
             clrscr();
         }
+    }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Apresentar matriculados com a situacao financeira indicada
+//  Parametros: Nenhum
+//  Retorno: Nenhum
+void apresentaAlunosPorSituacao(void)
+{
+    Aluno *alunos;
+    int indicador, qtdAlunos;
+    char *situacaoAluno[] = {"Regular",
+                             "Atrasada",
+                             "Totalmente Paga"};
+    
+    indicador = menuVertical("Qual a situacao de pagamento que deseja?", situacaoAluno, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+    
+    if(indicador)
+    {
+        if((alunos = obtemAlunosPorSituacaoPagamento(&qtdAlunos, indicador)) != NULL)
+        {
+            apresentaDadosAlunos(alunos, qtdAlunos);
+            free(alunos);
+        }
+        if(qtdAlunos == 0)
+        {
+            puts("Nao ha nenhum aluno cadastrado com esta situacao!");
+            getch();
+        }
+        clrscr();
     }
 }
 
@@ -483,6 +522,71 @@ Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador)
     }
     return alunos;
 }
+
+//***********************************************************************************************************************
+// Objetivo: Obter alunos matriculados em curso com situacao de pagamento indicada
+// Parametros: Ponteiro para quantidade de alunos lidos(a ser mudado pela funcao), indicador(1 - Regular, 2 - Atrasado, 3 - Pago)
+Aluno *obtemAlunosPorSituacaoPagamento(int *qtdAlunos, int indicador)
+{
+    Aluno *alunos = NULL, *alunosAux;
+    FILE *arq;
+    Cadastro matricula;
+    int posMatricula, flagErro = 0;
+    
+    *qtdAlunos = 0;
+    
+    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            {
+                if(indicador + '0' == matricula.situacaoPagamento)
+                {
+                    alunosAux = (Aluno*) realloc(alunos, (*qtdAlunos+1) * sizeof(Aluno));
+                    if(alunosAux != NULL)
+                    {
+                        alunos = alunosAux;
+                        posMatricula = pesquisaAlunoMatricula(matricula.matriculaAluno);
+                        if(posMatricula)
+                        {
+                            if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &alunos[*qtdAlunos], sizeof(Aluno), posMatricula))
+                            {
+                                (*qtdAlunos)++;
+                            }
+                            else
+                            {
+                                flagErro = 1;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            flagErro = 1;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        flagErro = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(arq);
+    }
+    if(flagErro)
+    {
+        if(alunos != NULL)
+        {
+            free(alunos);
+            alunos = NULL;
+        }
+    }
+    return alunos;
+}
+
 
 //***********************************************************************************************************************
 // Objetivo: Verificar se um aluno esta cadastrado em um curso

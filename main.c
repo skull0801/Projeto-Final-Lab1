@@ -198,6 +198,9 @@ int main(void)
                         case 5:
                             apresentaAlunosMatriculadosEmPeriodo();
                             break;
+                        case 6:
+                            apresentaAlunosPorSituacao();
+                            break;
                     }
                 }
                 while(subOpcao != 0 && subOpcao != 7);
