@@ -105,7 +105,6 @@ char leValidaChar(const char *titulo, const char *escolhas)
     return caractere;
 }
 
-// POSSIVEIS ERROS COM ESTA FUNCAO! CUIDADO AO USAR!
 //***********************************************************************************************************************
 // Objetivo: Ler uma string com limite
 // Parâmetros: tamanho maximo
@@ -113,14 +112,12 @@ char leValidaChar(const char *titulo, const char *escolhas)
 char * leStringEmCampo(int limite)
 {
     char *string = NULL, *stringAux, caractere;
-    int contador = 0, maxAlocado = 0;
+    int contador = 0, qtdCaracteres = 0;
     do
     {
-        if(sizeof(char)*(contador+2)>maxAlocado)
-        {
-            stringAux = (char *)realloc(string, sizeof(char)*(contador+2));
-            maxAlocado = sizeof(char)*(contador+2);
-        }
+        stringAux = (char *)realloc(string, sizeof(char)*(qtdCaracteres+1));
+        contador = qtdCaracteres;
+        
         if(stringAux != NULL)
         {
             string = stringAux;
@@ -128,29 +125,32 @@ char * leStringEmCampo(int limite)
             caractere = getch();
             if(caractere==8)
             {
-                if(contador>0)
+                if(qtdCaracteres>0)
                 {
                     printf("\b \b");
-                    contador--;
+                    qtdCaracteres--;
                 }
             }
-            else if(contador<limite && caractere>=32 || caractere == 13)
+            else if(qtdCaracteres<limite && caractere>=32 || caractere == 13)
             {
-                string[contador++] = caractere;
+                string[qtdCaracteres++] = caractere;
                 putc(caractere, stdout);
             }
         }
         else
             break;
     }
-    while(string[contador-1]!=13);
-    if(stringAux == NULL)
+    while(string[contador]!=13);
+    
+    if(stringAux == NULL && string != NULL)
     {
         free(string);
         string = NULL;
     }
+    
     if(string != NULL)
-        string[contador-1] = '\0';
+        string[contador] = '\0';
+        
     return string;
 }
 
