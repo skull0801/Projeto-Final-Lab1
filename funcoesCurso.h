@@ -16,7 +16,7 @@ void excluiCurso(void);
 // Pesquisa
 void pesquisaCurso(void);
 void pesquisaApresentaCursoCodigo(void);
-void pesquisaApresentaCursoNome(void);
+int pesquisaApresentaCursoNome(void);
 int pesquisaCursoCodigo(int codCursoBusca);
 
 // Apresentacao
@@ -27,6 +27,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
 // Comparacao
 int comparaCursosCodigo(const void *p1, const void *p2);
 int comparaCursosNome(const void *p1, const void *p2);
+int comparaNomesCurso(const void *p1, const void *p2);
 
 // Codigo
 int achaProximoCodCurso(void);

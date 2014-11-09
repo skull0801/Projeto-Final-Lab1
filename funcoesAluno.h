@@ -31,6 +31,7 @@ int verificaCPFAluno(const char *cpf);
 
 // Comparacao
 int comparaAlunos(const void *p1, const void *p2);
+int comparaNomesAlunos(const void *p1, const void *p2);
 
 // Data
 void geraDataIngresso(Data *data);

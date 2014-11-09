@@ -256,42 +256,44 @@ int pesquisaApresentaAlunoNome(void)
     int qtdLidos = 0, flag = 0, matriculaEscolhida;
     char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
     
-    leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
+    leValidaTexto(nomeBusca, "Informe o nome (ou parte do nome) do aluno", "Nome", 1, TAM_NOME_ALUNO);
     
     strToLower(nomeBusca);
     
-    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    {
-        while(!feof(arq))
-        {
-            if(fread(&aluno, sizeof(Aluno), 1, arq))
-            {
-                strcpy(copiaNome, aluno.nome);
-                strToLower(copiaNome);
-                if(strstr(copiaNome, nomeBusca))
-                {
-                    alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
-                    if(alunosAux != NULL)
-                    {
-                        alunos = alunosAux;
-                        alunos[qtdLidos] = aluno;
-                        qtdLidos++;
-                    }
-                    else
-                    {
-                        printf("Houve erro na alocacao de memoria!");
-                        flag = 1;
-                        if(qtdLidos)
-                            free(alunos);
-                        break;
-                    }
-                }
-            }
-        }
-        fclose(arq);
-    }
+    // if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    // {
+    //     while(!feof(arq))
+    //     {
+    //         if(fread(&aluno, sizeof(Aluno), 1, arq))
+    //         {
+    //             strcpy(copiaNome, aluno.nome);
+    //             strToLower(copiaNome);
+    //             if(strstr(copiaNome, nomeBusca))
+    //             {
+    //                 alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
+    //                 if(alunosAux != NULL)
+    //                 {
+    //                     alunos = alunosAux;
+    //                     alunos[qtdLidos] = aluno;
+    //                     qtdLidos++;
+    //                 }
+    //                 else
+    //                 {
+    //                     printf("Houve erro na alocacao de memoria!");
+    //                     flag = 1;
+    //                     if(qtdLidos)
+    //                         free(alunos);
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     fclose(arq);
+    // }
     
-    if(!flag)
+    alunos = (Aluno *) obtemDadosArquivoCondicao(ARQ_ALUNOS, sizeof(Aluno), &qtdLidos, (void *) nomeBusca, comparaNomesAlunos);
+
+    if(alunos != NULL)
     {
         if(qtdLidos)
         {
@@ -307,7 +309,19 @@ int pesquisaApresentaAlunoNome(void)
     else
         getch();
     clrscr();
+
     return matriculaEscolhida;
+}
+
+int comparaNomesAlunos(const void *p1, const void *p2)
+{
+    char *nome, nomeAux[TAM_NOME_ALUNO];
+    Aluno *aluno;
+    nome = (char *) p1;
+    aluno = (Aluno *) p2;
+    strcpy(nomeAux, aluno->nome);
+    strToLower(nomeAux);
+    return (strstr(nomeAux, nome) != NULL ? 1 : 0);
 }
 
 //***********************************************************************************************************************

@@ -31,6 +31,7 @@ int alteraDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado
 int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado);
 int obtemDadoArquivo(const char *nomeArquivo, void *dado, int tamanhoDado, int posDado);
 void * obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados);
+void * obtemDadosArquivoCondicao(const char *nomeArquivo, int tamanhoDado, int *qtdDados, void *dadoCondicao, int (*condicao)(const void *p1, const void *p2));
 int verificaArquivoVazio(char *nomeArquivo);
 
 #endif

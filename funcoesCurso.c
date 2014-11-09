@@ -62,7 +62,7 @@ void alteraCurso(void)
                                "Salvar Mudancas",
                                "Cancelar Mudancas"};
     
-    codigo = apresentaTodosCursos();
+    codigo = pesquisaApresentaCursoNome();
     
     if(codigo)
         posCurso = pesquisaCursoCodigo(codigo);
@@ -125,7 +125,7 @@ void excluiCurso(void)
     int posCurso = 0, codigo;
     char confirmacao;
     
-    codigo = apresentaTodosCursos();
+    codigo = pesquisaApresentaCursoNome();
     
     if(codigo)
         posCurso = pesquisaCursoCodigo(codigo);
@@ -186,52 +186,54 @@ void pesquisaCurso(void)
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
 //  Parametros: nome a ser pesquisado
-//  Retorno: nenhum
-void pesquisaApresentaCursoNome(void)
+//  Retorno: codigo do curso selecionado
+int pesquisaApresentaCursoNome(void)
 {
     FILE *arq;
     Curso curso, *cursos = NULL, *cursosAux;
-    int qtdLidos = 0, flag = 0;
+    int qtdLidos = 0, flag = 0, codigoSelecionado = 0;
     char copiaNome[TAM_NOME_CURSO], nomeBusca[TAM_NOME_CURSO];
     
-    leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
+    leValidaTexto(nomeBusca, "Informe o nome (ou parte do nome) do curso", "Nome", 1, TAM_NOME_CURSO);
     
     strToLower(nomeBusca);
     
-    if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
-    {
-        while(!feof(arq))
-        {
-            if(fread(&curso, sizeof(Curso), 1, arq))
-            {
-                strcpy(copiaNome, curso.nome);
-                strToLower(copiaNome);
-                if(strstr(copiaNome, nomeBusca))
-                {
-                    cursosAux = (Curso *) realloc(cursos, sizeof(Curso)*(qtdLidos+1));
-                    if(cursosAux != NULL)
-                    {
-                        cursos = cursosAux;
-                        cursos[qtdLidos] = curso;
-                        qtdLidos++;
-                    }
-                    else
-                    {
-                        printf("Erro ao alocar memoria para cursos!");
-                        flag = 1;
-                        break;
-                    }
-                }
-            }
-        }
-        fclose(arq);
-    }
+    // if((arq = fopen(ARQ_CURSOS, "rb")) != NULL)
+    // {
+    //     while(!feof(arq))
+    //     {
+    //         if(fread(&curso, sizeof(Curso), 1, arq))
+    //         {
+    //             strcpy(copiaNome, curso.nome);
+    //             strToLower(copiaNome);
+    //             if(strstr(copiaNome, nomeBusca))
+    //             {
+    //                 cursosAux = (Curso *) realloc(cursos, sizeof(Curso)*(qtdLidos+1));
+    //                 if(cursosAux != NULL)
+    //                 {
+    //                     cursos = cursosAux;
+    //                     cursos[qtdLidos] = curso;
+    //                     qtdLidos++;
+    //                 }
+    //                 else
+    //                 {
+    //                     printf("Erro ao alocar memoria para cursos!");
+    //                     flag = 1;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     fclose(arq);
+    // }
+
+    cursos = (Curso *) obtemDadosArquivoCondicao(ARQ_CURSOS, sizeof(Curso), &qtdLidos, (void *) nomeBusca, comparaNomesCurso);
     
     if(!flag)
     {
         if(qtdLidos)
         {
-            apresentaDadosCursos(cursos, qtdLidos);
+            codigoSelecionado = apresentaDadosCursos(cursos, qtdLidos);
             free(cursos);
         }
         else
@@ -247,6 +249,19 @@ void pesquisaApresentaCursoNome(void)
         getch();
     }
     clrscr();
+
+    return codigoSelecionado;
+}
+
+int comparaNomesCurso(const void *p1, const void *p2)
+{
+    char *nome, nomeAux[TAM_NOME_CURSO];
+    Curso *curso;
+    nome = (char *) p1;
+    curso = (Curso *) p2;
+    strcpy(nomeAux, curso->nome);
+    strToLower(nomeAux);
+    return (strstr(nomeAux, nome) != NULL ? 1 : 0);
 }
 
 //***********************************************************************************************************************

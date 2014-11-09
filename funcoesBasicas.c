@@ -583,6 +583,56 @@ int obtemDadoArquivo(const char *nomeArquivo, void *dado, int tamanhoDado, int p
 }
 
 //***********************************************************************************************************************
+//  Objetivo: Pesquisar um dado dentro de um arquivo e copiar para memoria os que satisfizerem uma condicao (funcao dada na chamada)
+//  Parametros: Nome do arquivo, Tamanho do dado, Referencia a quantidade de dados (valor sera dado pela funcao), Primeiro dado a ser usado na funcao de comparacao
+//              Funcao que compara os dados(recebe dois ponteiros void e retorna um int) (puxa o dado para memoria caso a funcao retorne >0)
+//  Retorno: a matricula do aluno escolhido
+void * obtemDadosArquivoCondicao(const char *nomeArquivo, int tamanhoDado, int *qtdDados, void *dadoCondicao, int (*condicao)(const void *p1, const void *p2))
+{
+    FILE *arq;
+    void *dado, *dados = NULL, *dadosAux;
+    
+    *qtdDados = 0;
+
+    if((dado = (void *) malloc(tamanhoDado)) != NULL)
+    {
+        if((arq = fopen(nomeArquivo, "rb")) != NULL)
+        {
+            while(!feof(arq))
+            {
+                if(fread(dado, tamanhoDado, 1, arq))
+                {
+                    if((*condicao)(dadoCondicao, dado) > 0)
+                    {
+                        dadosAux = (void *) realloc(dados, tamanhoDado*(*qtdDados+1));
+                        if(dadosAux != NULL)
+                        {
+                            dados = dadosAux;
+                            memcpy(dados+((*qtdDados)*tamanhoDado), dado, tamanhoDado);
+                            (*qtdDados)++;
+                        }
+                        else
+                        {
+                            printf("Houve erro na alocacao de memoria!");
+                            if(*qtdDados)
+                            {
+                                free(dados);
+                                dados = NULL;
+                                *qtdDados = 0;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            fclose(arq);
+        }
+    }
+
+    return dados;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Obter todos os dados de arquivo
 // Parametros: Nome do arquivo, Tamanho do dado, Referencia a quantidade de dados (valor sera dado pela funcao)
 // Retorno: Ponteiro para memoria alocada na qual os dados estao
