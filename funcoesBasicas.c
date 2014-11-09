@@ -155,6 +155,112 @@ char * leStringEmCampo(int limite)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Transformar uma string em uma data
+// Parametros: Referencia para uma estrutura de data, e a uma string
+// Retorno: 1 se a transformacao foi possivel, 0 se nao foi possivel
+int transformaStringEmData(Data *data, char *dataTexto)
+{
+    char aux[5];
+    int retorno = 0;
+    if(strlen(dataTexto) == 10)
+    {
+        strncpy(aux, dataTexto, 2);
+        aux[2] = '\0';
+        data->dia = atoi(aux);
+        if(data->dia > 0 && dataTexto[2] == '/')
+        {
+            strncpy(aux, dataTexto+3, 2);
+            aux[2] = '\0';
+            data->mes = atoi(aux);
+            if(data->mes > 0 || data->mes == 0 && dataTexto[10] == '0' && dataTexto[5] == '/')
+            {
+                strncpy(aux, dataTexto+6, 4);
+                aux[4] = '\0';
+                data->ano = atoi(aux);
+                if(data->ano > 0)
+                    retorno = 1;
+            }
+        }
+    }
+
+    return retorno;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Validar uma data
+// Parametros: Uma estrutura data
+// Retorno: 1 se a data for valida, 0 se for invalida
+int validaData(Data data)
+{
+    int retorno = 1;
+
+    if(data.ano < 0 || data.mes<1 || data.mes >12 || data.dia >31)
+       return 0;
+
+    switch(data.mes)
+    {
+       case 4:
+       case 6:
+       case 9:
+       case 11:
+            if(data.dia > 30)
+               retorno = 0;
+
+            break;
+       case 2:
+            if((data.ano%4 == 0 && data.ano%100 !=0) ||(data.ano % 400 == 0))
+            {
+               if(data.dia >29)
+                  retorno = 0;
+            }      
+            else
+            {
+               if(data.dia >28)
+                  retorno =0;                                      
+            }
+
+            break;      
+    }
+
+    return retorno;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Ler e validar uma data
+// Parametros: Referencia ao titulo a ser mostrado
+// Retorno: Data valida
+Data leValidaData(const char *titulo)
+{
+    int flag;
+    char dataTexto[11], aux[5];
+    Data data;
+
+    do
+    {
+        leValidaTexto(dataTexto, titulo, "Data", 10, 11);
+        if(transformaStringEmData(&data, dataTexto))
+            flag = validaData(data);
+        else
+            flag = 0;
+
+        if(!flag)
+            printf("Esta nao e uma data valida!\n");
+    }
+    while(!flag);
+
+    return data;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Compara duas datas
+// Parametros: Duas datas
+// Retorno: < 0 se primeira for menor que a segunda, 0 se as duas forem iguais, > 0 se a primeiro for maior que a segunda
+int comparaDatas(Data d1, Data d2)
+{
+    return d1.ano - d2.ano ? d1.ano - d2.ano : (d1.mes - d2.mes ? d1.mes - d2.mes : (d1.dia - d2.dia ? d1.dia - d2.dia : 0));
+}
+
+//***********************************************************************************************************************
 // Objetivo: Passar uma string para minusculo
 // Parametros: String a ser passada
 // Retorno: nenhum

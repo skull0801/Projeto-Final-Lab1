@@ -1,6 +1,7 @@
 // Prototipos para funcoes basicas
 #ifndef FUNCOESBASICAS_H
 #define FUNCOESBASICAS_H
+#include "dados.h"
 
 // Leitura de dados
 int leValidaInteiro(const char *msg, const char *identificacao, int valorMin, int valorMax);
@@ -8,6 +9,12 @@ float leValidaReal(const char *msg, const char *identificacao, float valorMin, f
 void leValidaTexto(char *texto, const char *msg, const char *identificacao, int valorMin, int valorMax);
 char leValidaChar(const char *titulo, const char *escolhas);
 char * leStringEmCampo(int limite);
+
+// Datas
+int transformaStringEmData(Data *data, char *dataTexto);
+int validaData(Data data);
+Data leValidaData(const char *titulo);
+int comparaDatas(Data d1, Data d2);
 
 // Tranformacao de dados
 void strToLower(char *string);

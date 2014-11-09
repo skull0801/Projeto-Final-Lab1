@@ -21,6 +21,7 @@ void pesquisaApresentaAlunoMatricula(void);
 
 // Apresentacao
 void apresentaAluno(Aluno aluno);
+void apresentaAlunosMatriculadosEmPeriodo(void);
 int apresentaTodosAlunos(void);
 int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos);
 

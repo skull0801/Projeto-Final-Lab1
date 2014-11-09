@@ -50,7 +50,7 @@ int main(void)
     char *opcoesMenuRelatorios[] = {"Pesquisa por Chave ou Todos",
                                     "Pesquisa de Alunos por Nome",
                                     "Listar Alunos de um Curso",
-                                    "Pesquisar Cursos por Nome",
+                                    "Pesquisar Cursos",
                                     "Alunos Matriculados em um Periodo",
                                     "Situacao Financeira dos Estudantes",
                                     "Voltar para Menu Principal"};
@@ -193,7 +193,10 @@ int main(void)
                             apresentaAlunosMatriculadosEmUmCurso();
                             break;
                         case 4:
-                            pesquisaApresentaCursoNome();
+                            pesquisaCurso();
+                            break;
+                        case 5:
+                            apresentaAlunosMatriculadosEmPeriodo();
                             break;
                     }
                 }

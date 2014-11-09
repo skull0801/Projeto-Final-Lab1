@@ -348,6 +348,72 @@ void apresentaAluno(Aluno aluno)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Apresentar alunos matriculados em um periodo informado
+// Parametros: Nenhum
+// Retorno: Nenhum
+void apresentaAlunosMatriculadosEmPeriodo(void)
+{
+    FILE *arq;
+    Data dataInicial, dataFinal;
+    Aluno *alunos = NULL, *alunosAux, aluno;
+    int flagData, flagErro = 0, qtdLidos = 0;
+
+    dataInicial = leValidaData("Informe a data inicial no padrao DD/MM/AAAA");
+
+    do
+    {
+        dataFinal = leValidaData("Informe data final no padrao DD/MM/AAAA");
+        flagData = comparaDatas(dataInicial, dataFinal);
+        if(flagData>0)
+            printf("A data inicial nao pode ser maior que a final!\n");
+    }
+    while(flagData>0);
+
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&aluno, sizeof(Aluno), 1, arq))
+            {
+                if(comparaDatas(aluno.dataIngresso, dataInicial) >= 0 && comparaDatas(aluno.dataIngresso, dataFinal) <= 0)
+                {
+                    alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
+                    if(alunosAux != NULL)
+                    {
+                        alunos = alunosAux;
+                        alunos[qtdLidos] = aluno;
+                        qtdLidos++;
+                    }
+                    else
+                    {
+                        printf("Houve erro na alocacao de memoria!");
+                        flagErro = 1;
+                        if(qtdLidos)
+                            free(alunos);
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(arq);
+    }
+
+    if(!flagErro)
+    {
+        if(qtdLidos)
+        {
+            apresentaDadosAlunos(alunos, qtdLidos);
+            free(alunos);
+        }
+        else
+        {
+            printf("Nao houve nenhuma correspondencia!");
+            getch();
+        }
+    }
+}
+
+//***********************************************************************************************************************
 // Objetivo: Apresentar todos os alunos
 // Parametros: Nenhum
 // Retorno: Matricula do aluno selecionado
