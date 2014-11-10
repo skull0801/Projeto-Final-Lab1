@@ -64,6 +64,22 @@ int main(void)
                                    "Voltar"};
     
     // Instrucoes
+/*  Teste para formulario!
+    int choice = 1;
+    Aluno aluno;
+    do
+    {
+        if(!obtemDadoArquivo(ARQ_ALUNOS, &aluno, sizeof(Aluno), choice))
+        {
+            memset(&aluno, 0, sizeof(Aluno));
+            geraDataIngresso(&aluno.dataIngresso);
+        }
+        apresentaAluno(aluno);
+        choice = getch() - '0';
+        clrscr();
+    }
+    while(1);
+*/
     do
     {
         opcao = menuVertical("ESCOLA DE INFORMATICA", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, opcao, PRETO, CINZA_C);
@@ -185,6 +201,7 @@ int main(void)
                                 }
                             }
                             while(subSubOpcao != 0 && subSubOpcao != 7);
+
                             break;
                         case 2:
                             pesquisaApresentaAlunoNome();

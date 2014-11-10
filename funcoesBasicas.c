@@ -232,19 +232,23 @@ int validaData(Data data)
 Data leValidaData(const char *titulo)
 {
     int flag;
-    char dataTexto[11], aux[5];
+    char *dataTexto, aux[5];
     Data data;
 
     do
     {
-        leValidaTexto(dataTexto, titulo, "Data", 10, 11);
+        printf("%s: ", titulo);
+        dataTexto = leStringEmCampo(10);
         if(transformaStringEmData(&data, dataTexto))
             flag = validaData(data);
         else
             flag = 0;
-
+        clrscr();
+        
         if(!flag)
             printf("Esta nao e uma data valida!\n");
+
+        free(dataTexto);
     }
     while(!flag);
 
