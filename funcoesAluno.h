@@ -9,18 +9,20 @@ int leDadosAluno(Aluno *aluno);
 
 // Alteracao
 void alteraAluno(void);
+int alteraDadosAluno(Aluno *aluno);
 
 // Exclusao
 void excluiAluno(void);
 
 // Pesquisa
+int selecionaAluno(void);
 void pesquisaAluno(void);
 int pesquisaAlunoMatricula(int matriculaBusca);
 int pesquisaApresentaAlunoNome(void);
 void pesquisaApresentaAlunoMatricula(void);
 
 // Apresentacao
-void apresentaAluno(Aluno aluno);
+void apresentaAluno(Aluno aluno, int coluna, int linha);
 void apresentaAlunosMatriculadosEmPeriodo(void);
 int apresentaTodosAlunos(void);
 int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos);
@@ -31,7 +33,6 @@ int verificaCPFAluno(const char *cpf);
 
 // Comparacao
 int comparaAlunos(const void *p1, const void *p2);
-int comparaNomesAlunos(const void *p1, const void *p2);
 
 // Data
 void geraDataIngresso(Data *data);
