@@ -627,6 +627,7 @@ void * obtemDadosArquivoCondicao(const char *nomeArquivo, int tamanhoDado, int *
             }
             fclose(arq);
         }
+        free(dado);
     }
 
     return dados;
