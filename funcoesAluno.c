@@ -84,14 +84,9 @@ int leDadosAluno(Aluno *aluno)
 void alteraAluno(void)
 {
     Aluno aluno;
-    int posAluno = 0, matricula, opcao = 1, confirmacao;
-    char *opcoesAlteracao[] = {"Alterar Nome",
-                               "Alterar Idade",
-                               "Alterar Sexo",
-                               "Salvar Mudancas",
-                               "Cancelar Mudancas"};
+    int posAluno = 0, matricula, opcao = 0, confirmacao;
     
-    matricula = pesquisaApresentaAlunoNome();
+    matricula = selecionaAluno();
     
     if(matricula)
         posAluno = pesquisaAlunoMatricula(matricula);
@@ -100,27 +95,9 @@ void alteraAluno(void)
     {
         if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
-            do
-            {
-                apresentaAluno(aluno);
-                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 10, opcao, PRETO, CINZA_E);
-                gotoxy(1, 8);
-                switch(opcao)
-                {
-                    case 1:
-                        leValidaTexto(aluno.nome, "Informe o novo nome", "Nome", 3, TAM_NOME_ALUNO);
-                        break;
-                    case 2:
-                        aluno.idade = leValidaInteiro("Informe a nova idade", "Idade", MIN_IDADE, MAX_IDADE);
-                        break;
-                    case 3:
-                        aluno.sexo = leValidaChar("Informe o novo sexo (M/F): ", "MF");
-                        break;
-                }
-            }
-            while(opcao != 0 && opcao != 4 && opcao != 5);
+            opcao = alteraDadosAluno(&aluno);
             
-            if(opcao == 4)
+            if(opcao == 1)
             {
                 confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
                 gotoxy(1, 8);
@@ -152,7 +129,7 @@ void excluiAluno(void)
     Aluno aluno;
     int posAluno = 0, matricula, confirmacao;
     
-    matricula = pesquisaApresentaAlunoNome();
+    matricula = selecionaAluno();
     
     if(matricula)
         posAluno = pesquisaAlunoMatricula(matricula);
@@ -161,7 +138,7 @@ void excluiAluno(void)
     {
         if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
-            apresentaAluno(aluno);
+            apresentaAluno(aluno,1,2);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
             gotoxy(1,8);
             if(confirmacao == 1)
@@ -182,6 +159,32 @@ void excluiAluno(void)
         getch();
         clrscr();
     }
+}
+
+//***********************************************************************************************************************
+// Objetivo: Permitir ao usuario selecionar um aluno dentre varios, dependendo de sua escolha
+// Parametros: nenhum
+// Retorno: Matricula do aluno selecionado (0 se nao selecionar ninguem)
+int selecionaAluno(void)
+{
+    int opcao, matricula = 0;
+    char *opcoesSelecao[] = {"Dentre Todos os Alunos",
+                             "Pesquisar por Nome",
+                             "Voltar"};
+
+    opcao = menuVertical("Como deseja selecionar o aluno?", opcoesSelecao, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
+        
+    switch(opcao)
+    {
+        case 1:
+            matricula = apresentaTodosAlunos();
+            break;
+        case 2:
+            matricula = pesquisaApresentaAlunoNome();
+            break;
+    }
+    
+    return matricula;
 }
 
 //***********************************************************************************************************************
@@ -256,44 +259,42 @@ int pesquisaApresentaAlunoNome(void)
     int qtdLidos = 0, flag = 0, matriculaEscolhida;
     char copiaNome[TAM_NOME_ALUNO], nomeBusca[TAM_NOME_ALUNO];
     
-    leValidaTexto(nomeBusca, "Informe o nome (ou parte do nome) do aluno", "Nome", 1, TAM_NOME_ALUNO);
+    leValidaTexto(nomeBusca, "Informe o nome do aluno", "Nome", 1, TAM_NOME_ALUNO);
     
     strToLower(nomeBusca);
     
-    // if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
-    // {
-    //     while(!feof(arq))
-    //     {
-    //         if(fread(&aluno, sizeof(Aluno), 1, arq))
-    //         {
-    //             strcpy(copiaNome, aluno.nome);
-    //             strToLower(copiaNome);
-    //             if(strstr(copiaNome, nomeBusca))
-    //             {
-    //                 alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
-    //                 if(alunosAux != NULL)
-    //                 {
-    //                     alunos = alunosAux;
-    //                     alunos[qtdLidos] = aluno;
-    //                     qtdLidos++;
-    //                 }
-    //                 else
-    //                 {
-    //                     printf("Houve erro na alocacao de memoria!");
-    //                     flag = 1;
-    //                     if(qtdLidos)
-    //                         free(alunos);
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     fclose(arq);
-    // }
+    if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
+    {
+        while(!feof(arq))
+        {
+            if(fread(&aluno, sizeof(Aluno), 1, arq))
+            {
+                strcpy(copiaNome, aluno.nome);
+                strToLower(copiaNome);
+                if(strstr(copiaNome, nomeBusca))
+                {
+                    alunosAux = (Aluno *) realloc(alunos, sizeof(Aluno)*(qtdLidos+1));
+                    if(alunosAux != NULL)
+                    {
+                        alunos = alunosAux;
+                        alunos[qtdLidos] = aluno;
+                        qtdLidos++;
+                    }
+                    else
+                    {
+                        printf("Houve erro na alocacao de memoria!");
+                        flag = 1;
+                        if(qtdLidos)
+                            free(alunos);
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(arq);
+    }
     
-    alunos = (Aluno *) obtemDadosArquivoCondicao(ARQ_ALUNOS, sizeof(Aluno), &qtdLidos, (void *) nomeBusca, comparaNomesAlunos);
-
-    if(alunos != NULL)
+    if(!flag)
     {
         if(qtdLidos)
         {
@@ -309,19 +310,7 @@ int pesquisaApresentaAlunoNome(void)
     else
         getch();
     clrscr();
-
     return matriculaEscolhida;
-}
-
-int comparaNomesAlunos(const void *p1, const void *p2)
-{
-    char *nome, nomeAux[TAM_NOME_ALUNO];
-    Aluno *aluno;
-    nome = (char *) p1;
-    aluno = (Aluno *) p2;
-    strcpy(nomeAux, aluno->nome);
-    strToLower(nomeAux);
-    return (strstr(nomeAux, nome) != NULL ? 1 : 0);
 }
 
 //***********************************************************************************************************************
@@ -340,20 +329,143 @@ void pesquisaApresentaAlunoMatricula(void)
     
     if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
     {
-        apresentaAluno(aluno);
+        apresentaAluno(aluno, 1, 2);
     }
     else
         printf("O aluno nao foi encontrado!");
     getch();
     clrscr();
 }
+//***********************************************************************************************************************
+// Objetivo: Permitir que o usario altere os dados de um aluno
+// Parametros: Referencia ao aluno a ser alterado
+// Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
+int alteraDadosAluno(Aluno *aluno)
+{
+    int opcao = 1, subOpcao, flag, aux;
+    char *campoLido;
+    char *opcoesAlteracao[] = {"Alterar Nome",
+                               "Alterar Idade",
+                               "Alterar Sexo",
+                               "Salvar Mudancas",
+                               "Cancelar Mudancas"};
+    char *sexos[] = {"MASCULINO", "FEMININO"};
+    do
+    {
+        apresentaAluno(*aluno, 5, 5);
+        opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 18, opcao, PRETO, CINZA_E);
+        switch(opcao)
+        {
+            case 1:
+                do
+                {
+                    limpaJanela(5, 13, 5, 63, PRETO);
+                    gotoxy(13, 5);
+                    campoLido = leStringEmCampo(50);
+                    if(campoLido != NULL && strlen(campoLido) >= 3)
+                    {
+                        flag = 1;
+                        strcpy(aluno->nome, campoLido);
+                    }
+                    else
+                    {
+                        flag = 0;
+                        gotoxy(13, 5);
+                        textcolor(VERMELHO);
+                        printf("Nome invalido!");
+                        textcolor(BRANCO);
+                        getch();
+                    }
+                    free(campoLido);
+                }
+                while(!flag);
+                break;
+            case 2:
+                do
+                {
+                    limpaJanela(11, 13, 11, 18, PRETO);
+                    gotoxy(13, 11);
+                    campoLido = leStringEmCampo(5);
+                    aux = atoi(campoLido);
+                    free(campoLido);
+                }
+                while(aux < 15 || aux > 150);
+                aluno->idade = aux;
+                
+                break;
+            case 3:
+                do
+                {
+                    subOpcao = menuVertical("", sexos, 2, BRANCO, AZUL_C, 1, 45, 11, 1, PRETO, CINZA_C);
+                }
+                while(subOpcao == 0);
+                
+                aluno->sexo = subOpcao == 1 ? 'M' : 'F';
+                break;
+        }
+    }
+    while(opcao != 0 && opcao != 4 && opcao != 5);
+    
+    return opcao == 4 ? 1 : 0;
+}
 
 //***********************************************************************************************************************
 // Objetivo: Apresentar os dados de um aluno
 // Parametros: Um aluno
 // Retorno: nenhum
-void apresentaAluno(Aluno aluno)
+void apresentaAluno(Aluno aluno, int coluna, int linha)
 {
+     int tamAluno = 51;
+     char cpfFormatado[15];
+     char *titulos[] = {"Nome", "CPF", "Matricula", "Idade", "Sexo", "Data de Ingresso"};
+
+     desenhaMoldura(linha-1, coluna+6, linha+1, coluna+8+tamAluno, PRETO, BRANCO);
+     gotoxy(coluna, linha);
+     printf("Nome:");
+     gotoxy(coluna+8, linha);
+     printf("%-*.*s\n", tamAluno-1, tamAluno-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
+
+     desenhaMoldura(linha+2, coluna+6, linha+4, coluna+11+TAM_CPF, PRETO, BRANCO);
+     gotoxy(coluna, linha+3);
+     printf("CPF:");
+     gotoxy(coluna+8, linha+3);
+     if(strlen(aluno.cpf))
+         sprintf(cpfFormatado, "%3.3s.%3.3s.%3.3s-%2.2s", aluno.cpf, aluno.cpf+3, aluno.cpf+6, aluno.cpf+9);
+     else
+         sprintf(cpfFormatado, "NUM.ERO.CPF-NU");
+     printf("%-*.*s", TAM_CPF+2, TAM_CPF+2, cpfFormatado);
+
+     desenhaMoldura(linha+2, coluna+26+TAM_CPF, linha+4, coluna+8+tamAluno, PRETO, BRANCO);
+     gotoxy(coluna+15+TAM_CPF, linha+3);
+     printf("Matricula:");
+     gotoxy(coluna+28+TAM_CPF, linha+3);
+     if(aluno.matricula)
+         printf("%06d\n", aluno.matricula);
+     else
+         printf("%-*.*s\n", 10, 10, "[Ex. 010]");
+
+     desenhaMoldura(linha+5, coluna+6, linha+7, coluna+17, PRETO, BRANCO);
+     gotoxy(coluna, linha+6);
+     printf("Idade:");
+     gotoxy(coluna+8, linha+6);
+     if(aluno.idade)
+         printf("%-8d\n", aluno.idade);
+     else
+         printf("%*.*s\n", 8, 8, "[Ex. 23]");
+
+     desenhaMoldura(linha+5, coluna+26+TAM_CPF, linha+7, coluna-1+tamAluno, PRETO, BRANCO);
+     gotoxy(coluna+29, linha+6);
+     printf("Sexo:");
+     gotoxy(coluna+28+TAM_CPF, linha+6);
+     printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
+
+     desenhaMoldura(linha+8, coluna+46, linha+10, coluna+8+tamAluno, PRETO, BRANCO);
+     gotoxy(coluna+28, linha+9);
+     printf("Data de Ingresso:");
+     gotoxy(coluna+48, linha+9);
+     printf("%02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
+
+    /*
     gotoxy(1,1);
     printf("Nome: %-*.*s\n", TAM_NOME_ALUNO, TAM_NOME_ALUNO, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
     
@@ -382,6 +494,7 @@ void apresentaAluno(Aluno aluno)
         printf("%-*.*s\n", 15, 15, "[Ex. MASCULINO]");
 
     printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
+    */
 }
 
 //***********************************************************************************************************************
@@ -560,21 +673,22 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
 int validaCPF(const char *cpf)
 {
     char *cpfsInvalidos[] = {"11111111111",
-                        "22222222222",
-                        "33333333333",
-                        "44444444444",
-                        "55555555555",
-                        "66666666666",
-                        "77777777777",
-                        "88888888888",
-                        "99999999999"};
+                             "22222222222",
+                             "33333333333",
+                             "44444444444",
+                             "55555555555",
+                             "66666666666",
+                             "77777777777",
+                             "88888888888",
+                             "99999999999",
+                             "00000000000"};
                         
     int flag = 1, soma, contador, auxDig, digVeri[2], digitos[11];
     
     if(strlen(cpf) != 11)
         return 0;
     
-    for(contador=0;contador<9;contador++)
+    for(contador=0;contador<10;contador++)
     {
         if(strcmp(cpf, cpfsInvalidos[contador])==0)
         {
