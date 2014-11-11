@@ -107,8 +107,8 @@ char leValidaChar(const char *titulo, const char *escolhas)
 
 //***********************************************************************************************************************
 // Objetivo: Ler uma string com limite
-// ParÃ¢metros: tamanho maximo
-// Retorno: EndereÃ§o para a string alocada dinamicamente
+// ParÃƒÂ¢metros: tamanho maximo
+// Retorno: EndereÃƒÂ§o para a string alocada dinamicamente
 char * leStringEmCampo(int limite)
 {
     char *string = NULL, *stringAux, caractere;
@@ -550,9 +550,9 @@ int alteraDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado
 //  Retorno: 1 se o dado foi excluido, 0 se o dado nao foi excluido
 int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
 {
-    FILE *arq, *arqTemp;
-    int qtdCopiados = 0, retorno = 0, flag = 0;
-    void *dado;
+    FILE *arq, *arqTemp, *arqBackup;
+    int qtdCopiados = 0, qtdBytesArquivo, retorno = 0, flag = 0;
+    void *dado, *dadosBackup;
     
     if((dado = malloc(tamanhoDado)) != NULL)
     {
@@ -572,15 +572,49 @@ int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
                 }
                 
                 fclose(arqTemp);
-                fclose(arq);
                 
-                if(remove(nomeArquivo) == 0)
+                if((arqBackup = fopen(ARQ_BACKUP, "wb")) != NULL)
                 {
-                    if(rename(ARQ_TEMP, nomeArquivo) == 0)
-                        retorno = 1;
+                    qtdBytesArquivo = ftell(arq);
+                    if((dadosBackup = malloc(qtdBytesArquivo)) != NULL)
+                    {
+                        rewind(arq);
+                        if(fread(dadosBackup, qtdBytesArquivo, 1, arq))
+                        {
+                            fclose(arq);
+                            if(fwrite(dadosBackup, qtdBytesArquivo, 1, arqBackup))
+                            {
+                                fclose(arqBackup);
+                                if(remove(nomeArquivo) == 0)
+                                {
+                                    if(rename(ARQ_TEMP, nomeArquivo) == 0)
+                                        retorno = 1;
+                                    else if(rename(ARQ_BACKUP, nomeArquivo) == 0)
+                                        apresentaMensagem("O dado nao pode ser removido!");
+                                    else
+                                        apresentaMensagem("O dado nao pode ser removido mas os dados foram perdidos!");
+                                }
+                                else
+                                    apresentaMensagem("O arquivo original nao pode ser removido!");
+                            }
+                            else
+                                apresentaMensagem("Os dados de backup nao puderam ser copiados!");
+                        }
+                        else
+                            apresentaMensagem("Os dados de backup nao puderam ser lidos!");
+                    }
+                    else
+                    {
+                        apresentaMensagem("A memoria para guardar os dados de backup nao pode ser alocada!");
+                        fclose(arq);
+                        fclose(arqBackup);
+                    }
                 }
                 else
-                    apresentaMensagem("O arquivo original nao pode ser removido!");
+                {
+                    apresentaMensagem("O arquivo de backup nao pode ser criado!");
+                    fclose(arq);
+                }
             }
             else
             {
@@ -626,7 +660,7 @@ int obtemDadoArquivo(const char *nomeArquivo, void *dado, int tamanhoDado, int p
 // Objetivo: Obter todos os dados de arquivo
 // Parametros: Nome do arquivo, Tamanho do dado, Referencia a quantidade de dados (valor sera dado pela funcao)
 // Retorno: Ponteiro para memoria alocada na qual os dados estao
-void * obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados)
+void *obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados)
 {
     FILE *arq;
     void *dados = NULL;
