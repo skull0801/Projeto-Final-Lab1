@@ -17,11 +17,12 @@ void excluiMatriculaAluno(int matricula, int codCurso);
 void listaDadosCadastro(void);
 void apresentaCadastro(Cadastro cadastro);
 void pesquisaApresentaCadastro(void);
-void apresentarTodosAlunosCadastrados(void);
+void apresentaTodosAlunosCadastrados(void);
 void apresentaAlunosMatriculadosEmUmCurso(void);
+int apresentaDadosCadastros(Cadastro *cadastros, int qtdeCadastros);
 
-Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador);
-Aluno *obtemAlunosPorSituacaoPagamento(int *qtdAlunos, int indicador);
+Cadastro *obtemAlunosDeCurso(int codigoCurso, int *qtdCadastros, int indicador);
+Cadastro *obtemAlunosPorSituacaoPagamento(int *qtdCadastros, int indicador);
 
 // Verificacao
 int verificaAlunoCadastrado(int matriculaAluno);
