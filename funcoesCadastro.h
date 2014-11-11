@@ -28,4 +28,7 @@ int verificaAlunoCadastrado(int matriculaAluno);
 int verificaCursoAlunoCadastrado(int codigoCurso);
 int verificaAlunoRepetidoCadastrando(int codCurso, int alunoMatricula);
 
+// Comparacao
+int comparaCadastroCodigo(const void *p1, const void *p2);
+
 #endif
