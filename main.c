@@ -144,7 +144,7 @@ int main(void)
                             apresentaAlunosMatriculadosEmUmCurso();
                             break;
                         case 6:
-                            //apresentarTodosAlunosCadastrados();
+                            apresentaTodosAlunosCadastrados();
                             break;
                     }
                 }
@@ -180,7 +180,7 @@ int main(void)
                                         apresentaTodosCursos();
                                         break;
                                     case 6:
-                                        //apresentarTodosAlunosCadastrados();
+                                        apresentaTodosAlunosCadastrados();
                                         break;
                                 }
                             }
