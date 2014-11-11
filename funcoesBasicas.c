@@ -107,8 +107,8 @@ char leValidaChar(const char *titulo, const char *escolhas)
 
 //***********************************************************************************************************************
 // Objetivo: Ler uma string com limite
-// Parâmetros: tamanho maximo
-// Retorno: Endereço para a string alocada dinamicamente
+// ParÃ¢metros: tamanho maximo
+// Retorno: EndereÃ§o para a string alocada dinamicamente
 char * leStringEmCampo(int limite)
 {
     char *string = NULL, *stringAux, caractere;
@@ -167,16 +167,19 @@ int transformaStringEmData(Data *data, char *dataTexto)
         strncpy(aux, dataTexto, 2);
         aux[2] = '\0';
         data->dia = atoi(aux);
+        
         if(data->dia > 0 && dataTexto[2] == '/')
         {
             strncpy(aux, dataTexto+3, 2);
             aux[2] = '\0';
             data->mes = atoi(aux);
+            
             if(data->mes > 0 || data->mes == 0 && dataTexto[10] == '0' && dataTexto[5] == '/')
             {
                 strncpy(aux, dataTexto+6, 4);
                 aux[4] = '\0';
                 data->ano = atoi(aux);
+                
                 if(data->ano > 0)
                     retorno = 1;
             }
@@ -216,7 +219,7 @@ int validaData(Data data)
             else
             {
                if(data.dia >28)
-                  retorno =0;                                      
+                  retorno = 0;                                      
             }
 
             break;      
@@ -342,7 +345,7 @@ int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra
 
     // Escreve titulo do menu
     colunaTitulo = coluna+(tamMaiorOpcao/2)-(strlen(titulo)/2);
-    colunaTitulo = colunaTitulo > 0 ? colunaTitulo : 0;
+    colunaTitulo = colunaTitulo > 0 ? colunaTitulo : 1;
     tamTitulo = strlen(titulo)+colunaTitulo > 80 ? 80-colunaTitulo : strlen(titulo);
     gotoxy(colunaTitulo, linhaTitulo);
     printf("%-*.*s", tamTitulo, tamTitulo, titulo);
@@ -476,16 +479,24 @@ int confirmaEscolha(int coluna, int linha, char *titulo)
 // Retorno: Nenhum
 void apresentaMensagem(char *mensagem)
 {
-    int linhas, linhaInicial, contador, tamLinha = 25;
-    linhas = strlen(mensagem) > tamLinha ? strlen(mensagem)/tamLinha : 1;
-    desenhaMoldura(11-linhas, 40-tamLinha/2, 13+linhas, 40+tamLinha/2, PRETO, BRANCO);
-    linhaInicial = 12-linhas;
+    int linhas, linhaInicial, contador, tamLinha;
+    if(strlen(mensagem)>25)
+    {
+        for(contador = 20;mensagem[contador]!=' ';contador++);
+        tamLinha = contador;
+    }
+    else
+        tamLinha = strlen(mensagem);
+    linhas = strlen(mensagem)/tamLinha + 1;
+    desenhaMoldura(12-linhas, 40-tamLinha/2-2, 12+linhas, 40+tamLinha/2+2, PRETO, BRANCO);
+    linhaInicial = 12-linhas/2;
     for(contador=0;contador<linhas;contador++)
     {
-        gotoxy((40-tamLinha/2)+1, linhaInicial+contador);
-        printf("%-*.*s", tamLinha-2, tamLinha-2, mensagem+(contador*tamLinha));
+        gotoxy(40-tamLinha/2, linhaInicial+contador);
+        printf("%-*.*s", tamLinha, tamLinha, mensagem+(contador*tamLinha));
     }
     getch();
+    limpaJanela(12-linhas, 40-tamLinha/2-2, 12+linhas, 40+tamLinha/2+2, PRETO);
 }
 
 //***********************************************************************************************************************
@@ -523,12 +534,12 @@ int alteraDadoArquivo(const char *nomeArquivo, const void *dado, int tamanhoDado
                 retorno = 1;
         }
         else
-            printf("O dado nao pode ser encontrado no arquivo!");
+            apresentaMensagem("O dado nao pode ser encontrado no arquivo!");
 
         fclose(arq);
     }
     else
-        printf("O arquivo nao pode ser aberto para ser alterado!");
+        apresentaMensagem("O arquivo nao pode ser aberto para ser alterado!");
     
     return retorno;
 }
@@ -543,41 +554,48 @@ int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
     int qtdCopiados = 0, retorno = 0, flag = 0;
     void *dado;
     
-    if((arq = fopen(nomeArquivo, "rb")) != NULL)
+    if((dado = malloc(tamanhoDado)) != NULL)
     {
-        if((arqTemp = fopen(ARQ_TEMP, "wb")) != NULL)
+        if((arq = fopen(nomeArquivo, "rb")) != NULL)
         {
-            dado = malloc(tamanhoDado);
-            while(!feof(arq))
+            if((arqTemp = fopen(ARQ_TEMP, "wb")) != NULL)
             {
-                if((fread(dado, tamanhoDado, 1, arq)) == 1)
+                while(!feof(arq))
                 {
-                    qtdCopiados++;
-                    if(posDado != qtdCopiados)
-                        if(fwrite(dado, tamanhoDado, 1, arqTemp) != 1)
-                            flag = 1;
+                    if((fread(dado, tamanhoDado, 1, arq)) == 1)
+                    {
+                        qtdCopiados++;
+                        if(posDado != qtdCopiados)
+                            if(fwrite(dado, tamanhoDado, 1, arqTemp) != 1)
+                                flag = 1;
+                    }
                 }
-            }
-            
-            fclose(arqTemp);
-            fclose(arq);
-            
-            if(remove(nomeArquivo) == 0)
-            {
-                if(rename(ARQ_TEMP, nomeArquivo) == 0)
-                    retorno = 1;
+                
+                fclose(arqTemp);
+                fclose(arq);
+                
+                if(remove(nomeArquivo) == 0)
+                {
+                    if(rename(ARQ_TEMP, nomeArquivo) == 0)
+                        retorno = 1;
+                }
+                else
+                    apresentaMensagem("O arquivo original nao pode ser removido!");
             }
             else
-                printf("O arquivo original nao pode ser removido!");
+            {
+                apresentaMensagem("O arquivo temporario nao pode ser criado!");
+                fclose(arq);
+            }
         }
         else
-        {
-            printf("O arquivo temporario nao pode ser criado!");
-            fclose(arq);
-        }
+            apresentaMensagem("O arquivo nao pode ser aberto!");
+            
+        free(dado);
     }
     else
-        printf("O arquivo nao pode ser aberto!");
+        apresentaMensagem("O arquivo nao pode ser lido!");
+        
     return retorno;
 }
 
@@ -628,25 +646,25 @@ void * obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDado
                     rewind(arq);
                     if(fread(dados, tamanhoDado, *qtdDados, arq) != *qtdDados)
                     {
-                        printf("Erro ao recuperar os dados!");
+                        apresentaMensagem("Erro ao recuperar os dados!");
                         free(dados);
                         dados = NULL;
                         *qtdDados = 0;
                     }
                 }
                 else
-                    printf("Erro ao alocar memoria para dados!");
+                    apresentaMensagem("Erro ao alocar memoria para dados!");
             }
             else
-                printf("Nao existem dados no arquivo!");
+                apresentaMensagem("Nao existem dados no arquivo!");
         }
         else
-            printf("Erro ao obter quantidade de dados.");
+            apresentaMensagem("Erro ao obter quantidade de dados.");
             
         fclose(arq);
     }
     else
-        printf("Erro ao abrir o arquivo de dados.");
+        apresentaMensagem("Erro ao abrir o arquivo de dados.");
         
     return dados;
 }
