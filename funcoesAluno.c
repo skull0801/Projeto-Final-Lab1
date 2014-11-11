@@ -91,7 +91,7 @@ void alteraAluno(void)
                                "Salvar Mudancas",
                                "Cancelar Mudancas"};
     
-    matricula = pesquisaApresentaAlunoNome();
+    matricula = selecionaAluno();
     
     if(matricula)
         posAluno = pesquisaAlunoMatricula(matricula);
@@ -152,7 +152,7 @@ void excluiAluno(void)
     Aluno aluno;
     int posAluno = 0, matricula, confirmacao;
     
-    matricula = pesquisaApresentaAlunoNome();
+    matricula = selecionaAluno();
     
     if(matricula)
         posAluno = pesquisaAlunoMatricula(matricula);
@@ -183,6 +183,33 @@ void excluiAluno(void)
         clrscr();
     }
 }
+
+//*********************************************************************************************************************** 
+// Objetivo: Permitir ao usuario selecionar um aluno dentre varios, dependendo de sua escolha 
+// Parametros: nenhum 
+// Retorno: Matricula do aluno selecionado (0 se nao selecionar ninguem) 
+int selecionaAluno(void) 
+{ 
+    int opcao, matricula = 0; 
+    char *opcoesSelecao[] = {"Dentre Todos os Alunos", 
+                             "Pesquisar por Nome", 
+                             "Voltar"}; 
+
+    opcao = menuVertical("Como deseja selecionar o aluno?", opcoesSelecao, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C); 
+         
+    switch(opcao) 
+    { 
+        case 1: 
+            matricula = apresentaTodosAlunos(); 
+            break; 
+        case 2: 
+            matricula = pesquisaApresentaAlunoNome(); 
+            break; 
+    } 
+     
+    return matricula; 
+} 
+
 
 //***********************************************************************************************************************
 // Objetivo: Pesquisar por um ou mais alunos
@@ -340,56 +367,6 @@ void pesquisaApresentaAlunoMatricula(void)
 // Retorno: nenhum
 void apresentaAluno(Aluno aluno)
 {
-    // int coluna = 1, linha = 2, i;
-    // int tamAluno = 51;
-    // char cpfFormatado[15];
-    // char *titulos[] = {"Nome", "CPF", "Matricula", "Idade", "Sexo", "Data de Ingresso"};
-
-    // desenhaMoldura(linha-1, coluna+6, linha+1, coluna+8+tamAluno, PRETO, BRANCO);
-    // gotoxy(coluna, linha);
-    // printf("Nome:");
-    // gotoxy(coluna+8, linha);
-    // printf("%-*.*s\n", tamAluno-1, tamAluno-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
-
-    // desenhaMoldura(linha+2, coluna+6, linha+4, coluna+11+TAM_CPF, PRETO, BRANCO);
-    // gotoxy(coluna, linha+3);
-    // printf("CPF:");
-    // gotoxy(coluna+8, linha+3);
-    // if(strlen(aluno.cpf))
-    //     sprintf(cpfFormatado, "%3.3s.%3.3s.%3.3s-%2.2s", aluno.cpf, aluno.cpf+3, aluno.cpf+6, aluno.cpf+9);
-    // else
-    //     sprintf(cpfFormatado, "NUM.ERO.CPF-NU");
-    // printf("%-*.*s", TAM_CPF+2, TAM_CPF+2, cpfFormatado);
-
-    // desenhaMoldura(linha+2, coluna+26+TAM_CPF, linha+4, coluna+8+tamAluno, PRETO, BRANCO);
-    // gotoxy(coluna+15+TAM_CPF, linha+3);
-    // printf("Matricula:");
-    // gotoxy(coluna+28+TAM_CPF, linha+3);
-    // if(aluno.matricula)
-    //     printf("%06d\n", aluno.matricula);
-    // else
-    //     printf("%-*.*s\n", 10, 10, "[Ex. 010]");
-
-    // desenhaMoldura(linha+5, coluna+6, linha+7, coluna+17, PRETO, BRANCO);
-    // gotoxy(coluna, linha+6);
-    // printf("Idade:");
-    // gotoxy(coluna+8, linha+6);
-    // if(aluno.idade)
-    //     printf("%-8d\n", aluno.idade);
-    // else
-    //     printf("%*.*s\n", 8, 8, "[Ex. 23]");
-
-    // desenhaMoldura(linha+5, coluna+35, linha+7, coluna-4+tamAluno, PRETO, BRANCO);
-    // gotoxy(coluna+29, linha+6);
-    // printf("Sexo:");
-    // gotoxy(coluna+37, linha+6);
-    // printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
-
-    // desenhaMoldura(linha+8, coluna+46, linha+10, coluna+8+tamAluno, PRETO, BRANCO);
-    // gotoxy(coluna+28, linha+9);
-    // printf("Data de Ingresso:");
-    // gotoxy(coluna+48, linha+9);
-    // printf("%02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
     gotoxy(1,1);
     printf("Nome: %-*.*s\n", TAM_NOME_ALUNO, TAM_NOME_ALUNO, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
     
