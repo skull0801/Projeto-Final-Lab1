@@ -76,9 +76,8 @@ void cadastraAlunoEmCurso(void)
 void alteraCadastro(void)
 {
     FILE *arq;
-    Cadastro cadastro;
-    Aluno *alunos = NULL;
-    int flag = 0, codigoCurso, qtdeAlunos, matriculaAluno, opcao, opcaoSituacao, posCadastro, escolha;
+    Cadastro cadastro, *cadastros;
+    int flag = 0, codigoCurso, qtdeCadastros, matriculaAluno, opcao, opcaoSituacao, posCadastro, escolha;
     char *opcoesSituacaoAluno[] = {"Cursando",
                                    "Concluiu"};
                                    
@@ -95,9 +94,9 @@ void alteraCadastro(void)
     
     if(codigoCurso)
     {
-        if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdeAlunos, 3)) != NULL)
+        if((cadastros = obtemAlunosDeCurso(codigoCurso, &qtdeCadastros, 3)) != NULL)
         {
-            matriculaAluno = apresentaDadosAlunos(alunos, qtdeAlunos);
+            matriculaAluno = apresentaDadosCadastros(cadastros, qtdeCadastros);
 
             posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaAluno);
 
@@ -150,16 +149,16 @@ void alteraCadastro(void)
                     }
                     else
                         apresentaMensagem("A matricula nao foi alterada!");
+                    limpaJanela(1, 1, 10, 80, PRETO);
                 }
                 else
                     apresentaMensagem("A matricula nao pode ser recuperada!");
             }
-            free(alunos);
+            free(cadastros);
         }
         else
             apresentaMensagem("O curso nao tem alunos cadastrados!");
     }
-    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -168,28 +167,38 @@ void alteraCadastro(void)
 //  Retorno: Nenhum
 void excluiMatriculaAlunoEmUmCurso(void)
 {
-    int codigoCurso, matriculaASerExcluida, qtdAlunos, posCadastro;
+    int codigoCurso, matriculaASerExcluida, qtdCadastros, posCadastro, confirmacao;
     FILE *arq;
-    Aluno *alunos;
+    Cadastro *cadastros;
         
     codigoCurso = apresentaTodosCursos();
     
     if(codigoCurso)
     {
-        if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdAlunos, 3)) != NULL)
+        if((cadastros = obtemAlunosDeCurso(codigoCurso, &qtdCadastros, 3)) != NULL)
         {
-            matriculaASerExcluida = apresentaDadosAlunos(alunos, qtdAlunos);
-            free(alunos);
+            matriculaASerExcluida = apresentaDadosCadastros(cadastros, qtdCadastros);
+            free(cadastros);
+            
             if(matriculaASerExcluida)
             {
                 posCadastro = pesquisaPosicaoCadastro(codigoCurso, matriculaASerExcluida);
 
                 if(posCadastro)
                 {
-                    if(excluiDadoArquivo(ARQ_MATRICULAS, sizeof(Cadastro), posCadastro))
-                        apresentaMensagem("A matricula foi excluida com sucesso!");
+                    confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
+                    
+                    limpaJanela(1, 1, 10, 80, PRETO);
+                    
+                    if(confirmacao == 1)
+                    {
+                        if(excluiDadoArquivo(ARQ_MATRICULAS, sizeof(Cadastro), posCadastro))
+                            apresentaMensagem("A matricula foi excluida com sucesso!");
+                        else
+                            apresentaMensagem("A matricula nao pode ser excluida!");
+                    }
                     else
-                        apresentaMensagem("A matricula nao pode ser excluida!");
+                        apresentaMensagem("A matricula nao foi excluida!");
                 }
                 else
                     apresentaMensagem("A matricula nao pode ser excluida!!");
@@ -198,6 +207,7 @@ void excluiMatriculaAlunoEmUmCurso(void)
         else
             apresentaMensagem("Nao ha nenhum aluno cadastrado no curso!");
     }
+    limpaJanela(1, 1, 10, 80, PRETO);
 }
 
 //***********************************************************************************************************************
@@ -218,16 +228,13 @@ void pesquisaApresentaCadastro(void)
     if(posCadastro)
     {
         if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-        {
             apresentaCadastro(cadastro);
-            getch();
-            limpaJanela(1, 1, 8, 80, PRETO);
-        }
         else
             apresentaMensagem("O cadastro nao pode ser recuperado!");
     }
     else
         apresentaMensagem("O cadastro nao foi encontrado!");
+    
 }
 
 //***********************************************************************************************************************
@@ -244,13 +251,123 @@ void apresentaCadastro(Cadastro cadastro)
 }
 
 //***********************************************************************************************************************
+//  Objetivo: Apresentar todos os alunos matriculados
+//  Parametros: nenhum
+//  Retorno: nenhum
+void apresentaTodosAlunosCadastrados(void)
+{
+    Cadastro *cadastros;
+    int qtdCadastros = 0, matriculaSelecionada = 0;
+    if((cadastros = (Cadastro *) obtemDadosArquivo(ARQ_MATRICULAS, sizeof(Cadastro), &qtdCadastros)) != NULL)
+    {
+        apresentaDadosCadastros(cadastros, qtdCadastros);
+        free(cadastros);
+    }
+}
+
+//***********************************************************************************************************************
+//  Objetivo: Apresentar todos os alunos matriculados em um curso
+//  Parametros: Ponteiro para cadastros alocados, quantidade de cadastros
+//  Retorno: Matricula do aluno selecionado
+int apresentaDadosCadastros(Cadastro *cadastros, int qtdeCadastros)
+{
+    int contador, flag = 0, qtdeLinhasAlocadas = 0, qtdeItens, selecao, matriculaSelecionada = 0, posAluno;
+    char **linhasTabela, titulo[TAM_TEXTO_TABELA+1], matriculaTexto[7];
+    Aluno aluno;
+    
+    sprintf(titulo,"%-9s%-18s%-29s%-13s%-10s", "Matr.", "CPF", "Nome Aluno", "Situacao", "Codigo");
+    
+    if(qtdeCadastros > 0)
+    {
+        linhasTabela = (char **)malloc(sizeof(char*)*qtdeCadastros);
+        if(linhasTabela != NULL)
+        {
+            
+            for(contador = 0; contador < qtdeCadastros; contador++)
+            {
+                posAluno = pesquisaAlunoMatricula(cadastros[contador].matriculaAluno);
+                if(obtemDadoArquivo(ARQ_ALUNOS, &aluno, sizeof(Aluno), posAluno))
+                {
+                    linhasTabela[contador] = (char *)malloc(sizeof(char)*(TAM_TEXTO_TABELA+1));
+                    if(linhasTabela[contador] != NULL)
+                    {
+                        sprintf(linhasTabela[contador], "%06d   %3.3s.%3.3s.%3.3s-%2.2s   %-29.29s%-15.15s%-06d", aluno.matricula, aluno.cpf, 
+                        aluno.cpf+3, aluno.cpf+6, aluno.cpf+9, aluno.nome, 
+                        cadastros[contador].situacaoAluno == '1' ? "Cursando" : "Concluiu", cadastros[contador].codigoCurso);
+                        qtdeLinhasAlocadas++;
+                    }
+                    else
+                    {
+                        apresentaMensagem("A memoria para as linhas nao puderam ser alocadas!");
+                        flag = 1;
+                        break;
+                    }
+                }
+                else
+                {
+                    apresentaMensagem("Um aluno nao pode ser recuperado");
+                    flag = 1;
+                    break;
+                    
+                }
+            }
+        }
+        else
+        {
+            apresentaMensagem("A memoria nao pode ser alocadas!");
+            flag = 1;
+        }
+        
+        if(!flag)
+        {
+            for(contador=0;contador<qtdeCadastros;contador+=LINHAS_TABELA)
+            {
+                qtdeItens = qtdeCadastros - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdeCadastros - contador;
+                
+                if(contador+LINHAS_TABELA<qtdeCadastros)
+                {
+                    gotoxy(45, LINHA_TABELA_ALUNOS+qtdeItens+3);
+                    printf("Pressione Esc para ver o restante!");
+                }
+
+                selecao = menuVertical(titulo, &linhasTabela[contador], qtdeItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
+                
+                limpaJanela(LINHA_TABELA_ALUNOS+qtdeItens+3, 45, LINHA_TABELA_ALUNOS+qtdeItens+3, 80, PRETO);
+                
+                if(selecao != 0)
+                {
+                    strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
+                    matriculaTexto[6] = '\0';
+                    matriculaSelecionada = atoi(matriculaTexto);
+                    break;
+                }
+                else if(contador+LINHAS_TABELA<qtdeCadastros)
+                {
+                    if(!confirmaEscolha(40, 12, "Deseja ver o restante das Matriculas?"))
+                        break;
+                }
+            }
+        }
+        
+        if(linhasTabela != NULL)
+        {
+            for(contador=0;contador<qtdeLinhasAlocadas;contador++)
+                free(linhasTabela[contador]);
+            free(linhasTabela);
+        }
+    }
+    
+    return matriculaSelecionada;
+}
+
+//***********************************************************************************************************************
 //  Objetivo: Apresentar os dados para a pesquisa de alunos matriculados em um curso
 //  Parametros: Nenhum
 //  Retorno: Nenhum
 void apresentaAlunosMatriculadosEmUmCurso(void)
 {
-    Aluno *alunos;
-    int codigoCurso, indicador, qtdAlunos;
+    Cadastro *cadastros;
+    int codigoCurso, indicador, qtdCadastros;
     char *situacaoAluno[] = {"Cursando",
                              "Concluido",
                              "Ambos"};
@@ -263,13 +380,15 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
         
         if(indicador)
         {
-            if((alunos = obtemAlunosDeCurso(codigoCurso, &qtdAlunos, indicador)) != NULL)
+            if((cadastros = obtemAlunosDeCurso(codigoCurso, &qtdCadastros, indicador)) != NULL)
             {
-                apresentaDadosAlunos(alunos, qtdAlunos);
-                free(alunos);
+                apresentaDadosCadastros(cadastros, qtdCadastros);
+                free(cadastros);
             }
-            else if(qtdAlunos == 0)
-                apresentaMensagem("Nao ha nenhum aluno cadastrado ate o momento neste curso!");
+            else if(qtdCadastros == 0)
+            {
+                apresentaMensagem("Nao ha nenhum aluno cadastrado ate o momento neste curso com a situacao escolhida!");
+            }
         }
     }
 }
@@ -280,8 +399,8 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
 //  Retorno: Nenhum
 void apresentaAlunosPorSituacao(void)
 {
-    Aluno *alunos;
-    int indicador, qtdAlunos;
+    Cadastro *cadastros;
+    int indicador, qtdCadastros;
     char *situacaoAluno[] = {"Regular",
                              "Atrasada",
                              "Totalmente Paga"};
@@ -290,66 +409,52 @@ void apresentaAlunosPorSituacao(void)
     
     if(indicador)
     {
-        if((alunos = obtemAlunosPorSituacaoPagamento(&qtdAlunos, indicador)) != NULL)
+        if((cadastros = obtemAlunosPorSituacaoPagamento(&qtdCadastros, indicador)) != NULL)
         {
-            apresentaDadosAlunos(alunos, qtdAlunos);
-            free(alunos);
+            apresentaDadosCadastros(cadastros, qtdCadastros);
+            free(cadastros);
         }
-        else if(qtdAlunos == 0)
-            apresentaMensagem("Nao ha nenhum aluno cadastrado com esta situacao!");
+        if(qtdCadastros == 0)
+        {
+            apresentaMensagem("Nao ha nenhum aluno cadastrado com esta situacao!");;
+        }
     }
 }
 
 //***********************************************************************************************************************
-// Objetivo: Obter alunos de um curso
-// Parametros: Codigo do curso, ponteiro para quantidade de alunos lidos(a ser mudado pela funcao), indicador( 1-Cursando, 2-Concluido e 3-Ambos)
-// Retorno: Pointeiro para alunos alocados
-Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador)
+// Objetivo: Obter cadastros de um curso
+// Parametros: Codigo do curso, ponteiro para quantidade de cadastros lidos(a ser mudado pela funcao), indicador( 1-Cursando, 2-Concluido e 3-Ambos)
+// Retorno: Pointeiro para cadastros alocados
+Cadastro *obtemAlunosDeCurso(int codigoCurso, int *qtdCadastros, int indicador)
 {
-    Aluno *alunos = NULL, *alunosAux;
+    Cadastro *cadastros = NULL, *cadastrosAux, cadastro;
     FILE *arq;
-    Cadastro matricula;
-    int posMatricula, flagErro = 0;
     
-    *qtdAlunos = 0;
+    *qtdCadastros = 0;
     
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
         while(!feof(arq))
         {
-            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            if(fread(&cadastro, sizeof(Cadastro), 1, arq))
             {
-                if(matricula.codigoCurso == codigoCurso && (indicador == 3 || indicador + '0' == matricula.situacaoAluno))
+                if(cadastro.codigoCurso == codigoCurso && (indicador == 3 || indicador + '0' == cadastro.situacaoAluno))
                 {
-                    alunosAux = (Aluno*) realloc(alunos, (*qtdAlunos+1) * sizeof(Aluno));
-                    if(alunosAux != NULL)
+                    cadastrosAux = (Cadastro*) realloc(cadastros, (*qtdCadastros+1) * sizeof(Cadastro));
+                    if(cadastrosAux != NULL)
                     {
-                        alunos = alunosAux;
-                        posMatricula = pesquisaAlunoMatricula(matricula.matriculaAluno);
-                        if(posMatricula)
-                        {
-                            if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &alunos[*qtdAlunos], sizeof(Aluno), posMatricula))
-                            {
-                                (*qtdAlunos)++;
-                            }
-                            else
-                            {
-                                flagErro = 1;
-                                apresentaMensagem("O aluno matriculado nao pode ser recuperado!");
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            flagErro = 1;
-                            apresentaMensagem("O aluno matriculado nao pode ser encontrado!");
-                            break;
-                        }
+                        cadastros = cadastrosAux;
+                        cadastros[*qtdCadastros] = cadastro;
+                        (*qtdCadastros)++;
                     }
-                    else
-                    {
-                        flagErro = 1;
-                        apresentaMensagem("A memoria para alunos nao pode ser alocada!");
+                    else 
+                    {   
+                        if(cadastros != NULL)
+                        {
+                            free(cadastros);
+                            cadastros = NULL;
+                        }
+                        apresentaMensagem("Erro ao alocar memoria para cadastro!");
                         break;
                     }
                 }
@@ -357,68 +462,43 @@ Aluno *obtemAlunosDeCurso(int codigoCurso, int *qtdAlunos, int indicador)
         }
         fclose(arq);
     }
-    
-    if(flagErro)
-    {
-        if(alunos != NULL)
-        {
-            free(alunos);
-            alunos = NULL;
-        }
-    }
-    
-    return alunos;
+    return cadastros;
 }
 
 //***********************************************************************************************************************
-// Objetivo: Obter alunos matriculados em curso com situacao de pagamento indicada
-// Parametros: Ponteiro para quantidade de alunos lidos(a ser mudado pela funcao), indicador(1 - Regular, 2 - Atrasado, 3 - Pago)
-Aluno *obtemAlunosPorSituacaoPagamento(int *qtdAlunos, int indicador)
+// Objetivo: Obter cadastros com situacao de pagamento indicada
+// Parametros: Ponteiro para quantidade de cadastros lidos(a ser mudado pela funcao), indicador(1 - Regular, 2 - Atrasado, 3 - Pago)
+// Retorno: Ponteiro para cadastros alocados
+Cadastro *obtemAlunosPorSituacaoPagamento(int *qtdCadastros, int indicador)
 {
-    Aluno *alunos = NULL, *alunosAux;
+    Cadastro *cadastros = NULL, *cadastrosAux, cadastro;
     FILE *arq;
-    Cadastro matricula;
-    int posMatricula, flagErro = 0;
     
-    *qtdAlunos = 0;
+    *qtdCadastros = 0;
     
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
         while(!feof(arq))
         {
-            if(fread(&matricula, sizeof(Cadastro), 1, arq))
+            if(fread(&cadastro, sizeof(Cadastro), 1, arq))
             {
-                if(indicador + '0' == matricula.situacaoPagamento)
+                if(indicador + '0' == cadastro.situacaoPagamento)
                 {
-                    alunosAux = (Aluno*) realloc(alunos, (*qtdAlunos+1) * sizeof(Aluno));
-                    if(alunosAux != NULL)
+                    cadastrosAux = (Cadastro*) realloc(cadastros, (*qtdCadastros+1) * sizeof(Cadastro));
+                    if(cadastrosAux != NULL)
                     {
-                        alunos = alunosAux;
-                        posMatricula = pesquisaAlunoMatricula(matricula.matriculaAluno);
-                        if(posMatricula)
-                        {
-                            if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &alunos[*qtdAlunos], sizeof(Aluno), posMatricula))
-                            {
-                                (*qtdAlunos)++;
-                            }
-                            else
-                            {
-                                flagErro = 1;
-                                apresentaMensagem("O aluno matriculado nao pode ser recuperado!");
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            flagErro = 1;
-                            apresentaMensagem("O aluno matriculado nao pode ser encontrado!");
-                            break;
-                        }
+                        cadastros = cadastrosAux;
+                        cadastros[*qtdCadastros] = cadastro;
+                        (*qtdCadastros)++;
                     }
-                    else
-                    {
-                        flagErro = 1;
-                        apresentaMensagem("A memoria para alunos nao pode ser alocada!");
+                    else 
+                    {   
+                        if(cadastros != NULL)
+                        {
+                            free(cadastros);
+                            cadastros = NULL;
+                        }
+                        apresentaMensagem("Erro ao alocar memoria para cadastro!");
                         break;
                     }
                 }
@@ -426,15 +506,7 @@ Aluno *obtemAlunosPorSituacaoPagamento(int *qtdAlunos, int indicador)
         }
         fclose(arq);
     }
-    if(flagErro)
-    {
-        if(alunos != NULL)
-        {
-            free(alunos);
-            alunos = NULL;
-        }
-    }
-    return alunos;
+    return cadastros;
 }
 
 
@@ -562,7 +634,7 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar entre 2 codigos de curso, qual Ã© o maior 
+//  Objetivo: Verificar entre 2 codigos de curso, qual ÃƒÂ© o maior 
 //  Parametros: Os codigos do curso
 //  Retorno: Numero positivo se o primeiro codigo for mais, negativo se o segundo for maior ou zero se forem iguais
 int comparaCadastroCodigo(const void *p1, const void *p2)
