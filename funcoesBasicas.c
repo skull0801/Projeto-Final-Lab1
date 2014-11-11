@@ -471,6 +471,24 @@ int confirmaEscolha(int coluna, int linha, char *titulo)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Apresentar uma mensagem no meio da tela esperando um prompt do usuario
+// Parametros: Referencia ao texto a ser escrito
+// Retorno: Nenhum
+void apresentaMensagem(char *mensagem)
+{
+    int linhas, linhaInicial, contador, tamLinha = 25;
+    linhas = strlen(mensagem) > tamLinha ? strlen(mensagem)/tamLinha : 1;
+    desenhaMoldura(11-linhas, 40-tamLinha/2, 13+linhas, 40+tamLinha/2, PRETO, BRANCO);
+    linhaInicial = 12-linhas;
+    for(contador=0;contador<linhas;contador++)
+    {
+        gotoxy((40-tamLinha/2)+1, linhaInicial+contador);
+        printf("%-*.*s", tamLinha-2, tamLinha-2, mensagem+(contador*tamLinha));
+    }
+    getch();
+}
+
+//***********************************************************************************************************************
 // Objetivo: Gravar dado em arquivo
 // Parametros: Nome do arquivo, Ponteiro void para o dado, Tamando do dado
 // Retorno: 1 se o dado foi gravado, 0 se o dado nao foi gravado
