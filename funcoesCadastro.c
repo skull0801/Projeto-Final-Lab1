@@ -216,51 +216,6 @@ void excluiMatriculaAlunoEmUmCurso(void)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Listar todas as matriculas
-//  Parametros: Nenhum
-//  Retorno: Nenhum
-void listaDadosCadastro(void)
-{
-    FILE *arq;
-    Cadastro matricula;
-    int contaMatriculas;
-    char situacaoAluno[9], situacaoPagamento[16];
-    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
-    {
-        printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
-        while(!feof(arq))
-            if(fread(&matricula, sizeof(Cadastro), 1, arq))
-            {
-                if(matricula.situacaoAluno == '1')
-                    sprintf(situacaoAluno,"Cursando");          
-                else
-                    sprintf(situacaoAluno,"Concluiu");
-                switch(matricula.situacaoPagamento)
-                {
-                    case '1':
-                        sprintf(situacaoPagamento,"Regular");
-                        break;
-                    case '2':
-                        sprintf(situacaoPagamento,"Atrasada");
-                        break;
-                    case '3':
-                        sprintf(situacaoPagamento,"Totalmente paga");
-                        break;
-                }
-                printf("\n%-18d%-19d%-19s%-16s",matricula.codigoCurso, matricula.matriculaAluno, situacaoAluno, situacaoPagamento);
-            }
-            fclose(arq);
-    }
-    else
-    {
-        clrscr();
-        puts("Nao ha nenhum aluno matriculado ate o momento");
-    }
-    getch();
-    clrscr();
-}
-
-//***********************************************************************************************************************
 // Objetivo: Pesquisar um cadastro especifico
 // Parametros: nenhum
 // Retorno: nenhum
@@ -314,68 +269,43 @@ void apresentarTodosAlunosCadastrados(void)
 {
     FILE *arq;
     Cadastro *matriculas, matricula, matriculaAux;
-    int qtdeMatriculas, contador, auxiliar, flag = 0;
+    int qtdeMatriculas = 0, contador, auxiliar, flag = 0;
     char situacaoAluno[9], situacaoPagamento[16];
 
-    if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
-    {
-        if(!fseek(arq, 0, SEEK_END))
-        {
-            qtdeMatriculas = ftell(arq)/sizeof(Cadastro);
-            matriculas = (Cadastro*) malloc(sizeof(Cadastro)*qtdeMatriculas);
-            if(matriculas != NULL)
-            {
-                rewind(arq);
-                if(fread(matriculas, sizeof(Cadastro), qtdeMatriculas, arq) != qtdeMatriculas)
-                {
-                    puts("Nao consegui ler do arquivo!");
-                    free(matriculas);
-                    matriculas = NULL;
-                    flag = 1;
-                }
-            }
-            else
-            {
-                puts("Nao foi possivel alocar a memoria!");
-                flag = 1;   
-            }
-        }
-        fclose(arq);
-    }
-    else
-        flag = 1;
-    if(flag)
+    matriculas = (Cadastro *) obtemDadosArquivo(ARQ_MATRICULAS, sizeof(Cadastro), &qtdeMatriculas);
+    
+    if(matriculas == NULL)
         puts("Houve um erro, os dados dos alunos nao foram alocados!");
+    else if(qtdeMatriculas == 0)
+            printf("Nao ha nenhum aluno matriculado no momento");
     else
     {
-        qsort(matriculas, qtdeMatriculas, sizeof(Cadastro), comparaCadastroCodigo);
-        printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
+        printf("%-15s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
+        desenhaMoldura(2, 1, 20, 80, PRETO, BRANCO);
         for(contador = 0; contador < qtdeMatriculas; contador++)
         {
+            gotoxy(2, 3+contador);
             if(matriculas[contador].situacaoAluno == '1')
-                        sprintf(situacaoAluno,"Cursando");          
-                    else
-                        sprintf(situacaoAluno,"Concluiu");
-                    switch(matriculas[contador].situacaoPagamento)
-                    {
-                        case '1':
-                            sprintf(situacaoPagamento,"Regular");
-                            break;
-                        case '2':
-                            sprintf(situacaoPagamento,"Atrasada");
-                            break;
-                        case '3':
-                            sprintf(situacaoPagamento,"Totalmente paga");
-                            break;
-                    }
-                    printf("\n%-18d%-19d%-19s%-16s", 
-                           matriculas[contador].codigoCurso, matriculas[contador].matriculaAluno, situacaoAluno, situacaoPagamento);
+                sprintf(situacaoAluno,"Cursando");          
+            else
+                sprintf(situacaoAluno,"Concluiu");
+            switch(matriculas[contador].situacaoPagamento)
+            {
+                case '1':
+                    sprintf(situacaoPagamento,"Regular");
+                    break;
+                case '2':
+                    sprintf(situacaoPagamento,"Atrasada");
+                    break;
+                case '3':
+                    sprintf(situacaoPagamento,"Totalmente paga");
+                    break;
+            }
+            printf("%-15d%-19d%-19s%-16s", 
+                   matriculas[contador].codigoCurso, matriculas[contador].matriculaAluno, situacaoAluno, situacaoPagamento);
         }
         free(matriculas);
-    }
-    if(qtdeMatriculas == 0)
-    {
-        puts("Nao ha nenhum aluno matriculado neste curso!");
+        
     }
     getch();
     clrscr();
@@ -700,7 +630,7 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar entre 2 codigos de curso, qual é o maior 
+//  Objetivo: Verificar entre 2 codigos de curso, qual Ã© o maior 
 //  Parametros: Os codigos do curso
 //  Retorno: Numero positivo se o primeiro codigo for mais, negativo se o segundo for maior ou zero se forem iguais
 int comparaCadastroCodigo(const void *p1, const void *p2)
