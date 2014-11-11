@@ -130,6 +130,7 @@ void excluiCurso(void)
         {
             apresentaCurso(curso);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
+            limpaJanela(1, 1, 9, 80, PRETO);
             if(confirmacao == 1)
             {
                 if(!verificaCursoAlunoCadastrado(codigo))
