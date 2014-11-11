@@ -522,6 +522,8 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
 
                 selecao = menuVertical(titulo, &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
                 
+                limpaJanela(LINHA_TABELA_ALUNOS+qtdItens+3, 45, LINHA_TABELA_ALUNOS+qtdItens+3, 80, PRETO);
+                
                 if(selecao != 0)
                 {
                     strncpy(matriculaTexto, linhasTabela[contador+selecao-1], 6);
@@ -544,7 +546,6 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
             free(linhasTabela);
         }
     }
-    limpaJanela(2, 3, 2, 80, PRETO);
     
     return matriculaSelecao;
 }
