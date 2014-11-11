@@ -588,7 +588,10 @@ int excluiDadoArquivo(const char *nomeArquivo, int tamanhoDado, int posDado)
                                 if(remove(nomeArquivo) == 0)
                                 {
                                     if(rename(ARQ_TEMP, nomeArquivo) == 0)
+                                    {
                                         retorno = 1;
+                                        remove(ARQ_BACKUP);
+                                    }
                                     else if(rename(ARQ_BACKUP, nomeArquivo) == 0)
                                         apresentaMensagem("O dado nao pode ser removido!");
                                     else
