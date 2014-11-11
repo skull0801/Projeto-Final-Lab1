@@ -2,7 +2,7 @@
 #define DADOS_H
 
 // Definicoes
-#define TAM_NOME_ALUNO 81
+#define TAM_NOME_ALUNO 51
 #define TAM_NOME_CURSO 51
 #define TAM_CPF 12
 #define TAM_TEXTO_TABELA 75
