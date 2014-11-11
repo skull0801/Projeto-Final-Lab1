@@ -18,14 +18,12 @@ void cadastraCurso(void)
     if(curso.codigo != 0)
     {
 		if(gravaDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso)))
-            printf("O curso foi salvo com sucesso!");
+            apresentaMensagem("O curso foi salvo com sucesso!");
         else
-            printf("O curso nao pode ser salvo!");
+            apresentaMensagem("O curso nao pode ser salvo!");
     }
     else
-        printf("O curso nao pode ser cadastrado!");
-    getch();
-    clrscr();
+        apresentaMensagem("O curso nao pode ser cadastrado!");
 }
 
 //***********************************************************************************************************************
@@ -42,9 +40,7 @@ void leDadosCurso(Curso *curso)
 	    curso->mensalidade = leValidaReal("Informe o valor da mensalidade","Mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
 	}
 	else
-	{
-		printf("Nao foi possivel realizar o cadastro!");
-	}
+		apresentaMensagem("Nao foi possivel realizar o cadastro!");
 }
 
 //***********************************************************************************************************************
@@ -75,7 +71,6 @@ void alteraCurso(void)
             {
                 apresentaCurso(curso);
                 opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 10, opcao, PRETO, CINZA_E);
-                gotoxy(1, 6);
                 switch(opcao)
                 {
                     case 1:
@@ -94,24 +89,23 @@ void alteraCurso(void)
             if(opcao == 4)
             {
                 confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
-                gotoxy(1,6);
                 if(confirmacao == 1)
                 {
                     if(alteraDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso), posCurso))
-                        printf("O curso foi alterado com sucesso!");
+                        apresentaMensagem("O curso foi alterado com sucesso!");
                     else
-                        printf("O curso nao foi alterado!");
+                        apresentaMensagem("O curso nao foi alterado!");
                 }
                 else
-                    printf("O curso nao foi alterado!");
+                    apresentaMensagem("O curso nao foi alterado!");
             }
             else
-                printf("O curso nao foi alterado!");
+                apresentaMensagem("O curso nao foi alterado!");
+                    
+            limpaJanela(1, 1, 9, 80, PRETO);
         }
         else
-            printf("O curso nao pode ser recuperado do arquivo!");
-        getch();
-        clrscr();
+            apresentaMensagem("O curso nao pode ser recuperado do arquivo!");
     }
 }
 
@@ -136,25 +130,21 @@ void excluiCurso(void)
         {
             apresentaCurso(curso);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
-            gotoxy(1,8);
-
             if(confirmacao == 1)
             {
                 if(!verificaCursoAlunoCadastrado(codigo))
                     if(excluiDadoArquivo(ARQ_CURSOS, sizeof(Curso), posCurso))
-                        printf("O curso foi excluido com sucesso!");
+                        apresentaMensagem("O curso foi excluido com sucesso!");
                     else
-                        printf("O curso nao foi excluido!");
+                        apresentaMensagem("O curso nao foi excluido!");
                 else
-                    printf("O curso tem ao menos um aluno cadastrado no mesmo!");
+                    apresentaMensagem("O curso tem ao menos um aluno cadastrado no mesmo!");
             }
             else
-                printf("Os dados nao foram excluidos!");
+                apresentaMensagem("Os dados nao foram excluidos!");
         }
         else
-            printf("O arquivo de curso nao pode ser aberto!");
-        getch();
-        clrscr();
+            apresentaMensagem("O arquivo de curso nao pode ser aberto!");
     }
 }
 
@@ -217,7 +207,7 @@ void pesquisaApresentaCursoNome(void)
                     }
                     else
                     {
-                        printf("Erro ao alocar memoria para cursos!");
+                        apresentaMensagem("Erro ao alocar memoria para cursos!");
                         flag = 1;
                         break;
                     }
@@ -235,18 +225,11 @@ void pesquisaApresentaCursoNome(void)
             free(cursos);
         }
         else
-        {
-            puts("Nao houve nenhuma correspondencia!");
-            getch();
-        }
+            apresentaMensagem("Nao houve nenhuma correspondencia!");
     }
     else
-    {
         if(qtdLidos)
             free(cursos);
-        getch();
-    }
-    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -268,14 +251,14 @@ void pesquisaApresentaCursoCodigo(void)
         if(obtemDadoArquivo(ARQ_CURSOS, &curso, sizeof(Curso), posCurso))
         {
             apresentaCurso(curso);
+            getch();
+            limpaJanela(1, 1, 10, 80, PRETO);
         }
         else
-            printf("O curso nao pode ser recuperado!");
+            apresentaMensagem("O curso nao pode ser recuperado!");
     }
     else
-        printf("O curso nao foi encontrado!");
-    getch();
-    clrscr();
+        apresentaMensagem("O curso nao foi encontrado!");
 }
 
 //***********************************************************************************************************************
@@ -365,7 +348,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
                 else
                 {
                     flag = 1;
-                    printf("A memoria para uma das linhas nao pode ser alocada");
+                    apresentaMensagem("A memoria para uma das linhas nao pode ser alocada");
                     break;
                 }
             }
@@ -373,7 +356,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
         else
         {
             flag = 1;
-            printf("A memoria para tabela nao pode ser alocada!");
+            apresentaMensagem("A memoria para tabela nao pode ser alocada!");
         }
         
         if(!flag)
@@ -407,10 +390,8 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
         }
     }
     else
-    {
-        printf("Nao existem cursos cadastrados!");
-        getch();
-    }
+        apresentaMensagem("Nao existem cursos cadastrados!");
+        
     return codigoSelecionado;
 }
 
