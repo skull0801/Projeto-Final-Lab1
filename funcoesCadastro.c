@@ -348,7 +348,7 @@ void apresentarTodosAlunosCadastrados(void)
         puts("Houve um erro, os dados dos alunos nao foram alocados!");
     else
     {
-        qsort(matriculas, qtdeMatriculas, sizeof(cadastro), comparaCadastroCodigo);
+        qsort(matriculas, qtdeMatriculas, sizeof(Cadastro), comparaCadastroCodigo);
         printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
         for(contador = 0; contador < qtdeMatriculas; contador++)
         {
