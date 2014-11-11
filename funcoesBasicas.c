@@ -107,8 +107,8 @@ char leValidaChar(const char *titulo, const char *escolhas)
 
 //***********************************************************************************************************************
 // Objetivo: Ler uma string com limite
-// ParÃƒÂ¢metros: tamanho maximo
-// Retorno: EndereÃƒÂ§o para a string alocada dinamicamente
+// Parametros: tamanho maximo
+// Retorno: Endereco para a string alocada dinamicamente
 char * leStringEmCampo(int limite)
 {
     char *string = NULL, *stringAux, caractere;
@@ -671,7 +671,7 @@ void *obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados
         {
             *qtdDados = (ftell(arq)/tamanhoDado);
             
-            if(*qtdDados>0)
+            if(*qtdDados>0 && ftell(arq)%tamanhoDado == 0)
             {
                 dados = malloc(tamanhoDado*(*qtdDados));
                 
@@ -690,7 +690,7 @@ void *obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados
                     apresentaMensagem("Erro ao alocar memoria para dados!");
             }
             else
-                apresentaMensagem("Nao existem dados no arquivo!");
+                apresentaMensagem("Nao existem dados no arquivo ou o arquivo esta corrompido!");
         }
         else
             apresentaMensagem("Erro ao obter quantidade de dados.");
