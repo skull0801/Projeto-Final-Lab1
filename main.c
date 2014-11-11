@@ -1,5 +1,5 @@
 // Alunos : Marcus Vinicius Campos Fonseca e Lucas Lima da Silva
-// Matriculas: UC14LINHA_MENU1868, UC14LINHA_MENU2446
+// Matriculas: UC14101868, UC14102446
 // Objetivo: Criar um sistema para facilitar o gerenciamento de alunos e cursos de uma escola de informatica
 
 #include <stdio.h>
@@ -64,22 +64,6 @@ int main(void)
                                    "Voltar"};
     
     // Instrucoes
-/*  Teste para formulario!
-    int choice = 1;
-    Aluno aluno;
-    do
-    {
-        if(!obtemDadoArquivo(ARQ_ALUNOS, &aluno, sizeof(Aluno), choice))
-        {
-            memset(&aluno, 0, sizeof(Aluno));
-            geraDataIngresso(&aluno.dataIngresso);
-        }
-        apresentaAluno(aluno);
-        choice = getch() - '0';
-        clrscr();
-    }
-    while(1);
-*/
     do
     {
         opcao = menuVertical("ESCOLA DE INFORMATICA", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, opcao, PRETO, CINZA_C);
@@ -160,7 +144,7 @@ int main(void)
                             apresentaAlunosMatriculadosEmUmCurso();
                             break;
                         case 6:
-                            apresentarTodosAlunosCadastrados();
+                            //apresentarTodosAlunosCadastrados();
                             break;
                     }
                 }
@@ -196,7 +180,7 @@ int main(void)
                                         apresentaTodosCursos();
                                         break;
                                     case 6:
-                                        apresentarTodosAlunosCadastrados();
+                                        //apresentarTodosAlunosCadastrados();
                                         break;
                                 }
                             }
