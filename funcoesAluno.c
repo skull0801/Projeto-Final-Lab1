@@ -18,14 +18,12 @@ void cadastraAluno(void)
     if(leDadosAluno(&aluno))
     {
         if(gravaDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno)))
-            printf("O aluno foi salvo com sucesso!");
+            apresentaMensagem("O aluno foi salvo com sucesso!");
         else
-            printf("O aluno nao pode ser salvo!");
+            apresentaMensagem("O aluno nao pode ser salvo!");
     }
     else
-        printf("\nO aluno nao foi cadastrado!");
-    getch();
-    clrscr();
+        apresentaMensagem("O aluno nao foi cadastrado!");
 }
 
 //***********************************************************************************************************************
@@ -104,7 +102,6 @@ void alteraAluno(void)
             {
                 apresentaAluno(aluno);
                 opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 15, opcao, PRETO, CINZA_E);
-                gotoxy(1, 8);
                 switch(opcao)
                 {
                     case 1:
@@ -123,24 +120,21 @@ void alteraAluno(void)
             if(opcao == 4)
             {
                 confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
-                gotoxy(1, 8);
                 if(confirmacao == 1)
                     if(alteraDadoArquivo(ARQ_ALUNOS, (void*) &aluno, sizeof(Aluno), posAluno))
-                        printf("O aluno foi alterado com sucesso!");
+                        apresentaMensagem("O aluno foi alterado com sucesso!");
                     else
-                        printf("O aluno nao foi alterado!");
+                        apresentaMensagem("O aluno nao foi alterado!");
                 else
-                    printf("O aluno nao foi alterado!");
+                    apresentaMensagem("O aluno nao foi alterado!");
             }
             else
-                printf("O aluno nao foi alterado!");
+                apresentaMensagem("O aluno nao foi alterado!");
+            limpaJanela(1, 1, 9, 80, PRETO);
         }
         else
-            printf("O aluno nao pode ser recuperado do arquivo!");
-        
-        getch();
+            apresentaMensagem("O aluno nao pode ser recuperado do arquivo!");
     }
-    clrscr();
 }
 
 //***********************************************************************************************************************
@@ -163,24 +157,22 @@ void excluiAluno(void)
         {
             apresentaAluno(aluno);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
-            gotoxy(1,8);
+            limpaJanela(1, 1, 25, 80, PRETO);
             if(confirmacao == 1)
             {
                 if(!verificaAlunoCadastrado(matricula))
                     if(excluiDadoArquivo(ARQ_ALUNOS, sizeof(Aluno), posAluno))
-                        printf("O aluno foi excluido com sucesso!");
+                        apresentaMensagem("O aluno foi excluido com sucesso!");
                     else
-                        printf("O aluno nao pode ser excluido!");
+                        apresentaMensagem("O aluno nao pode ser excluido!");
                 else
-                    printf("O aluno esta cadastrado em ao menos um curso!");
+                    apresentaMensagem("O aluno esta cadastrado em ao menos um curso!");
             }
             else
-                printf("Os dados nao foram excluidos!");
+                apresentaMensagem("Os dados nao foram excluidos!");
         }
         else
-            printf("O aluno nao pode ser recuperado!");
-        getch();
-        clrscr();
+            apresentaMensagem("O aluno nao pode ser recuperado!");
     }
 }
 
@@ -306,7 +298,7 @@ int pesquisaApresentaAlunoNome(void)
                     }
                     else
                     {
-                        printf("Houve erro na alocacao de memoria!");
+                        apresentaMensagem("Houve erro na alocacao de memoria!");
                         flag = 1;
                         if(qtdLidos)
                             free(alunos);
@@ -326,14 +318,9 @@ int pesquisaApresentaAlunoNome(void)
             free(alunos);
         }
         else
-        {
-            printf("Nao houve nenhuma correspondencia!");
-            getch();
-        }
+            apresentaMensagem("Nao houve nenhuma correspondencia!");
     }
-    else
-        getch();
-    clrscr();
+    
     return matriculaEscolhida;
 }
 
@@ -354,11 +341,11 @@ void pesquisaApresentaAlunoMatricula(void)
     if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
     {
         apresentaAluno(aluno);
+        getch();
+        limpaJanela(1, 1, 8, 80, PRETO);
     }
     else
-        printf("O aluno nao foi encontrado!");
-    getch();
-    clrscr();
+        apresentaMensagem("O aluno nao foi encontrado!");
 }
 
 //***********************************************************************************************************************
@@ -415,7 +402,7 @@ void apresentaAlunosMatriculadosEmPeriodo(void)
         dataFinal = leValidaData("Informe data final no padrao DD/MM/AAAA");
         flagData = comparaDatas(dataInicial, dataFinal);
         if(flagData>0)
-            printf("A data inicial nao pode ser maior que a final!\n");
+            apresentaMensagem("A data inicial nao pode ser maior que a final!");
     }
     while(flagData>0);
 
@@ -436,7 +423,7 @@ void apresentaAlunosMatriculadosEmPeriodo(void)
                     }
                     else
                     {
-                        printf("Houve erro na alocacao de memoria!");
+                        apresentaMensagem("Houve erro na alocacao de memoria!");
                         flagErro = 1;
                         if(qtdLidos)
                             free(alunos);
@@ -456,10 +443,7 @@ void apresentaAlunosMatriculadosEmPeriodo(void)
             free(alunos);
         }
         else
-        {
-            printf("Nao houve nenhuma correspondencia!");
-            getch();
-        }
+            apresentaMensagem("Nao houve nenhuma correspondencia!");
     }
 }
 
@@ -471,15 +455,13 @@ int apresentaTodosAlunos(void)
 {
     Aluno *alunos;
     int qtdAlunos = 0, matriculaSelecionada = 0;
+    
     if((alunos = (Aluno *) obtemDadosArquivo(ARQ_ALUNOS, sizeof(Aluno), &qtdAlunos)) != NULL)
     {
         matriculaSelecionada = apresentaDadosAlunos(alunos, qtdAlunos);
         free(alunos);
     }
-    else
-        getch();
-
-    clrscr();
+    
     return matriculaSelecionada;
 }
 
@@ -513,7 +495,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
                 else
                 {
                     flag = 1;
-                    printf("A memoria para uma das linhas da tabela nao pode ser alocada");
+                    apresentaMensagem("A memoria para uma das linhas da tabela nao pode ser alocada");
                     break;
                 }
             }
@@ -521,7 +503,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
         else
         {
             flag = 1;
-            printf("A memoria para tabela nao pode ser alocada!");
+            apresentaMensagem("A memoria para tabela nao pode ser alocada!");
         }
         
         if(!flag)
@@ -563,6 +545,7 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
         }
     }
     limpaJanela(2, 3, 2, 80, PRETO);
+    
     return matriculaSelecao;
 }
 
