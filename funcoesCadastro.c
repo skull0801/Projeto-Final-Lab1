@@ -348,7 +348,7 @@ void apresentarTodosAlunosCadastrados(void)
         puts("Houve um erro, os dados dos alunos nao foram alocados!");
     else
     {
-        qsort(matriculas, qtdeMatriculas, sizeof(cadastro), organizaMatriculasPorCurso);
+        qsort(matriculas, qtdeMatriculas, sizeof(cadastro), comparaCadastroCodigo);
         printf("%-18s%-19s%-19s%-16s","Codigo do Curso","Matricula Aluno","Situacao do Aluno","Situacao de Pagamento");
         for(contador = 0; contador < qtdeMatriculas; contador++)
         {
@@ -703,7 +703,7 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
 //  Objetivo: Verificar entre 2 codigos de curso, qual é o maior 
 //  Parametros: Os codigos do curso
 //  Retorno: Numero positivo se o primeiro codigo for mais, negativo se o segundo for maior ou zero se forem iguais
-int organizaMatriculasPorCurso(const void *p1, const void *p2)
+int comparaCadastroCodigo(const void *p1, const void *p2)
 {
     Cadastro *cadastro1, *cadastro2;
     cadastro1 = (Cadastro *) p1;
