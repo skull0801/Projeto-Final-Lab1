@@ -149,40 +149,68 @@ void excluiCurso(void)
     }
 }
 
+//*********************************************************************************************************************** 
+// Objetivo: Permitir ao usuario selecionar um curso dentre varios, dependendo de sua escolha 
+// Parametros: nenhum 
+// Retorno: Codigo do curso selecionado (0 se nao selecionar ninguem) 
+int selecionaCurso(void) 
+{ 
+    int opcao, codigo = 0; 
+    char *opcoesSelecao[] = {"Dentre Todos os Cursos", 
+                             "Pesquisar por Nome", 
+                             "Voltar"}; 
+
+    opcao = menuVertical("Como deseja selecionar os cursos?", opcoesSelecao, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C); 
+         
+    switch(opcao) 
+    { 
+        case 1: 
+            codigo = apresentaTodosCursos(); 
+            break; 
+        case 2: 
+            codigo = pesquisaApresentaCursoNome(); 
+            break; 
+    } 
+     
+    return codigo; 
+}
+
 //***********************************************************************************************************************
 // Objetivo: Pesquisar por um ou mais cursos
 // Parametros: nenhum
 // Retorno: nenhum
 void pesquisaCurso(void)
 {
-    int opcao;
+    int opcao = 1;
     char *opcoesPesquisa[] = {"Pesquisa por Codigo",
                               "Pesquisa por Nome",
                               "Voltar"};
-    
-    opcao = menuVertical("Pesquisa de um Curso", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C);
-    clrscr();
-    
-    switch(opcao)
+    do
     {
-        case 1:
-            pesquisaApresentaCursoCodigo();
-            break;
-        case 2:
-            pesquisaApresentaCursoNome();
-            break;
+        opcao = menuVertical("Pesquisa de um Curso", opcoesPesquisa, 3, BRANCO, AZUL_C, 1, 20, 5, opcao, PRETO, CINZA_C);
+        
+        switch(opcao)
+        {
+            case 1:
+                pesquisaApresentaCursoCodigo();
+                break;
+            case 2:
+                pesquisaApresentaCursoNome();
+                break;
+        }
     }
+    while(opcao != 0 && opcao != 3);
 }
 
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
 //  Parametros: nome a ser pesquisado
 //  Retorno: nenhum
-void pesquisaApresentaCursoNome(void)
+int pesquisaApresentaCursoNome(void)
 {
     FILE *arq;
     Curso curso, *cursos = NULL, *cursosAux;
-    int qtdLidos = 0, flag = 0;
+    int qtdLidos = 0, flag = 0, codigo = 0;
     char copiaNome[TAM_NOME_CURSO], nomeBusca[TAM_NOME_CURSO];
     
     leValidaTexto(nomeBusca, "Informe o nome do curso", "Nome", 1, TAM_NOME_CURSO);
@@ -222,7 +250,7 @@ void pesquisaApresentaCursoNome(void)
     {
         if(qtdLidos)
         {
-            apresentaDadosCursos(cursos, qtdLidos);
+            codigo = apresentaDadosCursos(cursos, qtdLidos);
             free(cursos);
         }
         else
@@ -231,6 +259,7 @@ void pesquisaApresentaCursoNome(void)
     else
         if(qtdLidos)
             free(cursos);
+    return codigo; 
 }
 
 //***********************************************************************************************************************
@@ -443,7 +472,7 @@ int achaProximoCodCurso(void)
             }
         }
     }
-    else
+    else if(!verificaArquivoVazio(ARQ_CURSOS))
         codigo = 0;
     return codigo;
 }
