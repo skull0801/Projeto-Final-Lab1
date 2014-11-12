@@ -278,6 +278,61 @@ void strToLower(char *string)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Simular um menu
+// Parametros: Endereco inicial de um vetor bidimensional que especifica as posicoes de cada opcao do menu, quantidade de opcoes, opcao inicial ser selecionada
+// Retorno: indice da opcao selecionada
+int simulaMenu(int posicoes[][2], int qtdOpcoes, int selecaoInicial)
+{
+    int selecao, val, ultimaSelecao;
+    char tecla;
+    selecao = selecaoInicial-1;
+    if(selecao<0)
+        selecao = 0;
+    gotoxy(posicoes[selecao][0]-1, posicoes[selecao][1]);
+    printf("->");
+    do
+    {
+        do
+        {
+            tecla = toupper(getch());
+            if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13)
+                val = 1;                                                                               
+            else
+                val = 0;
+        }
+        while(!val);
+        
+        ultimaSelecao = selecao;
+        
+        if(tecla == 72 || tecla == 75)
+            selecao--;
+        else if(tecla == 77 || tecla == 80)
+            selecao++;
+        else if(tecla == 27)
+            ultimaSelecao = -1;
+        
+        if(selecao <= -1)
+            selecao = qtdOpcoes-1;
+        else if(selecao >= qtdOpcoes)
+            selecao = 0;
+
+        gotoxy(posicoes[ultimaSelecao][0]-1, posicoes[ultimaSelecao][1]);
+        printf("%c%c", ' ', ' ');
+        
+        if(tecla != 13 && tecla != 27)
+        {
+            gotoxy(posicoes[selecao][0]-1, posicoes[selecao][1]);
+            printf("%c%c", '-', '>');
+            
+            fflush(stdin);
+        }
+    }
+    while(tecla != 13 && tecla != 27);
+    
+    return ultimaSelecao+1;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Fazer um menu e lidar com as escolhas do usuario
 // Parametros: titulo - Titulo do menu
 //             opcoes - Opcoes do menu
