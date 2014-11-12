@@ -14,9 +14,10 @@ void alteraCurso(void);
 void excluiCurso(void);
 
 // Pesquisa
+int selecionaCurso(void);
 void pesquisaCurso(void);
 void pesquisaApresentaCursoCodigo(void);
-void pesquisaApresentaCursoNome(void);
+int pesquisaApresentaCursoNome(void);
 int pesquisaCursoCodigo(int codCursoBusca);
 
 // Apresentacao
