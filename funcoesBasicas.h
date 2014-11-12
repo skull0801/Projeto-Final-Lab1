@@ -20,6 +20,7 @@ int comparaDatas(Data d1, Data d2);
 void strToLower(char *string);
 
 // Menus e limpeza de menus
+int simulaMenu(int posicoes[][2], int qtdOpcoes, int selecaoInical);
 int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra, int corSelecao, int moldura, int coluna, int linha, int selecaoInicial, int corFundoAtual, int corLetraAtual);
 void desenhaMoldura(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo, int corLetra);
 void limpaJanela(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal, int corFundo);
