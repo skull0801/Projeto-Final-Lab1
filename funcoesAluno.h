@@ -9,6 +9,7 @@ int leDadosAluno(Aluno *aluno);
 
 // Alteracao
 void alteraAluno(void);
+int alteraDadosAluno(Aluno *aluno);
 
 // Exclusao
 void excluiAluno(void);
@@ -21,7 +22,7 @@ int pesquisaApresentaAlunoNome(void);
 void pesquisaApresentaAlunoMatricula(void);
 
 // Apresentacao
-void apresentaAluno(Aluno aluno);
+void apresentaAluno(Aluno aluno, int linha, int coluna);
 void apresentaAlunosMatriculadosEmPeriodo(void);
 int apresentaTodosAlunos(void);
 int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos);

@@ -344,12 +344,15 @@ int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra
     }
 
     // Escreve titulo do menu
-    colunaTitulo = coluna+(tamMaiorOpcao/2)-(strlen(titulo)/2);
-    colunaTitulo = colunaTitulo > 0 ? colunaTitulo : 1;
-    tamTitulo = strlen(titulo)+colunaTitulo > 80 ? 80-colunaTitulo : strlen(titulo);
-    gotoxy(colunaTitulo, linhaTitulo);
-    printf("%-*.*s", tamTitulo, tamTitulo, titulo);
-    
+    if(strlen(titulo))
+    {
+        colunaTitulo = coluna+(tamMaiorOpcao/2)-(strlen(titulo)/2);
+        colunaTitulo = colunaTitulo > 0 ? colunaTitulo : 1;
+        tamTitulo = strlen(titulo)+colunaTitulo > 80 ? 80-colunaTitulo : strlen(titulo);
+        gotoxy(colunaTitulo, linhaTitulo);
+        printf("%-*.*s", tamTitulo, tamTitulo, titulo);
+    }
+
     do
     {
         do
@@ -395,8 +398,9 @@ int menuVertical(const char *titulo, char *opcoes[], int qtdOpcoes, int corLetra
         limpaJanela(linha-(offset), coluna-(offset), linha+qtdOpcoes+(offset-1), coluna+tamMaiorOpcao+(offset-1), corFundoAtual);
     else
         limpaJanela(linha, coluna, linha+qtdOpcoes, coluna+tamMaiorOpcao, corFundoAtual);
-        
-    limpaJanela(linhaTitulo, colunaTitulo, linhaTitulo, colunaTitulo+tamTitulo, corFundoAtual); // Limpa titulo do menu
+    
+    if(strlen(titulo))    
+        limpaJanela(linhaTitulo, colunaTitulo, linhaTitulo, colunaTitulo+tamTitulo, corFundoAtual); // Limpa titulo do menu
     
     return ultimaSelecao+1; // Retorna o item selecionado (Retorna 0 se foi pressionado esc)
 }

@@ -71,6 +71,7 @@ int leDadosAluno(Aluno *aluno)
     aluno->idade = leValidaInteiro("Informe a idade do aluno", "Idade", MIN_IDADE, MAX_IDADE);
     aluno->sexo = leValidaChar("Informe o sexo do aluno: ", "MF");
     geraDataIngresso(&(aluno->dataIngresso));
+
     
     return 1;
 }
@@ -98,26 +99,9 @@ void alteraAluno(void)
     {
         if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
-            do
-            {
-                apresentaAluno(aluno);
-                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 15, opcao, PRETO, CINZA_E);
-                switch(opcao)
-                {
-                    case 1:
-                        leValidaTexto(aluno.nome, "Informe o novo nome", "Nome", 3, TAM_NOME_ALUNO);
-                        break;
-                    case 2:
-                        aluno.idade = leValidaInteiro("Informe a nova idade", "Idade", MIN_IDADE, MAX_IDADE);
-                        break;
-                    case 3:
-                        aluno.sexo = leValidaChar("Informe o novo sexo (M/F): ", "MF");
-                        break;
-                }
-            }
-            while(opcao != 0 && opcao != 4 && opcao != 5);
+            opcao = alteraDadosAluno(&aluno);
             
-            if(opcao == 4)
+            if(opcao == 1)
             {
                 confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
                 if(confirmacao == 1)
@@ -155,7 +139,7 @@ void excluiAluno(void)
     {
         if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
-            apresentaAluno(aluno);
+            apresentaAluno(aluno, 1, 1);
             confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
             limpaJanela(1, 1, 25, 80, PRETO);
             if(confirmacao == 1)
@@ -340,48 +324,225 @@ void pesquisaApresentaAlunoMatricula(void)
     
     if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
     {
-        apresentaAluno(aluno);
+        apresentaAluno(aluno, 5, 5);
         getch();
-        limpaJanela(1, 1, 8, 80, PRETO);
+        limpaJanela(5-1, 5, (5-1)+11, 5+TAM_NOME_ALUNO+8, PRETO);
     }
     else
         apresentaMensagem("O aluno nao foi encontrado!");
 }
 
 //***********************************************************************************************************************
+// Objetivo: Permitir que o usario altere os dados de um aluno
+// Parametros: Referencia ao aluno a ser alterado
+// Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
+int alteraDadosAluno(Aluno *aluno)
+{
+    int opcao = 1, subOpcao, flag, flagSelecao, selecao, aux, val, ultimaSelecao;
+    char *campoLido, tecla;
+    char *opcoesAlteracao[] = {"Alterar Nome",
+                               "Alterar Idade",
+                               "Alterar Sexo",
+                               "Salvar Mudancas",
+                               "Cancelar Mudancas"};
+    char *sexos[] = {"MASCULINO", "FEMININO"};
+
+    int pos [6][2] = {4,5, 4,8, 4,11, 4,14, 31,8, 33, 11};
+    do
+    {
+        apresentaAluno(*aluno, 5, 5);
+        //opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 18, opcao, PRETO, CINZA_E);
+        flagSelecao = 0;
+        selecao = 0;
+        gotoxy(4,5);
+        printf("/");
+        do
+        {
+            do
+            {
+                tecla = toupper(getch());
+                if(tecla == 72 || tecla == 75 || tecla == 77 || tecla == 80 || tecla == 27 || tecla == 13) // Verifica se a tecla pressionada e relevante (72 - cima, 75 - esquerda, 77 - direita, 80 - baixo)
+                    val = 1;                                                                               // 27 - esc, 13 - enter
+                else
+                    val = 0;
+            }
+            while(!val); // Repete ate que uma tecla valida seja pressionada
+            
+            ultimaSelecao = selecao; // Guarda a ultima selecao antes de muda-la
+            if(tecla == 72 || tecla == 75)
+                selecao--;
+            else if(tecla == 77 || tecla == 80)
+                selecao++;
+            else if(tecla == 27)
+                ultimaSelecao = -1; // O usuario pressionou esc, ou seja nao selecionou nada
+            
+            if(selecao <= -1)
+                selecao = (6)-1;  // Se for menor vai para o ultimo item
+            else if(selecao >= (6))
+                selecao = 0;   // Se for maior vai para o primeiro item
+
+            gotoxy(pos[ultimaSelecao][0], pos[ultimaSelecao][1]);            // a ultima
+            printf("%c", ' ');       // opcao
+
+            if(tecla != 13 && tecla != 27) // Se o usuario pressionou algo diferente de enter ou esc, fazer a mudanca necessaria
+            {
+                gotoxy(pos[selecao][0], pos[selecao][1]);                           // a posicao
+                printf("%c", '/');             // atual
+                
+                fflush(stdin); // Limpa o buffer do teclado
+            }
+        }
+        while(tecla != 13 && tecla != 27); 
+
+        if(tecla == 13)
+            opcao = selecao+1;
+        else
+            opcao = 0;
+
+        switch(opcao)
+        {
+            case 1:
+                do
+                {
+                    limpaJanela(5, 13, 5, 63, PRETO);
+                    gotoxy(13, 5);
+                    campoLido = leStringEmCampo(50);
+                    if(campoLido != NULL && strlen(campoLido) >= 3)
+                    {
+                        flag = 1;
+                        strcpy(aluno->nome, campoLido);
+                    }
+                    else
+                    {
+                        flag = 0;
+                        gotoxy(13, 5);
+                        textcolor(VERMELHO);
+                        printf("Nome invalido!");
+                        textcolor(BRANCO);
+                        getch();
+                    }
+                    free(campoLido);
+                }
+                while(!flag);
+
+                break;
+            case 3:
+                do
+                {
+                    limpaJanela(11, 13, 11, 18, PRETO);
+                    gotoxy(13, 11);
+                    campoLido = leStringEmCampo(5);
+                    aux = atoi(campoLido);
+                    free(campoLido);
+                }
+                while(aux < 15 || aux > 150);
+                aluno->idade = aux;
+                
+                break;
+            case 6:
+                do
+                {
+                    limpaJanela(10, 43, 15, 55, PRETO);
+                    subOpcao = menuVertical("", sexos, 2, BRANCO, AZUL_C, 1, 45, 11, 1, PRETO, CINZA_C);
+                }
+                while(subOpcao == 0);
+                
+                aluno->sexo = subOpcao == 1 ? 'M' : 'F';
+
+                break;
+        }
+    }
+    while(opcao != 0);
+        
+    limpaJanela(5-1, 5, (5-1)+11, 5+TAM_NOME_ALUNO+8, PRETO);
+    
+    return opcao == 4 ? 1 : 0;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Apresentar os dados de um aluno
 // Parametros: Um aluno
 // Retorno: nenhum
-void apresentaAluno(Aluno aluno)
+void apresentaAluno(Aluno aluno, int linha, int coluna)
 {
-    gotoxy(1,1);
-    printf("Nome: %-*.*s\n", TAM_NOME_ALUNO, TAM_NOME_ALUNO, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
-    
-    printf("Matricula: ");
+    int tamAluno = 51;
+    char cpfFormatado[15];
+    char *titulos[] = {"Nome", "CPF", "Matricula", "Idade", "Sexo", "Data de Ingresso"};
+
+    desenhaMoldura(linha-1, coluna+6, linha+1, coluna+8+tamAluno, PRETO, BRANCO);
+    gotoxy(coluna, linha);
+    printf("Nome:");
+    gotoxy(coluna+8, linha);
+    printf("%-*.*s\n", tamAluno-1, tamAluno-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
+
+    desenhaMoldura(linha+2, coluna+6, linha+4, coluna+11+TAM_CPF, PRETO, BRANCO);
+    gotoxy(coluna, linha+3);
+    printf("CPF:");
+    gotoxy(coluna+8, linha+3);
+    if(strlen(aluno.cpf))
+        sprintf(cpfFormatado, "%3.3s.%3.3s.%3.3s-%2.2s", aluno.cpf, aluno.cpf+3, aluno.cpf+6, aluno.cpf+9);
+    else
+        sprintf(cpfFormatado, "NUM.ERO.CPF-NU");
+    printf("%-*.*s", TAM_CPF+2, TAM_CPF+2, cpfFormatado);
+
+    desenhaMoldura(linha+2, coluna+26+TAM_CPF, linha+4, coluna+8+tamAluno, PRETO, BRANCO);
+    gotoxy(coluna+15+TAM_CPF, linha+3);
+    printf("Matricula:");
+    gotoxy(coluna+28+TAM_CPF, linha+3);
     if(aluno.matricula)
         printf("%06d\n", aluno.matricula);
     else
         printf("%-*.*s\n", 10, 10, "[Ex. 010]");
 
-    printf("CPF: ");
-    if(strlen(aluno.cpf))
-        printf("%-*.*s\n", TAM_CPF-1, TAM_CPF-1, aluno.cpf);
-    else
-        printf("%-*.*s\n", 20, 20, "[Ex. 14851693729]");
-
-    printf("Idade: ");
+    desenhaMoldura(linha+5, coluna+6, linha+7, coluna+17, PRETO, BRANCO);
+    gotoxy(coluna, linha+6);
+    printf("Idade:");
+    gotoxy(coluna+8, linha+6);
     if(aluno.idade)
-        printf("%d\n", aluno.idade);
+        printf("%-8d\n", aluno.idade);
     else
-        printf("%-*.*s\n", 10, 10, "[Ex. 23]");
+        printf("%*.*s\n", 8, 8, "[Ex. 23]");
 
-    printf("Sexo: ");
-    if(aluno.sexo)
-        printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
-    else
-        printf("%-*.*s\n", 15, 15, "[Ex. MASCULINO]");
+    desenhaMoldura(linha+5, coluna+26+TAM_CPF, linha+7, coluna-1+tamAluno, PRETO, BRANCO);
+    gotoxy(coluna+29, linha+6);
+    printf("Sexo:");
+    gotoxy(coluna+28+TAM_CPF, linha+6);
+    printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
 
-    printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
+    desenhaMoldura(linha+8, coluna+18, linha+10, coluna+34, PRETO, BRANCO);
+    gotoxy(coluna, linha+9);
+    printf("Data de Ingresso:");
+    gotoxy(coluna+21, linha+9);
+    printf("%02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
+
+    // gotoxy(1,1);
+    // printf("Nome: %-*.*s\n", TAM_NOME_ALUNO, TAM_NOME_ALUNO, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
+    
+    // printf("Matricula: ");
+    // if(aluno.matricula)
+    //     printf("%06d\n", aluno.matricula);
+    // else
+    //     printf("%-*.*s\n", 10, 10, "[Ex. 010]");
+
+    // printf("CPF: ");
+    // if(strlen(aluno.cpf))
+    //     printf("%-*.*s\n", TAM_CPF-1, TAM_CPF-1, aluno.cpf);
+    // else
+    //     printf("%-*.*s\n", 20, 20, "[Ex. 14851693729]");
+
+    // printf("Idade: ");
+    // if(aluno.idade)
+    //     printf("%d\n", aluno.idade);
+    // else
+    //     printf("%-*.*s\n", 10, 10, "[Ex. 23]");
+
+    // printf("Sexo: ");
+    // if(aluno.sexo)
+    //     printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
+    // else
+    //     printf("%-*.*s\n", 15, 15, "[Ex. MASCULINO]");
+
+    // printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
 }
 
 //***********************************************************************************************************************
