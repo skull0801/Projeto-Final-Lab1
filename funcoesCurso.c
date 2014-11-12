@@ -69,8 +69,8 @@ void alteraCurso(void)
         {
             do
             {
-                apresentaCurso(curso);
-                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 10, opcao, PRETO, CINZA_E);
+                apresentaCurso(curso, 5, 5);
+                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 15, opcao, PRETO, CINZA_E);
                 switch(opcao)
                 {
                     case 1:
@@ -128,8 +128,8 @@ void excluiCurso(void)
     {
         if(obtemDadoArquivo(ARQ_CURSOS, (void *) &curso, sizeof(Curso), posCurso))
         {
-            apresentaCurso(curso);
-            confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
+            apresentaCurso(curso, 5, 5);
+            confirmacao = confirmaEscolha(55, 15, "Realmente deseja excluir?");
             limpaJanela(1, 1, 9, 80, PRETO);
             if(confirmacao == 1)
             {
@@ -280,7 +280,7 @@ void pesquisaApresentaCursoCodigo(void)
     {
         if(obtemDadoArquivo(ARQ_CURSOS, &curso, sizeof(Curso), posCurso))
         {
-            apresentaCurso(curso);
+            apresentaCurso(curso, 5, 5);
             getch();
             limpaJanela(1, 1, 10, 80, PRETO);
         }
@@ -323,15 +323,43 @@ int pesquisaCursoCodigo(int codCursoBusca)
 
 //***********************************************************************************************************************
 // Objetivo: Apresentar um curso
-// Parametros: Curso
+// Parametros: Curso, linha da apresentacao e coluna da apresentacao
 // Retorno: Nenhum
-void apresentaCurso(Curso curso)
+void apresentaCurso(Curso curso, int linha, int coluna)
 {
-    gotoxy(1,1);
-    printf("Nome do Curso: %s\n", curso.nome);
-    printf("Codigo: %d\n", curso.codigo);
-    printf("Carga Horaria: %d\n", curso.cargaHoraria);
-    printf("Valor da mensalidade: %.2f\n", curso.mensalidade);
+    int tamCurso = 51;
+
+    desenhaMoldura(linha-1, coluna+12, linha+1, coluna+9+tamCurso+5, PRETO, BRANCO);
+    gotoxy(coluna, linha);
+    printf("Nome:");
+    gotoxy(coluna+14, linha);
+    printf("%-*.*s\n", tamCurso-1, tamCurso-1, strlen(curso.nome) ? curso.nome : "[Ex. Curso ABC]");
+
+    desenhaMoldura(linha+2, coluna+12, linha+4, coluna+9+10+5, PRETO, BRANCO);
+    gotoxy(coluna, linha+3);
+    printf("Codigo:");
+    gotoxy(coluna+14, linha+3);
+    if(curso.codigo)
+        printf("%06d\n", curso.codigo);
+    else
+        printf("%-*.*s\n", 10, 10, "[Ex. 0100]");
+
+
+    desenhaMoldura(linha+2, coluna+50, linha+4, coluna+9+tamCurso+5, PRETO, BRANCO);
+    gotoxy(coluna+42, linha+3);
+    printf("Horas:");
+    gotoxy(coluna+52, linha+3);
+    if(curso.cargaHoraria)
+        printf("%-8d\n", curso.cargaHoraria);
+    else
+        printf("%*.*s\n", 8, 8, "[Ex. 10]");
+
+    desenhaMoldura(linha+5, coluna+12, linha+7, coluna+24, PRETO, BRANCO);
+    gotoxy(coluna, linha+6);
+    printf("Mensalidade:");
+    gotoxy(coluna+14, linha+6);
+    printf("%-8.2f", curso.mensalidade);
+    
 }
 
 //***********************************************************************************************************************
