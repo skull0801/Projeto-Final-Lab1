@@ -612,20 +612,19 @@ void apresentaAluno(Aluno aluno, int linha, int coluna)
 void apresentaAlunosMatriculadosEmPeriodo(void)
 {
     FILE *arq;
-    Data dataInicial, dataFinal;
+    Data dataInicial, dataFinal, bucket;
     Aluno *alunos = NULL, *alunosAux, aluno;
     int flagData, flagErro = 0, qtdLidos = 0;
 
     dataInicial = leValidaData("Informe a data inicial no padrao DD/MM/AAAA");
-
-    do
+    dataFinal = leValidaData("Informe data final no padrao DD/MM/AAAA");
+    
+    if(comparaDatas(dataInicial, dataFinal) > 0)
     {
-        dataFinal = leValidaData("Informe data final no padrao DD/MM/AAAA");
-        flagData = comparaDatas(dataInicial, dataFinal);
-        if(flagData>0)
-            apresentaMensagem("A data inicial nao pode ser maior que a final!");
+        bucket = dataInicial;
+        dataInicial = dataFinal;
+        dataFinal = bucket;
     }
-    while(flagData>0);
 
     if((arq = fopen(ARQ_ALUNOS, "rb")) != NULL)
     {
