@@ -541,11 +541,12 @@ void apresentaMensagem(char *mensagem)
     int linhas, linhaInicial, contador, tamLinha;
     if(strlen(mensagem)>25)
     {
-        for(contador = 20;mensagem[contador]!=' ';contador++);
+        for(contador = 20;mensagem[contador]!=' ' && mensagem[contador]!=0;contador++);
         tamLinha = contador;
     }
     else
         tamLinha = strlen(mensagem);
+        
     linhas = strlen(mensagem)/tamLinha + 1;
     desenhaMoldura(12-linhas, 40-tamLinha/2-2, 12+linhas, 40+tamLinha/2+2, PRETO, BRANCO);
     linhaInicial = 12-linhas/2;
@@ -751,8 +752,10 @@ void *obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados
                 else
                     apresentaMensagem("Erro ao alocar memoria para dados!");
             }
+            else if(*qtdDados>0)
+                apresentaMensagem("O arquivo esta corrompido!");
             else
-                apresentaMensagem("Nao existem dados no arquivo ou o arquivo esta corrompido!");
+                apresentaMensagem("Nao existem dados no arquivo.");
         }
         else
             apresentaMensagem("Erro ao obter quantidade de dados.");
@@ -760,9 +763,25 @@ void *obtemDadosArquivo(const char *nomeArquivo, int tamanhoDado, int * qtdDados
         fclose(arq);
     }
     else
-        apresentaMensagem("Erro ao abrir o arquivo de dados.");
+        apresentaMensagem("O arquivo nao foi encontrado!");
         
     return dados;
+}
+
+//***********************************************************************************************************************
+// Objetivo: Apresentar uma mensagem de erro em um campo especificico
+// Parametros: Linha do campo, coluna inicial do campo, coluna final do campo, referencia a mensagem de erro
+// Retorno: nenhum
+char apresentaErroCampo(int linha, int colunaIni, int colunaFim, char *mensagem)
+{
+    char tecla;
+    gotoxy(colunaIni, linha);
+    textcolor(VERMELHO);
+    printf("%-*.*s", colunaFim-colunaIni, colunaFim-colunaIni, mensagem);
+    tecla = getch();
+    textcolor(BRANCO);
+    limpaJanela(linha, colunaIni, linha, colunaFim, PRETO);
+    return tecla;
 }
 
 //***********************************************************************************************************************
