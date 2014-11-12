@@ -73,11 +73,7 @@ int leDadosAluno(Aluno *aluno)
                     else
                     {
                         flag = 0;
-                        gotoxy(13, 5);
-                        textcolor(VERMELHO);
-                        printf("Nome invalido!");
-                        textcolor(BRANCO);
-                        getch();
+                        apresentaErroCampo(5, 13, 63, "Nome invalido!");
                     }
                     free(campoLido);
                 }
@@ -107,15 +103,18 @@ int leDadosAluno(Aluno *aluno)
                     
                     if(!flag)
                     {
-                        gotoxy(13, 8);
-                        textcolor(VERMELHO);
                         if(cpfValida == 0)
-                            printf("CPF nao existe");
+                        {
+                            if(toupper(apresentaErroCampo(8, 13, 27, "CPF nao existe"))==27)
+                                flag = 1;
+                        }
                         else if(cpfExiste == 1)
-                            printf("CPF cadastrado");
-                        textcolor(BRANCO);
-                        if(toupper(getch())==27)
-                            flag = 1;
+                        {
+                            if(toupper(apresentaErroCampo(8, 13, 27, "CPF cadastrado"))==27)
+                                flag = 1;
+                        }
+                        else
+                            apresentaErroCampo(8, 13, 27, "Insira novamente");
                     }
                     free(campoLido);
                 }
@@ -129,6 +128,8 @@ int leDadosAluno(Aluno *aluno)
                     gotoxy(13, 11);
                     campoLido = leStringEmCampo(5);
                     idade = atoi(campoLido);
+                    if(idade < MIN_IDADE || idade > MAX_IDADE)
+                        apresentaErroCampo(11, 13, 20, "!");
                     free(campoLido);
                 }
                 while(idade < 15 || idade > 150);
@@ -139,15 +140,23 @@ int leDadosAluno(Aluno *aluno)
             case 4:
                 do
                 {
-                    limpaJanela(8, 45, 8, 57, PRETO);
+                    limpaJanela(8, 45, 8, 63, PRETO);
                     gotoxy(45, 8);
                     campoLido = leStringEmCampo(6);
                     matricula = atoi(campoLido);
                     free(campoLido);
+                    gotoxy(45, 8);
                     if(matricula < MATRICULA_MIN || matricula > MATRICULA_MAX)
+                    {
                         flag = 1;
+                        apresentaErroCampo(8, 45, 63, "Matricula Positiva!");
+                    }
                     else
+                    {
                         flag = pesquisaAlunoMatricula(matricula);
+                        if(flag)
+                            apresentaErroCampo(8, 45, 63, "Ja cadastrada");
+                    }
                 }
                 while(flag);
                 aluno->matricula = matricula;
@@ -166,7 +175,7 @@ int leDadosAluno(Aluno *aluno)
                 break;
         }
         
-        if(strlen(aluno->nome) > 3 && strlen(aluno->cpf) == 11 && aluno->idade >= 15 && aluno->matricula > 0 && aluno->sexo != 0)
+        if(strlen(aluno->nome) >= 3 && strlen(aluno->cpf) == 11 && aluno->idade >= 15 && aluno->matricula > 0 && aluno->sexo != 0)
             flagTudoLido = 1;
             
         limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
@@ -241,7 +250,7 @@ void alteraAluno(void)
 // Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
 int alteraDadosAluno(Aluno *aluno)
 {
-    int opcao = 1, subOpcao, flag, flagSelecao, selecao, aux, val, ultimaSelecao;
+    int opcao = 1, subOpcao, flag, flagSelecao, selecao, idade, val, ultimaSelecao;
     int pos [5][2] = {4,5, 4,11, 33,11, 5+15-1,5+12, 5+30-1,5+12};
     char *campoLido, tecla;
     char *opcoesAlteracao[] = {"Alterar Nome",
@@ -279,11 +288,7 @@ int alteraDadosAluno(Aluno *aluno)
                     else
                     {
                         flag = 0;
-                        gotoxy(13, 5);
-                        textcolor(VERMELHO);
-                        printf("Nome invalido!");
-                        textcolor(BRANCO);
-                        getch();
+                        apresentaErroCampo(5, 13, 63, "Nome invalido!");
                     }
                     free(campoLido);
                 }
@@ -293,14 +298,17 @@ int alteraDadosAluno(Aluno *aluno)
             case 2:
                 do
                 {
-                    limpaJanela(11, 13, 11, 18, PRETO);
+                    limpaJanela(11, 13, 11, 20, PRETO);
                     gotoxy(13, 11);
                     campoLido = leStringEmCampo(5);
-                    aux = atoi(campoLido);
+                    idade = atoi(campoLido);
+                    if(idade < MIN_IDADE || idade > MAX_IDADE)
+                        apresentaErroCampo(11, 13, 20, "!");
                     free(campoLido);
                 }
-                while(aux < 15 || aux > 150);
-                aluno->idade = aux;
+                while(idade < 15 || idade > 150);
+                
+                aluno->idade = idade;
                 
                 break;
             case 3:
@@ -348,8 +356,8 @@ void excluiAluno(void)
         if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
             apresentaAluno(aluno, 5, 5);
-            confirmacao = confirmaEscolha(55, 150, "Realmente deseja excluir?");
-            limpaJanela(1, 1, 25, 80, PRETO);
+            confirmacao = confirmaEscolha(55, 15, "Realmente deseja excluir?");
+            limpaJanela(4, 5, 15, 65, PRETO);
             if(confirmacao == 1)
             {
                 if(!verificaAlunoCadastrado(matricula))
@@ -554,7 +562,7 @@ void apresentaAluno(Aluno aluno, int linha, int coluna)
     gotoxy(coluna, linha);
     printf("Nome:");
     gotoxy(coluna+8, linha);
-    printf("%-*.*s\n", tamAluno-1, tamAluno-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
+    printf("%-*.*s\n", tamAluno-1, tamAluno-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Jose da Silva]");
 
     desenhaMoldura(linha+2, coluna+6, linha+4, coluna+11+TAM_CPF, PRETO, BRANCO);
     gotoxy(coluna, linha+3);
