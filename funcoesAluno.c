@@ -31,10 +31,10 @@ void cadastraAluno(void)
 //***********************************************************************************************************************
 //  Objetivo: Ler os dados de um aluno
 //  Parametros: Referencia ao aluno
-//  Retorno: Nenhum
+//  Retorno: 1 se leu com sucesso, e 0 se nao leu os dados
 int leDadosAluno(Aluno *aluno)
 {
-    int opcao = 1, subOpcao, flag, flagSelecao, selecao, matricula, ultimaSelecao, idade;
+    int opcao = 0, subOpcao, flagTudoLido = 0, flag, flagSelecao, selecao, matricula, ultimaSelecao, idade;
     int cpfExiste, cpfValida, flagMatricula;
     int pos [7][2] = {4,5, 4,8, 4,11, 31,8, 33,11, 5+15-1,5+12, 5+30-1,5+12};
     char *campoLido, tecla;
@@ -55,7 +55,7 @@ int leDadosAluno(Aluno *aluno)
         gotoxy(5+30, 5+12);
         printf("Cancelar");
         
-        opcao = simulaMenu(pos, 7, opcao);
+        opcao = simulaMenu(pos, 7, opcao+1);
 
         switch(opcao)
         {
@@ -90,19 +90,32 @@ int leDadosAluno(Aluno *aluno)
                     limpaJanela(8, 13, 8, 27, PRETO);
                     gotoxy(13, 8);
                     campoLido = leStringEmCampo(11);
-                    if(campoLido != NULL && (cpfExiste = verificaCPFAluno(campoLido)) == 0 && (cpfValida = validaCPF(campoLido)) == 1)
+                    if(campoLido != NULL)
                     {
-                        flag = 1;
-                        strcpy(aluno->cpf, campoLido);
+                        cpfValida = validaCPF(campoLido);
+                        cpfExiste = verificaCPFAluno(campoLido);
+                        if(cpfValida == 1 && cpfExiste == 0)
+                        {
+                            flag = 1;
+                            strcpy(aluno->cpf, campoLido);
+                        }
+                        else
+                            flag = 0;
                     }
                     else
-                    {
                         flag = 0;
+                    
+                    if(!flag)
+                    {
                         gotoxy(13, 8);
                         textcolor(VERMELHO);
-                        printf("CPF invalido!");
+                        if(cpfValida == 0)
+                            printf("CPF nao existe");
+                        else if(cpfExiste == 1)
+                            printf("CPF cadastrado");
                         textcolor(BRANCO);
-                        getch();
+                        if(toupper(getch())==27)
+                            flag = 1;
                     }
                     free(campoLido);
                 }
@@ -152,12 +165,21 @@ int leDadosAluno(Aluno *aluno)
 
                 break;
         }
-        if(opcao == 0 || opcao == 7)
+        
+        if(strlen(aluno->nome) > 3 && strlen(aluno->cpf) == 11 && aluno->idade >= 15 && aluno->matricula > 0 && aluno->sexo != 0)
+            flagTudoLido = 1;
+            
+        limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
+        
+        if(opcao == 6 && !flagTudoLido)
         {
-            limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
+            apresentaMensagem("Voce deve preencher todos os campos!");
+            opcao = 1;
+        }
+        
+        if(opcao == 0 || opcao == 7)
             if(confirmaEscolha(40, 12, "Deseja cancelar?") == 0)
                 opcao = 1;
-        }
     }
     while(opcao != 0 && opcao != 6 && opcao != 7);
         
@@ -325,8 +347,8 @@ void excluiAluno(void)
     {
         if(obtemDadoArquivo(ARQ_ALUNOS, (void *) &aluno, sizeof(Aluno), posAluno))
         {
-            apresentaAluno(aluno, 1, 1);
-            confirmacao = confirmaEscolha(40, 12, "Realmente deseja excluir?");
+            apresentaAluno(aluno, 5, 5);
+            confirmacao = confirmaEscolha(55, 150, "Realmente deseja excluir?");
             limpaJanela(1, 1, 25, 80, PRETO);
             if(confirmacao == 1)
             {
@@ -566,42 +588,13 @@ void apresentaAluno(Aluno aluno, int linha, int coluna)
     gotoxy(coluna+29, linha+6);
     printf("Sexo:");
     gotoxy(coluna+28+TAM_CPF, linha+6);
-    printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
+    printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : (aluno.sexo=='F' ? "FEMININO" : "SEXO"));
 
     desenhaMoldura(linha+8, coluna+18, linha+10, coluna+34, PRETO, BRANCO);
     gotoxy(coluna, linha+9);
     printf("Data de Ingresso:");
     gotoxy(coluna+21, linha+9);
     printf("%02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
-
-    // gotoxy(1,1);
-    // printf("Nome: %-*.*s\n", TAM_NOME_ALUNO, TAM_NOME_ALUNO, strlen(aluno.nome) ? aluno.nome : "[Ex. Joao da Silva]");
-    
-    // printf("Matricula: ");
-    // if(aluno.matricula)
-    //     printf("%06d\n", aluno.matricula);
-    // else
-    //     printf("%-*.*s\n", 10, 10, "[Ex. 010]");
-
-    // printf("CPF: ");
-    // if(strlen(aluno.cpf))
-    //     printf("%-*.*s\n", TAM_CPF-1, TAM_CPF-1, aluno.cpf);
-    // else
-    //     printf("%-*.*s\n", 20, 20, "[Ex. 14851693729]");
-
-    // printf("Idade: ");
-    // if(aluno.idade)
-    //     printf("%d\n", aluno.idade);
-    // else
-    //     printf("%-*.*s\n", 10, 10, "[Ex. 23]");
-
-    // printf("Sexo: ");
-    // if(aluno.sexo)
-    //     printf("%-*.*s\n", 10, 10, (aluno.sexo=='M') ? "MASCULINO" : "FEMININO");
-    // else
-    //     printf("%-*.*s\n", 15, 15, "[Ex. MASCULINO]");
-
-    // printf("Data de Ingresso: %02d/%02d/%04d", aluno.dataIngresso.dia, aluno.dataIngresso.mes, aluno.dataIngresso.ano);
 }
 
 //***********************************************************************************************************************
