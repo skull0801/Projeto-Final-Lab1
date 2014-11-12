@@ -24,11 +24,11 @@ void cadastraAlunoEmCurso(void)
                                       "Totalmente Paga"};
     Cadastro matricula;
     
-    matricula.matriculaAluno = apresentaTodosAlunos();
+    matricula.matriculaAluno = selecionaAluno();
 
     if(matricula.matriculaAluno)
     {
-        matricula.codigoCurso = apresentaTodosCursos();
+        matricula.codigoCurso = selecionaCurso();
         
         if(matricula.codigoCurso)
         {
@@ -65,8 +65,6 @@ void cadastraAlunoEmCurso(void)
         else
             apresentaMensagem("O aluno nao foi matriculado!");
     }
-    else
-        apresentaMensagem("O aluno nao foi matriculado!");
 }
 
 //***********************************************************************************************************************
@@ -90,7 +88,7 @@ void alteraCadastro(void)
                                "Salvar alteracoes",
                                "Cancelar Mudancas"};
     
-    codigoCurso = apresentaTodosCursos();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -171,7 +169,7 @@ void excluiMatriculaAlunoEmUmCurso(void)
     FILE *arq;
     Cadastro *cadastros;
         
-    codigoCurso = apresentaTodosCursos();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -634,7 +632,7 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar entre 2 codigos de curso, qual ÃƒÂ© o maior 
+//  Objetivo: Verificar entre 2 codigos de curso, qual ÃƒÆ’Ã‚Â© o maior 
 //  Parametros: Os codigos do curso
 //  Retorno: Numero positivo se o primeiro codigo for mais, negativo se o segundo for maior ou zero se forem iguais
 int comparaCadastroCodigo(const void *p1, const void *p2)
