@@ -551,15 +551,18 @@ int obtemCursosComAlunosMatriculados()
 			}
 		}
 	}
-	else
+	
 		apresentaMensagem("O arquivo dos cursos nao pode ser aberto!");
 	if(flagAloc == 1)
 	{
 		apresentaMensagem("Os dados nao puderam ser alocados!");
 		free(cursos);
 	}
-	free(cursos);
-	cursoEscolhido = apresentaDadosCursos(cursos, qtdeCopiados);
+	else
+	{
+		cursoEscolhido = apresentaDadosCursos(cursos, qtdeCopiados);
+		free(cursos);
+	}
 	return cursoEscolhido;
 }
 
