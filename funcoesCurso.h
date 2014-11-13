@@ -21,7 +21,7 @@ int pesquisaApresentaCursoNome(void);
 int pesquisaCursoCodigo(int codCursoBusca);
 
 // Apresentacao
-void apresentaCurso(Curso curso);
+void apresentaCurso(Curso curso, int linha, int coluna);
 int apresentaTodosCursos(void);
 int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
 
