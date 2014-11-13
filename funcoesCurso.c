@@ -536,8 +536,9 @@ int obtemCursosComAlunosMatriculados()
 				flag = verificaCursoAlunoCadastrado(curso.codigo);
 				if(flag == 1)
 				{
-					if(cursos = (Curso *)realloc(cursos,sizeof(Curso)*(qtdeCopiados+1)))
+					if(cursosAux = (Curso *)realloc(cursos,sizeof(Curso)*(qtdeCopiados+1)))
 					{
+						cursos = cursosAux;
 						cursos[qtdeCopiados] = curso;	
 						qtdeCopiados++;
 					}
@@ -551,12 +552,13 @@ int obtemCursosComAlunosMatriculados()
 			}
 		}
 	}
-	
+	else
 		apresentaMensagem("O arquivo dos cursos nao pode ser aberto!");
 	if(flagAloc == 1)
 	{
 		apresentaMensagem("Os dados nao puderam ser alocados!");
-		free(cursos);
+		if(qtdeCopiados > 0)
+			free(cursos);
 	}
 	else
 	{
