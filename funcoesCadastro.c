@@ -88,7 +88,7 @@ void alteraCadastro(void)
                                "Salvar alteracoes",
                                "Cancelar Mudancas"};
     
-    codigoCurso = selecionaCurso();
+    codigoCurso = obtemCursosComAlunosMatriculados();
     
     if(codigoCurso)
     {
@@ -172,7 +172,7 @@ void excluiMatriculaAlunoEmUmCurso(void)
     FILE *arq;
     Cadastro *cadastros;
         
-    codigoCurso = selecionaCurso();
+    codigoCurso = obtemCursosComAlunosMatriculados();
     
     if(codigoCurso)
     {
@@ -380,13 +380,13 @@ int apresentaDadosCadastros(Cadastro *cadastros, int qtdeCadastros)
                 
                 if(contador+LINHAS_TABELA<qtdeCadastros)
                 {
-                    gotoxy(45, LINHA_TABELA_ALUNOS+qtdeItens+3);
+                    gotoxy(45, LINHA_TABELA+qtdeItens+3);
                     printf("Pressione Esc para ver o restante!");
                 }
 
-                selecao = menuVertical(titulo, &linhasTabela[contador], qtdeItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
+                selecao = menuVertical(titulo, &linhasTabela[contador], qtdeItens, BRANCO, AZUL_C, 1, COLUNA_TABELA, LINHA_TABELA, 1, PRETO, CINZA_C);
                 
-                limpaJanela(LINHA_TABELA_ALUNOS+qtdeItens+3, 45, LINHA_TABELA_ALUNOS+qtdeItens+3, 80, PRETO);
+                limpaJanela(LINHA_TABELA+qtdeItens+3, 45, LINHA_TABELA+qtdeItens+3, 80, PRETO);
                 
                 if(selecao != 0)
                 {
@@ -426,7 +426,7 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
                              "Concluido",
                              "Ambos"};
     
-    codigoCurso = apresentaTodosCursos();
+    codigoCurso = obtemCursosComAlunosMatriculados();
     
     if(codigoCurso)
     {

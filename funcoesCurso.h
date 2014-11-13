@@ -24,6 +24,7 @@ int pesquisaCursoCodigo(int codCursoBusca);
 void apresentaCurso(Curso curso, int linha, int coluna);
 int apresentaTodosCursos(void);
 int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
+int obtemCursosComAlunosMatriculados();
 
 // Comparacao
 int comparaCursosCodigo(const void *p1, const void *p2);
