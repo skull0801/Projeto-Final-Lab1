@@ -273,7 +273,7 @@ Data leValidaData(const char *titulo)
 // Retorno: < 0 se primeira for menor que a segunda, 0 se as duas forem iguais, > 0 se a primeiro for maior que a segunda
 int comparaDatas(Data d1, Data d2)
 {
-    return d1.ano - d2.ano ? d1.ano - d2.ano : (d1.mes - d2.mes ? d1.mes - d2.mes : (d1.dia - d2.dia ? d1.dia - d2.dia : 0));
+    return d1.ano - d2.ano ? d1.ano - d2.ano : (d1.mes - d2.mes ? d1.mes - d2.mes : d1.dia - d2.dia);
 }
 
 //***********************************************************************************************************************
