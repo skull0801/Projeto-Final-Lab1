@@ -3,7 +3,7 @@ FileName=ProjetoFinal.dev
 Name=ProjetoFinal
 UnitCount=5
 Type=1
-Ver=1
+Ver=2
 ObjFiles=
 Includes=
 Libs=
@@ -14,7 +14,7 @@ Compiler=
 CppCompiler=
 Linker=
 IsCpp=0
-Icon=ProjetoFinal.ico
+Icon=
 ExeOutput=
 ObjectOutput=
 OverrideOutput=0
@@ -28,6 +28,8 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=
+LogOutput=
+LogOutputEnabled=0
 
 [Unit1]
 FileName=main.c
@@ -96,4 +98,5 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+SyncProduct=0
 

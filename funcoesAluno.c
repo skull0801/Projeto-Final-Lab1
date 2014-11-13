@@ -736,13 +736,13 @@ int apresentaDadosAlunos(Aluno *alunos, int qtdAlunos)
                 
                 if(contador+LINHAS_TABELA<qtdAlunos)
                 {
-                    gotoxy(45, LINHA_TABELA_ALUNOS+qtdItens+3);
+                    gotoxy(45, LINHA_TABELA+qtdItens+3);
                     printf("Pressione Esc para ver o restante!");
                 }
 
-                selecao = menuVertical(titulo, &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
+                selecao = menuVertical(titulo, &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, COLUNA_TABELA, LINHA_TABELA, 1, PRETO, CINZA_C);
                 
-                limpaJanela(LINHA_TABELA_ALUNOS+qtdItens+3, 45, LINHA_TABELA_ALUNOS+qtdItens+3, 80, PRETO);
+                limpaJanela(LINHA_TABELA+qtdItens+3, 45, LINHA_TABELA+qtdItens+3, 80, PRETO);
                 
                 if(selecao != 0)
                 {

@@ -386,7 +386,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
 {
     int selecao, qtdItens, contador, qtdLinhasAlocada = 0, flag = 0;
     int codigoSelecionado = 0;
-    char ** linhasTabela, codigoTexto[7];
+    char ** linhasTabela, codigoTexto[7], titulo[TAM_TEXTO_TABELA+1];
     if(qtdCursos > 0)
     {
         qsort(cursos, qtdCursos, sizeof(Curso), comparaCursosNome);
@@ -399,7 +399,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
                 linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
                 if(linhasTabela[contador] != NULL)
                     {
-                        sprintf(linhasTabela[contador], "%06d - %-25.20s -  %04dh - %-10.2f",
+                        sprintf(linhasTabela[contador], "%06d - %-45.20s -  %04dh - %-10.2f",
                         cursos[contador].codigo, cursos[contador].nome, cursos[contador].cargaHoraria, cursos[contador].mensalidade);
                     qtdLinhasAlocada++;
                 }
@@ -419,11 +419,21 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
         
         if(!flag)
         {
-            for(contador=0;contador<qtdCursos;contador+=10)
+        	sprintf(titulo, "%-6s - %-45s - %6s - %-10s","Codigo","Nome do Curso","C.Hor.","Mensalidade");
+            for(contador=0;contador<qtdCursos;contador+=LINHAS_TABELA)
             {
-                qtdItens = qtdCursos - contador > 10 ? 10 : qtdCursos - contador;
+            	
+                qtdItens = qtdCursos - contador > LINHAS_TABELA ? LINHAS_TABELA : qtdCursos - contador;
                 
-                selecao = menuVertical("CURSOS", &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 10, 5, 1, PRETO, CINZA_C);
+                if(contador+LINHAS_TABELA < qtdCursos)
+                {
+                    gotoxy(45, LINHA_TABELA+qtdItens+3);
+                    printf("Pressione Esc para ver o restante!");
+                }
+                
+                selecao = menuVertical(titulo, &linhasTabela[contador], qtdItens, BRANCO, AZUL_C, 1, 1, LINHA_TABELA, 1, PRETO, CINZA_C);
+                
+                limpaJanela(LINHA_TABELA+qtdItens+3, 45, LINHA_TABELA+qtdItens+3, 80, PRETO);
                 
                 if(selecao != 0)
                 {
@@ -432,9 +442,9 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
                     codigoSelecionado = atoi(codigoTexto);
                     break;
                 }
-                else if(contador+10<qtdCursos)
+                else if(contador+LINHAS_TABELA < qtdCursos)
                 {
-                    if(!confirmaEscolha(20, 5, "Deseja continuar?"))
+                	if(!confirmaEscolha(40, 12, "Deseja ver o restante dos cursos?"))
                         break;
                 }
             }
@@ -504,3 +514,52 @@ int achaProximoCodCurso(void)
         codigo = 0;
     return codigo;
 }
+
+//***********************************************************************************************************************
+//  Objetivo: Obter todos os cursos que possuem alunos matriculados
+//  Parametros: Nenhum
+//  Retorno: O codigo do curso
+int obtemCursosComAlunosMatriculados()
+{
+	FILE *arq;
+	Curso curso, *cursos = NULL, *cursosAux;
+	Cadastro *cadastros;
+	int qtdeCadastros, qtdeCopiados = 0, flag, flagAloc = 0, cursoEscolhido;
+	
+	cadastros = (Cadastro *)obtemDadosArquivo(ARQ_MATRICULAS, sizeof(Cadastro), &qtdeCadastros);
+	if((arq = fopen(ARQ_CURSOS,"rb")) != NULL)
+	{
+		while(!feof(arq))
+		{
+			if(fread(&curso, sizeof(Curso), 1, arq))
+			{
+				flag = verificaCursoAlunoCadastrado(curso.codigo);
+				if(flag == 1)
+				{
+					if(cursos = (Curso *)realloc(cursos,sizeof(Curso)*(qtdeCopiados+1)))
+					{
+						cursos[qtdeCopiados] = curso;	
+						qtdeCopiados++;
+					}
+					else
+					{
+						flagAloc = 1;
+						break;
+					}
+					flag = 0;
+				}
+			}
+		}
+	}
+	else
+		apresentaMensagem("O arquivo dos cursos nao pode ser aberto!");
+	if(flagAloc == 1)
+	{
+		apresentaMensagem("Os dados nao puderam ser alocados!");
+		free(cursos);
+	}
+	
+	cursoEscolhido = apresentaDadosCursos(cursos, qtdeCopiados);
+	return cursoEscolhido;
+}
+
