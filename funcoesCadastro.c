@@ -83,12 +83,12 @@ void alteraCadastro(void)
                                       "Atrasada",
                                       "Totalmente Paga"};
                                       
-    char *opcoesAlteracao[] = {"Alterar Situacao aluno",
-                               "Alterar Situacao da mensalidade",
+    char *opcoesAlteracao[] = {"Alterar Situacao da mensalidade",
+                               "Alterar Situacao aluno",
                                "Salvar alteracoes",
                                "Cancelar Mudancas"};
     
-    codigoCurso = obtemCursosComAlunosMatriculados();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -105,7 +105,7 @@ void alteraCadastro(void)
                     do
                     {
                         clrscr();
-                        apresentaCadastro(cadastro);
+                        apresentaCadastro(cadastro, 5, 5);
                         opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 4, BRANCO, AZUL_C, 1, 48, 1, 1, PRETO, CINZA_C);
                         
                         switch(opcao)
@@ -113,21 +113,24 @@ void alteraCadastro(void)
                             case 1:
                                 do
                                 {
-                                    opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 71, 1, 1, PRETO, CINZA_C);
-                                }
-                                while(!opcaoSituacao);
-                                
-                                cadastro.situacaoAluno = opcaoSituacao + '0';
-                                break; 
-                            case 2:
-                                do
-                                {
-                                    opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 64, 1, 1, PRETO, CINZA_C);
+                                    limpaJanela(5+9, 5+12, 5+11, 5+30, PRETO); 
+                                    opcaoSituacao = menuVertical("", opcaoSituacaoPagamento, 3, BRANCO, AZUL_C, 1, 5+14, 5+9, 1, PRETO, CINZA_C);
                                 }
                                 while(!opcaoSituacao);
                                 
                                 cadastro.situacaoPagamento = opcaoSituacao + '0';
                                 break;
+                                
+                            case 2:
+                                do
+                                {
+                                    limpaJanela(5+8, 5+54, 5+10, 5+65, PRETO);
+                                    opcaoSituacao = menuVertical("", opcoesSituacaoAluno, 2, BRANCO, AZUL_C, 1, 5+56, 5+9, 1, PRETO, CINZA_C);
+                                }
+                                while(!opcaoSituacao);
+                                
+                                cadastro.situacaoAluno = opcaoSituacao + '0';
+                                break; 
                         }
                     }
                     while(opcao == 1 || opcao == 2);
@@ -169,7 +172,7 @@ void excluiMatriculaAlunoEmUmCurso(void)
     FILE *arq;
     Cadastro *cadastros;
         
-    codigoCurso = obtemCursosComAlunosMatriculados();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -226,7 +229,7 @@ void pesquisaApresentaCadastro(void)
     if(posCadastro)
     {
         if(obtemDadoArquivo(ARQ_MATRICULAS, (void *) &cadastro, sizeof(Cadastro), posCadastro))
-            apresentaCadastro(cadastro);
+            apresentaCadastro(cadastro, 5, 5);
         else
             apresentaMensagem("O cadastro nao pode ser recuperado!");
     }
@@ -239,13 +242,66 @@ void pesquisaApresentaCadastro(void)
 //  Objetivo: Apresentar os dados de um cadastro
 //  Paramentos: O cadastro
 //  Retorno: Nenhum
-void apresentaCadastro(Cadastro cadastro)
+void apresentaCadastro(Cadastro cadastro, int linha, int coluna)
 {
-    gotoxy(1,1);
-    printf("Matricula Aluno: %d\n", cadastro.matriculaAluno);
-    printf("Codigo do Curso: %d\n", cadastro.codigoCurso);
-    printf("Situacao Financeira: %s\n", cadastro.situacaoPagamento == '1' ? "Regular" : (cadastro.situacaoPagamento == '2' ? "Atrasado" : "Totalmente Pago" ));
-    printf("Situacao do Aluno: %s", cadastro.situacaoAluno == '1' ? "Cursando" : "Concluido");
+    Aluno aluno;
+    Curso curso;
+    char sit = cadastro.situacaoPagamento;
+    int posAluno, posCurso;
+    
+    if(posAluno = pesquisaAlunoMatricula(cadastro.matriculaAluno))
+    {
+        if(obtemDadoArquivo(ARQ_ALUNOS, &aluno, sizeof(Aluno), posAluno))
+        {
+            desenhaMoldura(linha-1, coluna+12, linha+1, coluna+14+TAM_NOME_ALUNO, PRETO, BRANCO);
+            gotoxy(coluna, linha);
+            printf("Aluno:");
+            gotoxy(coluna+14, linha);
+            printf("%-*.*s\n", TAM_NOME_ALUNO-1, TAM_NOME_ALUNO-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Jose da Silva]");
+        }
+    }
+    
+    if(posCurso = pesquisaCursoCodigo(cadastro.codigoCurso))
+    {
+        if(obtemDadoArquivo(ARQ_CURSOS, &curso, sizeof(Curso), posCurso))
+        {
+            desenhaMoldura(linha+2, coluna+12, linha+4, coluna+14+TAM_NOME_CURSO, PRETO, BRANCO);
+            gotoxy(coluna, linha+3);
+            printf("Curso:");
+            gotoxy(coluna+14, linha+3);
+            printf("%-*.*s\n", TAM_NOME_CURSO-1, TAM_NOME_CURSO-1, strlen(curso.nome) ? curso.nome : "[Ex. Curso ABC]");
+        }
+    }
+    
+    desenhaMoldura(linha+5, coluna+47, linha+7, coluna+65, PRETO, BRANCO);
+    gotoxy(coluna+36, linha+6);
+    printf("Matricula:");
+    gotoxy(coluna+49, linha+6);
+    if(cadastro.matriculaAluno)
+        printf("%06d\n", cadastro.matriculaAluno);
+    else
+        printf("%-*.*s\n", 10, 10, "[Ex. 010]");
+
+    desenhaMoldura(linha+5, coluna+12, linha+7, coluna+9+10+5, PRETO, BRANCO);
+    gotoxy(coluna, linha+6);
+    printf("Codigo:");
+    gotoxy(coluna+14, linha+6);
+    if(cadastro.codigoCurso)
+        printf("%06d\n", cadastro.codigoCurso);
+    else
+        printf("%-*.*s\n", 10, 10, "[Ex. 0100]");
+    
+    desenhaMoldura(linha+8, coluna+12, linha+10, coluna+30, PRETO, BRANCO);
+    gotoxy(coluna, linha+9);
+    printf("Financeiro:");
+    gotoxy(coluna+14, linha+9);
+    printf("%-*.*s\n", 16, 16, sit == '1' ? "Regular" : (sit == '2' ? "Atrasado" : (sit == '3' ? "Totalmente Pago" : "Situacao" )));
+
+    desenhaMoldura(linha+8, coluna+54, linha+10, coluna+65, PRETO, BRANCO);
+    gotoxy(coluna+43, linha+9);
+    printf("Conclusao:");
+    gotoxy(coluna+56, linha+9);
+    printf("%-*.*s\n", 9, 9, cadastro.situacaoAluno == '1' ? "Cursando" : "Concluiu");
 }
 
 //***********************************************************************************************************************
@@ -324,13 +380,13 @@ int apresentaDadosCadastros(Cadastro *cadastros, int qtdeCadastros)
                 
                 if(contador+LINHAS_TABELA<qtdeCadastros)
                 {
-                    gotoxy(45, LINHA_TABELA+qtdeItens+3);
+                    gotoxy(45, LINHA_TABELA_ALUNOS+qtdeItens+3);
                     printf("Pressione Esc para ver o restante!");
                 }
 
-                selecao = menuVertical(titulo, &linhasTabela[contador], qtdeItens, BRANCO, AZUL_C, 1, COLUNA_TABELA, LINHA_TABELA, 1, PRETO, CINZA_C);
+                selecao = menuVertical(titulo, &linhasTabela[contador], qtdeItens, BRANCO, AZUL_C, 1, COLUNA_TABELA_ALUNOS, LINHA_TABELA_ALUNOS, 1, PRETO, CINZA_C);
                 
-                limpaJanela(COLUNA_TABELA+qtdeItens+3, 45, LINHA_TABELA+qtdeItens+3, 80, PRETO);
+                limpaJanela(LINHA_TABELA_ALUNOS+qtdeItens+3, 45, LINHA_TABELA_ALUNOS+qtdeItens+3, 80, PRETO);
                 
                 if(selecao != 0)
                 {
@@ -370,7 +426,7 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
                              "Concluido",
                              "Ambos"};
     
-    codigoCurso = obtemCursosComAlunosMatriculados();
+    codigoCurso = apresentaTodosCursos();
     
     if(codigoCurso)
     {
@@ -632,7 +688,7 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar entre 2 codigos de curso, qual e o maior 
+//  Objetivo: Verificar entre 2 codigos de curso, qual ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© o maior 
 //  Parametros: Os codigos do curso
 //  Retorno: Numero positivo se o primeiro codigo for mais, negativo se o segundo for maior ou zero se forem iguais
 int comparaCadastroCodigo(const void *p1, const void *p2)
@@ -642,4 +698,3 @@ int comparaCadastroCodigo(const void *p1, const void *p2)
     cadastro2 = (Cadastro *) p2;
     return cadastro1->codigoCurso - cadastro2->codigoCurso;
 }
-
