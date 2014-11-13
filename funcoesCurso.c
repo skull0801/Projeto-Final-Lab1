@@ -558,7 +558,7 @@ int obtemCursosComAlunosMatriculados()
 		apresentaMensagem("Os dados nao puderam ser alocados!");
 		free(cursos);
 	}
-	
+	free(cursos);
 	cursoEscolhido = apresentaDadosCursos(cursos, qtdeCopiados);
 	return cursoEscolhido;
 }
