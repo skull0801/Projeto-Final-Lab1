@@ -236,7 +236,9 @@ Data leValidaData(const char *titulo)
 {
     int flag;
     char *dataTexto, aux[5];
-    Data data;
+    Data data, dataAtual;
+    
+    geraDataIngresso(&dataAtual);
 
     do
     {
@@ -247,9 +249,16 @@ Data leValidaData(const char *titulo)
         else
             flag = 0;
         clrscr();
-        
-        if(!flag)
-            printf("Esta nao e uma data valida!\n");
+        if(flag)
+        {
+            if(comparaDatas(data, dataAtual) > 0)
+            {
+                apresentaMensagem("A data nao pode ser maior que a atual!");
+                flag = 0;
+            }
+        }
+        else
+            apresentaMensagem("Esta nao e uma data valida!");
 
         free(dataTexto);
     }
