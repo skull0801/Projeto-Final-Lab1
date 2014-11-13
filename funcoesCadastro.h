@@ -14,8 +14,7 @@ void excluiMatriculaAlunoEmUmCurso(void);
 void excluiMatriculaAluno(int matricula, int codCurso);
 
 // Apresentacao
-void listaDadosCadastro(void);
-void apresentaCadastro(Cadastro cadastro);
+void apresentaCadastro(Cadastro cadastro, int linha, int coluna);
 void pesquisaApresentaCadastro(void);
 void apresentaTodosAlunosCadastrados(void);
 void apresentaAlunosMatriculadosEmUmCurso(void);
