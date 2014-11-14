@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
 #include "dados.h"
 #include "cores.h"
 #include "funcoesBasicas.h"
@@ -14,7 +15,10 @@
 void cadastraCurso(void)
 {
     Curso curso;
-    leDadosCurso(&curso);
+    
+    memset(&curso, 0, sizeof(Curso));
+    curso.codigo = achaProximoCodCurso();
+    alteraDadosCurso(&curso);
     if(curso.codigo != 0)
     {
 		if(gravaDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso)))
@@ -27,23 +31,6 @@ void cadastraCurso(void)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Ler os dados de um curso
-//  Parametros: Referencia a um curso
-//  Retorno: 0 se os dados foram lidos com sucesso ou 1 se houve algum erro
-void leDadosCurso(Curso *curso)
-{
-    curso->codigo = achaProximoCodCurso();
-    if(curso->codigo != 0)
-    {
-	    leValidaTexto(curso->nome, "Informe o nome do curso", "Curso", 3, TAM_NOME_CURSO);
-	    curso->cargaHoraria = leValidaInteiro("Informe a carga horaria", "Carga Horaria", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
-	    curso->mensalidade = leValidaReal("Informe o valor da mensalidade","Mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
-	}
-	else
-		apresentaMensagem("Nao foi possivel realizar o cadastro!");
-}
-
-//***********************************************************************************************************************
 // Objetivo: Recuperar um curso de um arquivo, deixar o usuario alterar seus dados, e confirmar se as mudancas devem ser salvas
 // Parametros: nenhum
 // Retorno: nenhum
@@ -52,13 +39,8 @@ void alteraCurso(void)
     int posCurso = 0, codigo;
     int opcao = 1, confirmacao;
     Curso curso;
-    char *opcoesAlteracao[] = {"Alterar Nome",
-                               "Alterar Mensalidade",
-                               "Alterar Carga Horaria",
-                               "Salvar Mudancas",
-                               "Cancelar Mudancas"};
     
-    codigo = apresentaTodosCursos();
+    codigo = selecionaCurso();
     
     if(codigo)
         posCurso = pesquisaCursoCodigo(codigo);
@@ -67,26 +49,9 @@ void alteraCurso(void)
     {
         if(obtemDadoArquivo(ARQ_CURSOS, (void *) &curso, sizeof(Curso), posCurso))
         {
-            do
-            {
-                apresentaCurso(curso, 5, 5);
-                opcao = menuVertical("O que deseja fazer?", opcoesAlteracao, 5, BRANCO, AZUL_C, 1, 55, 15, opcao, PRETO, CINZA_E);
-                switch(opcao)
-                {
-                    case 1:
-                        leValidaTexto(curso.nome, "Informe qual o novo nome do curso", "Novo nome do curso", 3, TAM_NOME_CURSO);
-                        break;
-                    case 2:
-                        curso.mensalidade = leValidaReal("Informe qual o novo valor da mensalidade", "Novo valor da mensalidade", MENSALIDADE_MIN, MENSALIDADE_MAX);
-                        break;
-                    case 3:
-                        curso.cargaHoraria = leValidaInteiro("Informe qual o novo valor da carga horaria do curso", "Novo valor da carga horaria", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
-                        break;
-                }
-            }
-            while(opcao != 0 && opcao != 4 && opcao != 5);
+            opcao = alteraDadosCurso(&curso);
             
-            if(opcao == 4)
+            if(opcao == 1)
             {
                 confirmacao = confirmaEscolha(40, 12, "Deseja salvar as mudancas?");
                 if(confirmacao == 1)
@@ -110,6 +75,109 @@ void alteraCurso(void)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Permitir que o usario altere os dados de um cuso
+// Parametros: Referencia ao curso a ser alterado
+// Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
+int alteraDadosCurso(Curso *curso)
+{
+    int opcao = 1, flag, horas;
+    int pos [5][2] = {4,5, 4,8, 4,11, 5+15-1,5+12, 5+30-1,5+12};
+    float mensalidade;
+    char *campoLido, *erro = NULL;
+    char erroHoras[50], erroMensalidade[50];
+
+    sprintf(erroHoras, "Horas devem estar entre %d e %d!", CARGA_HORARIA_MIN, CARGA_HORARIA_MAX);
+    sprintf(erroMensalidade, "Mensalidade deve estar entre %.2f e %.2f", MENSALIDADE_MIN, MENSALIDADE_MAX);
+    
+    do
+    {
+        apresentaCurso(*curso, 5, 5);
+        
+        gotoxy(5+15, 5+12);
+        printf("Salvar");
+        
+        gotoxy(5+30, 5+12);
+        printf("Cancelar");
+        
+        opcao = simulaMenu(pos, 5, opcao);
+
+        switch(opcao)
+        {
+            case 1:
+                do
+                {
+                    limpaJanela(5, 5+14, 5, 64, PRETO);
+                    gotoxy(5+14, 5);
+                    campoLido = leStringEmCampo(50);
+                    if(campoLido != NULL && strlen(campoLido) >= 3)
+                    {
+                        flag = 1;
+                        strcpy(curso->nome, campoLido);
+                    }
+                    else
+                    {
+                        flag = 0;
+                        apresentaErroCampo(5, 5+14, 63, "Nome invalido!");
+                    }
+                    free(campoLido);
+                }
+                while(!flag);
+
+                break;
+            case 2:
+                do
+                {
+                    limpaJanela(5+3, 5+14, 5+3, 27, PRETO);
+                    gotoxy(5+14, 5+3);
+                    campoLido = leStringEmCampo(5);
+                    horas = atoi(campoLido);
+                    if(horas < CARGA_HORARIA_MIN || horas > CARGA_HORARIA_MAX)
+                        apresentaErroCampo(5+10, 5+20, 5+20+strlen(erroHoras), erroHoras);
+                    free(campoLido);
+                }
+                while(horas < CARGA_HORARIA_MIN || horas > CARGA_HORARIA_MAX);
+                
+                curso->cargaHoraria = horas;
+                
+                break;
+            case 3:
+                do
+                {
+                    limpaJanela(5+6, 5+14, 5+6, 27, PRETO);
+                    gotoxy(5+14, 5+6);
+                    campoLido = leStringEmCampo(9);
+                    mensalidade = atof(campoLido);
+                    if(mensalidade < MENSALIDADE_MIN || mensalidade > MENSALIDADE_MAX)
+                        apresentaErroCampo(5+10, 5+14, 5+14+strlen(erroMensalidade), erroMensalidade);
+                    free(campoLido);
+                }
+                while(mensalidade < MENSALIDADE_MIN || mensalidade > MENSALIDADE_MAX);
+                
+                curso->mensalidade = mensalidade;
+
+                break;
+        }
+
+        limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_CURSO+14, PRETO);
+
+        if(opcao == 4 && (strlen(curso->nome) < 3 || curso->cargaHoraria < CARGA_HORARIA_MIN || curso->mensalidade < MENSALIDADE_MIN))
+        {
+            apresentaMensagem("Voce deve preencher todos os campos!");
+            opcao = 1;
+        }
+
+        if(opcao == 0 || opcao == 5)
+        {
+            if(confirmaEscolha(40, 12, "Deseja cancelar?") == 0)
+                opcao = 1;
+        }
+    }
+    while(opcao != 0 && opcao != 4 && opcao != 5);
+    
+    return opcao == 4 ? 1 : 0;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Ler o codigo de um curso, buscar pelo mesmo, e confirmar se o usuario deseja excluir o curso, caso queira, excluir
 // Parametros: Nenhum
 // Retorno: Nenhum
@@ -130,7 +198,7 @@ void excluiCurso(void)
         {
             apresentaCurso(curso, 5, 5);
             confirmacao = confirmaEscolha(55, 15, "Realmente deseja excluir?");
-            limpaJanela(1, 1, 9, 80, PRETO);
+            limpaJanela(1, 1, 12, 80, PRETO);
             if(confirmacao == 1)
             {
                 if(!verificaCursoAlunoCadastrado(codigo))
@@ -282,7 +350,7 @@ void pesquisaApresentaCursoCodigo(void)
         {
             apresentaCurso(curso, 5, 5);
             getch();
-            limpaJanela(1, 1, 10, 80, PRETO);
+            limpaJanela(1, 1, 12, 80, PRETO);
         }
         else
             apresentaMensagem("O curso nao pode ser recuperado!");
@@ -327,28 +395,25 @@ int pesquisaCursoCodigo(int codCursoBusca)
 // Retorno: Nenhum
 void apresentaCurso(Curso curso, int linha, int coluna)
 {
-    int tamCurso = 51;
-
-    desenhaMoldura(linha-1, coluna+12, linha+1, coluna+9+tamCurso+5, PRETO, BRANCO);
+    desenhaMoldura(linha-1, coluna+12, linha+1, coluna+9+TAM_NOME_CURSO+5, PRETO, BRANCO);
     gotoxy(coluna, linha);
     printf("Nome:");
     gotoxy(coluna+14, linha);
-    printf("%-*.*s\n", tamCurso-1, tamCurso-1, strlen(curso.nome) ? curso.nome : "[Ex. Curso ABC]");
+    printf("%-*.*s\n", TAM_NOME_CURSO-1, TAM_NOME_CURSO-1, strlen(curso.nome) ? curso.nome : "[Ex. Curso ABC]");
 
-    desenhaMoldura(linha+2, coluna+12, linha+4, coluna+9+10+5, PRETO, BRANCO);
-    gotoxy(coluna, linha+3);
+    desenhaMoldura(linha+2, coluna+50, linha+4, coluna+9+TAM_NOME_CURSO+5, PRETO, BRANCO);
+    gotoxy(coluna+42, linha+3);
     printf("Codigo:");
-    gotoxy(coluna+14, linha+3);
+    gotoxy(coluna+52, linha+3);
     if(curso.codigo)
         printf("%06d\n", curso.codigo);
     else
         printf("%-*.*s\n", 10, 10, "[Ex. 0100]");
 
-
-    desenhaMoldura(linha+2, coluna+50, linha+4, coluna+9+tamCurso+5, PRETO, BRANCO);
-    gotoxy(coluna+42, linha+3);
+    desenhaMoldura(linha+2, coluna+12, linha+4, coluna+9+10+5, PRETO, BRANCO);
+    gotoxy(coluna, linha+3);
     printf("Horas:");
-    gotoxy(coluna+52, linha+3);
+    gotoxy(coluna+14, linha+3);
     if(curso.cargaHoraria)
         printf("%-8d\n", curso.cargaHoraria);
     else
@@ -358,7 +423,10 @@ void apresentaCurso(Curso curso, int linha, int coluna)
     gotoxy(coluna, linha+6);
     printf("Mensalidade:");
     gotoxy(coluna+14, linha+6);
-    printf("%-8.2f", curso.mensalidade);
+    if(curso.mensalidade)
+        printf("%-8.2f", curso.mensalidade);
+    else
+        printf("%9.9s", "[Ex. 200]");
     
 }
 
@@ -399,7 +467,7 @@ int apresentaDadosCursos(Curso *cursos, int qtdCursos)
                 linhasTabela[contador] = (char*) malloc(sizeof(char)*(TAM_TEXTO_TABELA));
                 if(linhasTabela[contador] != NULL)
                     {
-                        sprintf(linhasTabela[contador], "%06d - %-45.20s -  %04dh - %-10.2f",
+                        sprintf(linhasTabela[contador], "%06d - %-45.40s -  %04dh - %-10.2f",
                         cursos[contador].codigo, cursos[contador].nome, cursos[contador].cargaHoraria, cursos[contador].mensalidade);
                     qtdLinhasAlocada++;
                 }

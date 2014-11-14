@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include <time.h>
+#include <stdlib.h>
 #include "dados.h"
 #include "cores.h"
 #include "funcoesBasicas.h"
@@ -15,7 +16,9 @@
 void cadastraAluno(void)
 {
     Aluno aluno;
+
     memset(&aluno, 0, sizeof(Aluno));
+
     geraDataIngresso(&aluno.dataIngresso);
     if(leDadosAluno(&aluno))
     {
@@ -105,13 +108,19 @@ int leDadosAluno(Aluno *aluno)
                     {
                         if(cpfValida == 0)
                         {
-                            if(toupper(apresentaErroCampo(8, 13, 27, "CPF nao existe"))==27)
+                            if(apresentaErroCampo(8, 13, 27, "CPF nao existe"))
+                            {
                                 flag = 1;
+                                opcao = 1;
+                            }
                         }
                         else if(cpfExiste == 1)
                         {
-                            if(toupper(apresentaErroCampo(8, 13, 27, "CPF cadastrado"))==27)
+                            if(apresentaErroCampo(8, 13, 27, "CPF cadastrado"))
+                            {
                                 flag = 1;
+                                opcao = 1;
+                            }
                         }
                         else
                             apresentaErroCampo(8, 13, 27, "Insira novamente");
@@ -191,12 +200,8 @@ int leDadosAluno(Aluno *aluno)
                 opcao = 1;
     }
     while(opcao != 0 && opcao != 6 && opcao != 7);
-        
-    limpaJanela(5-1, 5-1, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
     
     return opcao == 6 ? 1 : 0;
-    
-    return 1;
 }
 
 //***********************************************************************************************************************
@@ -250,14 +255,9 @@ void alteraAluno(void)
 // Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
 int alteraDadosAluno(Aluno *aluno)
 {
-    int opcao = 1, subOpcao, flag, flagSelecao, selecao, idade, val, ultimaSelecao;
+    int opcao = 1, subOpcao, flag, idade;
     int pos [5][2] = {4,5, 4,11, 33,11, 5+15-1,5+12, 5+30-1,5+12};
-    char *campoLido, tecla;
-    char *opcoesAlteracao[] = {"Alterar Nome",
-                               "Alterar Idade",
-                               "Alterar Sexo",
-                               "Salvar Mudancas",
-                               "Cancelar Mudancas"};
+    char *campoLido;
     char *sexos[] = {"MASCULINO", "FEMININO"};
     
     do
@@ -323,16 +323,16 @@ int alteraDadosAluno(Aluno *aluno)
 
                 break;
         }
+
+        limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
+
         if(opcao == 0 || opcao == 5)
         {
-            limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
             if(confirmaEscolha(40, 12, "Deseja cancelar?") == 0)
                 opcao = 1;
         }
     }
     while(opcao != 0 && opcao != 4 && opcao != 5);
-        
-    limpaJanela(5-1, 5-1, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
     
     return opcao == 4 ? 1 : 0;
 }
@@ -554,15 +554,13 @@ void pesquisaApresentaAlunoMatricula(void)
 // Retorno: nenhum
 void apresentaAluno(Aluno aluno, int linha, int coluna)
 {
-    int tamAluno = 51;
     char cpfFormatado[15];
-    char *titulos[] = {"Nome", "CPF", "Matricula", "Idade", "Sexo", "Data de Ingresso"};
 
-    desenhaMoldura(linha-1, coluna+6, linha+1, coluna+8+tamAluno, PRETO, BRANCO);
+    desenhaMoldura(linha-1, coluna+6, linha+1, coluna+8+TAM_NOME_ALUNO, PRETO, BRANCO);
     gotoxy(coluna, linha);
     printf("Nome:");
     gotoxy(coluna+8, linha);
-    printf("%-*.*s\n", tamAluno-1, tamAluno-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Jose da Silva]");
+    printf("%-*.*s\n", TAM_NOME_ALUNO-1, TAM_NOME_ALUNO-1, strlen(aluno.nome) ? aluno.nome : "[Ex. Jose da Silva]");
 
     desenhaMoldura(linha+2, coluna+6, linha+4, coluna+11+TAM_CPF, PRETO, BRANCO);
     gotoxy(coluna, linha+3);
@@ -574,7 +572,7 @@ void apresentaAluno(Aluno aluno, int linha, int coluna)
         sprintf(cpfFormatado, "NUMEROCPFNU");
     printf("%-*.*s", TAM_CPF+2, TAM_CPF+2, cpfFormatado);
 
-    desenhaMoldura(linha+2, coluna+26+TAM_CPF, linha+4, coluna+8+tamAluno, PRETO, BRANCO);
+    desenhaMoldura(linha+2, coluna+26+TAM_CPF, linha+4, coluna+8+TAM_NOME_ALUNO, PRETO, BRANCO);
     gotoxy(coluna+15+TAM_CPF, linha+3);
     printf("Matricula:");
     gotoxy(coluna+28+TAM_CPF, linha+3);
@@ -592,7 +590,7 @@ void apresentaAluno(Aluno aluno, int linha, int coluna)
     else
         printf("%*.*s\n", 8, 8, "[Ex. 23]");
 
-    desenhaMoldura(linha+5, coluna+26+TAM_CPF, linha+7, coluna-1+tamAluno, PRETO, BRANCO);
+    desenhaMoldura(linha+5, coluna+26+TAM_CPF, linha+7, coluna-1+TAM_NOME_ALUNO, PRETO, BRANCO);
     gotoxy(coluna+29, linha+6);
     printf("Sexo:");
     gotoxy(coluna+28+TAM_CPF, linha+6);
