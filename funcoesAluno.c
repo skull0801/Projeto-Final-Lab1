@@ -37,16 +37,12 @@ void cadastraAluno(void)
 //  Retorno: 1 se leu com sucesso, e 0 se nao leu os dados
 int leDadosAluno(Aluno *aluno)
 {
-    int opcao = 0, subOpcao, flagTudoLido = 0, flag, flagSelecao, selecao, matricula, ultimaSelecao, idade;
+    int opcao = 0, subOpcao, flagTudoLido = 0, flag, matricula, idade;
     int cpfExiste, cpfValida, flagMatricula;
     int pos [7][2] = {4,5, 4,8, 4,11, 31,8, 33,11, 5+15-1,5+12, 5+30-1,5+12};
-    char *campoLido, tecla;
-    char *opcoesAlteracao[] = {"Alterar Nome",
-                               "Alterar Idade",
-                               "Alterar Sexo",
-                               "Salvar Mudancas",
-                               "Cancelar Mudancas"};
+    char *campoLido, erroIdade[50];
     char *sexos[] = {"MASCULINO", "FEMININO"};
+    sprintf(erroIdade, "Idade deve estar entre %d e %d!", MIN_IDADE, MAX_IDADE);
     
     do
     {
@@ -138,10 +134,10 @@ int leDadosAluno(Aluno *aluno)
                     campoLido = leStringEmCampo(5);
                     idade = atoi(campoLido);
                     if(idade < MIN_IDADE || idade > MAX_IDADE)
-                        apresentaErroCampo(11, 13, 20, "!");
+                        apresentaErroCampo(18, 20, strlen(erroIdade)+20, erroIdade);
                     free(campoLido);
                 }
-                while(idade < 15 || idade > 150);
+                while(idade < MIN_IDADE || idade > MAX_IDADE);
                 aluno->idade = idade;
                 
                 break;
@@ -257,8 +253,9 @@ int alteraDadosAluno(Aluno *aluno)
 {
     int opcao = 1, subOpcao, flag, idade;
     int pos [5][2] = {4,5, 4,11, 33,11, 5+15-1,5+12, 5+30-1,5+12};
-    char *campoLido;
+    char *campoLido, erroIdade[50];
     char *sexos[] = {"MASCULINO", "FEMININO"};
+    sprintf(erroIdade, "Idade deve estar entre %d e %d!", MIN_IDADE, MAX_IDADE);
     
     do
     {
@@ -303,11 +300,10 @@ int alteraDadosAluno(Aluno *aluno)
                     campoLido = leStringEmCampo(5);
                     idade = atoi(campoLido);
                     if(idade < MIN_IDADE || idade > MAX_IDADE)
-                        apresentaErroCampo(11, 13, 20, "!");
+                        apresentaErroCampo(18, 20, strlen(erroIdade)+20, erroIdade);
                     free(campoLido);
                 }
-                while(idade < 15 || idade > 150);
-                
+                while(idade < MIN_IDADE || idade > MAX_IDADE);
                 aluno->idade = idade;
                 
                 break;
