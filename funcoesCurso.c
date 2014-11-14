@@ -577,6 +577,7 @@ int achaProximoCodCurso(void)
                 }
             }
         }
+        free(cursos);
     }
     else if(!verificaArquivoVazio(ARQ_CURSOS))
         codigo = 0;
@@ -619,6 +620,7 @@ int obtemCursosComAlunosMatriculados()
 				}
 			}
 		}
+		fclose(arq);
 	}
 	else
 		apresentaMensagem("O arquivo dos cursos nao pode ser aberto!");

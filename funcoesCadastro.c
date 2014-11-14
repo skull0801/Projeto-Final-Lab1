@@ -218,7 +218,6 @@ void excluiMatriculaAlunoEmUmCurso(void)
         if((cadastros = obtemAlunosDeCurso(codigoCurso, &qtdCadastros, 3)) != NULL)
         {
             matriculaASerExcluida = apresentaDadosCadastros(cadastros, qtdCadastros);
-            free(cadastros);
             
             if(matriculaASerExcluida)
             {
@@ -243,6 +242,7 @@ void excluiMatriculaAlunoEmUmCurso(void)
                 else
                     apresentaMensagem("A matricula nao pode ser excluida!!");
             }
+            free(cadastros);
         }
         else
             apresentaMensagem("Nao ha nenhum aluno cadastrado no curso!");
