@@ -324,12 +324,12 @@ int simulaMenu(int posicoes[][2], int qtdOpcoes, int selecaoInicial)
             selecao = qtdOpcoes-1;
         else if(selecao >= qtdOpcoes)
             selecao = 0;
-
-        gotoxy(posicoes[ultimaSelecao][0]-1, posicoes[ultimaSelecao][1]);
-        printf("%c%c", ' ', ' ');
         
         if(tecla != 13 && tecla != 27)
         {
+            gotoxy(posicoes[ultimaSelecao][0]-1, posicoes[ultimaSelecao][1]);
+            printf("%c%c", ' ', ' ');
+            
             gotoxy(posicoes[selecao][0]-1, posicoes[selecao][1]);
             printf("%c%c", '-', '>');
             

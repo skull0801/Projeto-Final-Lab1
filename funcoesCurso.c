@@ -18,13 +18,13 @@ void cadastraCurso(void)
     
     memset(&curso, 0, sizeof(Curso));
     curso.codigo = achaProximoCodCurso();
-    alteraDadosCurso(&curso);
     if(curso.codigo != 0)
     {
-		if(gravaDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso)))
-            apresentaMensagem("O curso foi salvo com sucesso!");
-        else
-            apresentaMensagem("O curso nao pode ser salvo!");
+        if(alteraDadosCurso(&curso))
+    		if(gravaDadoArquivo(ARQ_CURSOS, (void*) &curso, sizeof(Curso)))
+                apresentaMensagem("O curso foi salvo com sucesso!");
+            else
+                apresentaMensagem("O curso nao pode ser salvo!");
     }
     else
         apresentaMensagem("O curso nao pode ser cadastrado!");
