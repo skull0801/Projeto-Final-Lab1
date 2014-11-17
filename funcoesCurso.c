@@ -80,7 +80,7 @@ void alteraCurso(void)
 // Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
 int alteraDadosCurso(Curso *curso)
 {
-    int opcao = 1, flag, horas;
+    int opcao = 1, horas;
     int pos [5][2] = {4,5, 4,8, 4,11, 5+15-1,5+12, 5+30-1,5+12};
     float mensalidade;
     char *campoLido, *erro = NULL;
@@ -104,56 +104,47 @@ int alteraDadosCurso(Curso *curso)
         switch(opcao)
         {
             case 1:
-                do
-                {
-                    limpaJanela(5, 5+14, 5, 64, PRETO);
-                    gotoxy(5+14, 5);
-                    campoLido = leStringEmCampo(50);
-                    if(campoLido != NULL && strlen(campoLido) >= 3)
-                    {
-                        flag = 1;
-                        strcpy(curso->nome, campoLido);
-                    }
-                    else
-                    {
-                        flag = 0;
-                        apresentaErroCampo(5, 5+14, 63, "Nome invalido!");
-                    }
-                    free(campoLido);
-                }
-                while(!flag);
-
+                limpaJanela(5, 5+14, 5, 64, PRETO);
+                gotoxy(5+14, 5);
+                
+                campoLido = leStringEmCampo(50);
+                
+                if(campoLido != NULL && strlen(campoLido) >= 3)
+                    strcpy(curso->nome, campoLido);
+                else
+                    apresentaErroCampo(5, 5+14, 63, "Nome invalido!");
+                    
+                free(campoLido);
+                
                 break;
             case 2:
-                do
-                {
-                    limpaJanela(5+3, 5+14, 5+3, 27, PRETO);
-                    gotoxy(5+14, 5+3);
-                    campoLido = leStringEmCampo(5);
-                    horas = atoi(campoLido);
-                    if(horas < CARGA_HORARIA_MIN || horas > CARGA_HORARIA_MAX)
-                        apresentaErroCampo(5+10, 5+20, 5+20+strlen(erroHoras), erroHoras);
-                    free(campoLido);
-                }
-                while(horas < CARGA_HORARIA_MIN || horas > CARGA_HORARIA_MAX);
+                limpaJanela(5+3, 5+14, 5+3, 27, PRETO);
+                gotoxy(5+14, 5+3);
                 
-                curso->cargaHoraria = horas;
+                campoLido = leStringEmCampo(5);
+                horas = atoi(campoLido);
+                
+                if(horas < CARGA_HORARIA_MIN || horas > CARGA_HORARIA_MAX)
+                    apresentaErroCampo(5+10, 5+20, 5+20+strlen(erroHoras), erroHoras);
+                else
+                    curso->cargaHoraria = horas;
+                    
+                free(campoLido);
                 
                 break;
             case 3:
-                do
-                {
-                    limpaJanela(5+6, 5+14, 5+6, 27, PRETO);
-                    gotoxy(5+14, 5+6);
-                    campoLido = leStringEmCampo(9);
-                    mensalidade = atof(campoLido);
-                    if(mensalidade < MENSALIDADE_MIN || mensalidade > MENSALIDADE_MAX)
-                        apresentaErroCampo(5+10, 5+14, 5+14+strlen(erroMensalidade), erroMensalidade);
-                    free(campoLido);
-                }
-                while(mensalidade < MENSALIDADE_MIN || mensalidade > MENSALIDADE_MAX);
+                limpaJanela(5+6, 5+14, 5+6, 27, PRETO);
+                gotoxy(5+14, 5+6);
                 
-                curso->mensalidade = mensalidade;
+                campoLido = leStringEmCampo(9);
+                mensalidade = atof(campoLido);
+                
+                if(mensalidade < MENSALIDADE_MIN || mensalidade > MENSALIDADE_MAX)
+                    apresentaErroCampo(5+10, 5+14, 5+14+strlen(erroMensalidade), erroMensalidade);
+                else
+                    curso->mensalidade = mensalidade;
+                    
+                free(campoLido);
 
                 break;
         }
@@ -584,6 +575,7 @@ int achaProximoCodCurso(void)
     return codigo;
 }
 
+/*
 //***********************************************************************************************************************
 //  Objetivo: Obter todos os cursos que possuem alunos matriculados
 //  Parametros: Nenhum
@@ -637,4 +629,4 @@ int obtemCursosComAlunosMatriculados()
 	}
 	return cursoEscolhido;
 }
-
+*/
