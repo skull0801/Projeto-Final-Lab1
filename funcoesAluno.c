@@ -202,7 +202,7 @@ void alteraAluno(void)
 int alteraDadosAluno(Aluno *aluno)
 {
     int opcao = 1, subOpcao, idade;
-    int pos [5][2] = {4,5, 4,11, 33,11, 5+15-1,5+12, 5+30-1,5+12};
+    int pos [6][2] = {4,5, 4,8, 4,11, 33,11, 5+15-1,5+12, 5+30-1,5+12};
     char *campoLido, erroIdade[50];
     char *sexos[] = {"MASCULINO", "FEMININO"};
     sprintf(erroIdade, "Idade deve estar entre %d e %d!", MIN_IDADE, MAX_IDADE);
@@ -217,7 +217,7 @@ int alteraDadosAluno(Aluno *aluno)
         gotoxy(5+30, 5+12);
         printf("Cancelar");
         
-        opcao = simulaMenu(pos, 5, opcao);
+        opcao = simulaMenu(pos, 6, opcao);
 
         switch(opcao)
         {
@@ -234,6 +234,23 @@ int alteraDadosAluno(Aluno *aluno)
 
                 break;
             case 2:
+                limpaJanela(8, 13, 8, 27, PRETO);
+                gotoxy(13, 8);
+                
+                campoLido = leStringEmCampo(11);
+                
+                if(validaCPF(campoLido))
+                    if(verificaCPFAluno(campoLido) == 0)
+                        strcpy(aluno->cpf, campoLido);
+                    else
+                        apresentaErroCampo(8, 13, 27, "CPF cadastrado");
+                else
+                    apresentaErroCampo(8, 13, 27, "CPF nao existe");
+                    
+                free(campoLido);
+                
+                break;
+            case 3:
                 limpaJanela(11, 13, 11, 20, PRETO);
                 gotoxy(13, 11);
                 
@@ -247,7 +264,7 @@ int alteraDadosAluno(Aluno *aluno)
                     aluno->idade = idade;
                     
                 break;
-            case 3:
+            case 4:
                 do
                 {
                     limpaJanela(10, 43, 15, 55, PRETO);
@@ -262,15 +279,15 @@ int alteraDadosAluno(Aluno *aluno)
 
         limpaJanela(5-1, 5-2, (5)+12, 5+TAM_NOME_ALUNO+8, PRETO);
 
-        if(opcao == 0 || opcao == 5)
+        if(opcao == 0 || opcao == 6)
         {
             if(confirmaEscolha(40, 12, "Deseja cancelar?") == 0)
                 opcao = 1;
         }
     }
-    while(opcao != 0 && opcao != 4 && opcao != 5);
+    while(opcao != 0 && opcao != 5 && opcao != 6);
     
-    return opcao == 4 ? 1 : 0;
+    return opcao == 5 ? 1 : 0;
 }
 
 //***********************************************************************************************************************
