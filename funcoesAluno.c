@@ -37,7 +37,7 @@ void cadastraAluno(void)
 //  Retorno: 1 se leu com sucesso, e 0 se nao leu os dados
 int leDadosAluno(Aluno *aluno)
 {
-    int opcao = 0, subOpcao, flagTudoLido = 0, flag, matricula, idade;
+    int opcao = 0, subOpcao, flagTudoLido = 0, matricula, idade;
     int cpfExiste, cpfValida, flagMatricula;
     int pos [7][2] = {4,5, 4,8, 4,11, 31,8, 33,11, 5+15-1,5+12, 5+30-1,5+12};
     char *campoLido, erroIdade[50];
@@ -54,117 +54,67 @@ int leDadosAluno(Aluno *aluno)
         gotoxy(5+30, 5+12);
         printf("Cancelar");
         
-        opcao = simulaMenu(pos, 7, opcao+1);
+        opcao = simulaMenu(pos, 7, opcao);
 
         switch(opcao)
         {
             case 1:
-                do
-                {
-                    limpaJanela(5, 13, 5, 63, PRETO);
-                    gotoxy(13, 5);
-                    campoLido = leStringEmCampo(50);
-                    if(campoLido != NULL && strlen(campoLido) >= 3)
-                    {
-                        flag = 1;
-                        strcpy(aluno->nome, campoLido);
-                    }
-                    else
-                    {
-                        flag = 0;
-                        apresentaErroCampo(5, 13, 63, "Nome invalido!");
-                    }
-                    free(campoLido);
-                }
-                while(!flag);
+                limpaJanela(5, 13, 5, 63, PRETO);
+                gotoxy(13, 5);
+                
+                campoLido = leStringEmCampo(50);
+                if(campoLido != NULL && strlen(campoLido) >= 3)
+                    strcpy(aluno->nome, campoLido);
+                else
+                    apresentaErroCampo(5, 13, 63, "Nome invalido!");
+                free(campoLido);
 
                 break;
             case 2:
-                do
-                {
-                    limpaJanela(8, 13, 8, 27, PRETO);
-                    gotoxy(13, 8);
-                    campoLido = leStringEmCampo(11);
-                    if(campoLido != NULL)
-                    {
-                        cpfValida = validaCPF(campoLido);
-                        cpfExiste = verificaCPFAluno(campoLido);
-                        if(cpfValida == 1 && cpfExiste == 0)
-                        {
-                            flag = 1;
-                            strcpy(aluno->cpf, campoLido);
-                        }
-                        else
-                            flag = 0;
-                    }
+                limpaJanela(8, 13, 8, 27, PRETO);
+                gotoxy(13, 8);
+                
+                campoLido = leStringEmCampo(11);
+                
+                if(validaCPF(campoLido))
+                    if(verificaCPFAluno(campoLido) == 0)
+                        strcpy(aluno->cpf, campoLido);
                     else
-                        flag = 0;
+                        apresentaErroCampo(8, 13, 27, "CPF cadastrado");
+                else
+                    apresentaErroCampo(8, 13, 27, "CPF nao existe");
                     
-                    if(!flag)
-                    {
-                        if(cpfValida == 0)
-                        {
-                            if(apresentaErroCampo(8, 13, 27, "CPF nao existe"))
-                            {
-                                flag = 1;
-                                opcao = 1;
-                            }
-                        }
-                        else if(cpfExiste == 1)
-                        {
-                            if(apresentaErroCampo(8, 13, 27, "CPF cadastrado"))
-                            {
-                                flag = 1;
-                                opcao = 1;
-                            }
-                        }
-                        else
-                            apresentaErroCampo(8, 13, 27, "Insira novamente");
-                    }
-                    free(campoLido);
-                }
-                while(!flag);
+                free(campoLido);
                 
                 break;
             case 3:
-                do
-                {
-                    limpaJanela(11, 13, 11, 20, PRETO);
-                    gotoxy(13, 11);
-                    campoLido = leStringEmCampo(5);
-                    idade = atoi(campoLido);
-                    if(idade < MIN_IDADE || idade > MAX_IDADE)
-                        apresentaErroCampo(18, 20, strlen(erroIdade)+20, erroIdade);
-                    free(campoLido);
-                }
-                while(idade < MIN_IDADE || idade > MAX_IDADE);
-                aluno->idade = idade;
+                limpaJanela(11, 13, 11, 20, PRETO);
+                gotoxy(13, 11);
                 
+                campoLido = leStringEmCampo(5);
+                idade = atoi(campoLido);   
+                free(campoLido);
+                
+                if(idade < MIN_IDADE || idade > MAX_IDADE)
+                    apresentaErroCampo(18, 20, strlen(erroIdade)+20, erroIdade);
+                else
+                    aluno->idade = idade;
+                    
                 break;
-            
             case 4:
-                do
-                {
-                    limpaJanela(8, 45, 8, 63, PRETO);
-                    gotoxy(45, 8);
-                    campoLido = leStringEmCampo(6);
-                    matricula = atoi(campoLido);
-                    free(campoLido);
-                    gotoxy(45, 8);
-                    if(matricula < MATRICULA_MIN || matricula > MATRICULA_MAX)
-                    {
-                        flag = 1;
-                        apresentaErroCampo(8, 45, 63, "Matricula Positiva!");
-                    }
-                    else
-                    {
-                        flag = pesquisaAlunoMatricula(matricula);
-                        if(flag)
-                            apresentaErroCampo(8, 45, 63, "Ja cadastrada");
-                    }
-                }
-                while(flag);
-                aluno->matricula = matricula;
+                limpaJanela(8, 45, 8, 63, PRETO);
+                gotoxy(45, 8);
+                
+                campoLido = leStringEmCampo(6);
+                matricula = atoi(campoLido);
+                free(campoLido);
+                
+                if(matricula < MATRICULA_MIN || matricula > MATRICULA_MAX)
+                    apresentaErroCampo(8, 45, 63, "Matricula Positiva!");
+                else if(pesquisaAlunoMatricula(matricula))
+                    apresentaErroCampo(8, 45, 63, "Ja cadastrada");
+                else
+                    aluno->matricula = matricula;
                 
                 break;
             case 5:
@@ -251,7 +201,7 @@ void alteraAluno(void)
 // Retorno: 1 se as alteracoes devem ser salvas e 0 se nao devem
 int alteraDadosAluno(Aluno *aluno)
 {
-    int opcao = 1, subOpcao, flag, idade;
+    int opcao = 1, subOpcao, idade;
     int pos [5][2] = {4,5, 4,11, 33,11, 5+15-1,5+12, 5+30-1,5+12};
     char *campoLido, erroIdade[50];
     char *sexos[] = {"MASCULINO", "FEMININO"};
@@ -272,40 +222,30 @@ int alteraDadosAluno(Aluno *aluno)
         switch(opcao)
         {
             case 1:
-                do
-                {
-                    limpaJanela(5, 13, 5, 63, PRETO);
-                    gotoxy(13, 5);
-                    campoLido = leStringEmCampo(50);
-                    if(campoLido != NULL && strlen(campoLido) >= 3)
-                    {
-                        flag = 1;
-                        strcpy(aluno->nome, campoLido);
-                    }
-                    else
-                    {
-                        flag = 0;
-                        apresentaErroCampo(5, 13, 63, "Nome invalido!");
-                    }
-                    free(campoLido);
-                }
-                while(!flag);
+                limpaJanela(5, 13, 5, 63, PRETO);
+                gotoxy(13, 5);
+                
+                campoLido = leStringEmCampo(50);
+                if(campoLido != NULL && strlen(campoLido) >= 3)
+                    strcpy(aluno->nome, campoLido);
+                else
+                    apresentaErroCampo(5, 13, 63, "Nome invalido!");
+                free(campoLido);
 
                 break;
             case 2:
-                do
-                {
-                    limpaJanela(11, 13, 11, 20, PRETO);
-                    gotoxy(13, 11);
-                    campoLido = leStringEmCampo(5);
-                    idade = atoi(campoLido);
-                    if(idade < MIN_IDADE || idade > MAX_IDADE)
-                        apresentaErroCampo(18, 20, strlen(erroIdade)+20, erroIdade);
-                    free(campoLido);
-                }
-                while(idade < MIN_IDADE || idade > MAX_IDADE);
-                aluno->idade = idade;
+                limpaJanela(11, 13, 11, 20, PRETO);
+                gotoxy(13, 11);
                 
+                campoLido = leStringEmCampo(5);
+                idade = atoi(campoLido);   
+                free(campoLido);
+                
+                if(idade < MIN_IDADE || idade > MAX_IDADE)
+                    apresentaErroCampo(18, 20, strlen(erroIdade)+20, erroIdade);
+                else
+                    aluno->idade = idade;
+                    
                 break;
             case 3:
                 do
