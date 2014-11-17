@@ -72,11 +72,7 @@ void alteraCadastro(void)
                              "Pesquisar por Nome", 
                              "Voltar"};
 
-    opcao = menuVertical("Como deseja selecionar os cursos?", opcoesSelecao, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C); 
-    if(opcao == 1)
-        codigoCurso = obtemCursosComAlunosMatriculados();
-    else if(opcao == 2)
-        codigoCurso = pesquisaApresentaCursoNome();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -206,12 +202,7 @@ void excluiMatriculaAlunoEmUmCurso(void)
                              "Pesquisar por Nome", 
                              "Voltar"};
 
-    opcao = menuVertical("Como deseja selecionar os cursos?", opcoesSelecao, 3, BRANCO, AZUL_C, 1, 20, 5, 1, PRETO, CINZA_C); 
-    
-    if(opcao == 1)
-        codigoCurso = obtemCursosComAlunosMatriculados();
-    else if(opcao == 2)
-        codigoCurso = pesquisaApresentaCursoNome();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -465,7 +456,7 @@ void apresentaAlunosMatriculadosEmUmCurso(void)
                              "Concluido",
                              "Ambos"};
     
-    codigoCurso = obtemCursosComAlunosMatriculados();
+    codigoCurso = selecionaCurso();
     
     if(codigoCurso)
     {
@@ -504,7 +495,10 @@ void apresentaAlunosPorSituacao(void)
     {
         if((cadastros = obtemAlunosPorSituacaoPagamento(&qtdCadastros, indicador)) != NULL)
         {
+            gotoxy(COLUNA_TABELA+1, LINHA_TABELA-4);
+            printf("Alunos com situacao financeira: %s", situacaoAluno[indicador-1]);
             apresentaDadosCadastros(cadastros, qtdCadastros);
+            limpaJanela(LINHA_TABELA-4, COLUNA_TABELA+1, LINHA_TABELA-4, 75, PRETO);
             free(cadastros);
         }
         if(qtdCadastros == 0)
@@ -727,7 +721,7 @@ int pesquisaPosicaoCadastro(int codCurso, int matriculaAluno)
 }
 
 //***********************************************************************************************************************
-//  Objetivo: Verificar entre 2 codigos de curso, qual ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© o maior 
+//  Objetivo: Verificar entre 2 codigos de curso, qual ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© o maior 
 //  Parametros: Os codigos do curso
 //  Retorno: Numero positivo se o primeiro codigo for mais, negativo se o segundo for maior ou zero se forem iguais
 int comparaCadastroCodigo(const void *p1, const void *p2)
