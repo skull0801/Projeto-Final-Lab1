@@ -19,6 +19,7 @@ void pesquisaApresentaCadastro(void);
 void apresentaTodosAlunosCadastrados(void);
 void apresentaAlunosMatriculadosEmUmCurso(void);
 int apresentaDadosCadastros(Cadastro *cadastros, int qtdeCadastros);
+int apresentaCursosDeAluno(int matriculaAluno);
 
 Cadastro *obtemAlunosDeCurso(int codigoCurso, int *qtdCadastros, int indicador);
 Cadastro *obtemAlunosPorSituacaoPagamento(int *qtdCadastros, int indicador);
