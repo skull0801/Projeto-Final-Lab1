@@ -381,6 +381,54 @@ int pesquisaCursoCodigo(int codCursoBusca)
 }
 
 //***********************************************************************************************************************
+// Objetivo: Filtrar cursos por um nome
+// Parametros: Ponteiro para ponteiro de cursos, ponteiro para quantidade de cursos, ponteiro para nome a ser buscado
+// Retorno: 1 se a pesquisa foi feita com sucesso, 0 se houve erro
+int filtraCursosNome(Curso **cursos, int *qtdCursos, const char *nomeBusca)
+{
+    Curso *cursosFiltro = NULL, *cursosAux;
+    int qtdCursosFiltrados = 0, flag = 0, contador;
+    char copiaNome[TAM_NOME_CURSO];
+    
+    for(contador = 0; contador < *qtdCursos; contador++)
+    {
+        strcpy(copiaNome, (*cursos)[contador].nome);
+        strToLower(copiaNome);
+        if(strstr(copiaNome, nomeBusca))
+        {
+            cursosAux = (Curso *) realloc(cursosFiltro, sizeof(Curso)*(qtdCursosFiltrados+1));
+            if(cursosAux != NULL)
+            {
+                cursosFiltro = cursosAux;
+                cursosFiltro[qtdCursosFiltrados] = (*cursos)[contador];
+                qtdCursosFiltrados++;
+            }
+            else
+            {
+                apresentaMensagem("Erro ao alocar memoria para cursos!");
+                flag = 1;
+                break;
+            }
+        }
+    }
+    
+    free(*cursos);
+    
+    if(!flag)
+    {
+        *cursos = cursosFiltro;
+        *qtdCursos = qtdCursosFiltrados;
+    }
+    else
+    {
+        *cursos = NULL;
+        *qtdCursos = 0;
+    }
+    
+    return !flag;
+}
+
+//***********************************************************************************************************************
 // Objetivo: Apresentar um curso
 // Parametros: Curso, linha da apresentacao e coluna da apresentacao
 // Retorno: Nenhum
