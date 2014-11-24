@@ -496,10 +496,11 @@ void apresentaAlunosPorSituacao(void)
 // Retorno: Codigo do curso selecionado
 int apresentaCursosDeAluno(int matriculaAluno)
 {
-    Curso *cursos = NULL, *cursosAux, curso;
+    Curso *cursos = NULL, *cursosPesquisa = NULL, *cursosAux, curso;
     Cadastro cadastro;
+    char nomeBusca[TAM_NOME_CURSO];
     FILE *arq;
-    int qtdCursos = 0, posCurso, codigo = 0, flag = 0;
+    int qtdCursos = 0, posCurso, codigo = 0, flag = 0, contador, qtdCursosPesquisa = 0;
     
     if((arq = fopen(ARQ_MATRICULAS,"rb")) != NULL)
     {
@@ -552,8 +553,26 @@ int apresentaCursosDeAluno(int matriculaAluno)
         if(qtdCursos)
         {
             if(!flag)
-                codigo = apresentaDadosCursos(cursos, qtdCursos);
-            free(cursos);
+            {
+                leValidaTexto(nomeBusca, "Informe o nome do curso a ser buscado (nulo para ver todos)", "Nome", 0, TAM_NOME_CURSO);
+                
+                strToLower(nomeBusca);
+                
+                if(filtraCursosNome(&cursos, &qtdCursos, nomeBusca))
+                {
+                    if(qtdCursos)
+                    {
+                        codigo = apresentaDadosCursos(cursos, qtdCursos);
+                        free(cursos);
+                    }
+                    else
+                    {
+                        apresentaMensagem("Nao houve nenhuma correspondencia!");
+                    }
+                }
+            }
+            else
+                free(cursos);
         }
         else
             apresentaMensagem("Este aluno nao esta matriculado em nenhum curso!");
