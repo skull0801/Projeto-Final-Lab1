@@ -1,6 +1,19 @@
 // Alunos : Marcus Vinicius Campos Fonseca e Lucas Lima da Silva
 // Matriculas: UC14101868, UC14102446
-// Objetivo: Criar um sistema para facilitar o gerenciamento de alunos e cursos de uma escola de informatica
+
+/*
+ Sintese
+    Objetivo: Criar um sistema para facilitar o gerenciamento de alunos e cursos de uma escola de informatica
+    
+    Entrada:  Para cadastrar aluno (Nome, CPF, Idade, Matricula, Sexo), para curso (Nome, Mensalidade, Carga Horaria)
+              e para cadastro (Situacoes financeira e de conclusao), para alterar, excluir e pesquisar: alunos (Nome ou matricula),
+              cursos (Nome ou codigo), e matriculas (Nome do curso), para pesquisa de data (data inicial e final), o restante das
+              selecoes sao feitas por meio de menu vertical
+              
+    Saida:    Apresentacao de dados cadastrais de aluno, de cursos e matriculas (pesquisa por chave unica), tabelas com alunos e cursos
+              correspondentes (pesquisa por parte do nome, situacao do aluno, ou alunos matriculados em periodo)
+           
+*/
 
 #include <stdio.h>
 #include <conio.c>
