@@ -19,6 +19,7 @@ void pesquisaCurso(void);
 void pesquisaApresentaCursoCodigo(void);
 int pesquisaApresentaCursoNome(void);
 int pesquisaCursoCodigo(int codCursoBusca);
+int filtraCursosNome(Curso **cursos, int *qtdCursos, const char *nomeBusca);
 
 // Apresentacao
 void apresentaCurso(Curso curso, int linha, int coluna);
