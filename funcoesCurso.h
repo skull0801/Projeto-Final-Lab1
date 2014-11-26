@@ -17,11 +17,13 @@ void excluiCurso(void);
 int selecionaCurso(void);
 void pesquisaCurso(void);
 void pesquisaApresentaCursoCodigo(void);
+void pesquisaCursoNome(void);
 int pesquisaApresentaCursoNome(void);
 int pesquisaCursoCodigo(int codCursoBusca);
 int filtraCursosNome(Curso **cursos, int *qtdCursos, const char *nomeBusca);
 
 // Apresentacao
+void apresentaCursos(void);
 void apresentaCurso(Curso curso, int linha, int coluna);
 int apresentaTodosCursos(void);
 int apresentaDadosCursos(Curso *cursos, int qtdeCursos);
