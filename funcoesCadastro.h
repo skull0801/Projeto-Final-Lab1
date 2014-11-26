@@ -18,6 +18,7 @@ void apresentaCadastro(Cadastro cadastro, int linha, int coluna);
 void pesquisaApresentaCadastro(void);
 void apresentaTodosAlunosCadastrados(void);
 void apresentaAlunosMatriculadosEmUmCurso(void);
+void apresentaAlunosPorSituacao(void);
 int apresentaDadosCadastros(Cadastro *cadastros, int qtdeCadastros);
 int apresentaCursosDeAluno(int matriculaAluno);
 
