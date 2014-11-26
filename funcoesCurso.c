@@ -261,6 +261,11 @@ void pesquisaCurso(void)
     while(opcao != 0 && opcao != 3);
 }
 
+void pesquisaCursoNome(void)
+{
+    pesquisaApresentaCursoNome();
+}
+
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um curso dentro de um arquivo por nome
 //  Parametros: nome a ser pesquisado
@@ -467,6 +472,11 @@ void apresentaCurso(Curso curso, int linha, int coluna)
     else
         printf("%9.9s", "[Ex. 200]");
     
+}
+
+void apresentaCursos(void)
+{
+    apresentaTodosCursos();
 }
 
 //***********************************************************************************************************************
