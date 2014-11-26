@@ -18,10 +18,12 @@ void excluiAluno(void);
 int selecionaAluno(void);
 void pesquisaAluno(void);
 int pesquisaAlunoMatricula(int matriculaBusca);
+void pesquisaAlunoNome(void);
 int pesquisaApresentaAlunoNome(void);
 void pesquisaApresentaAlunoMatricula(void);
 
 // Apresentacao
+void apresentaAlunos(void);
 void apresentaAluno(Aluno aluno, int linha, int coluna);
 void apresentaAlunosMatriculadosEmPeriodo(void);
 int apresentaTodosAlunos(void);
