@@ -417,6 +417,11 @@ int pesquisaAlunoMatricula(int matriculaBusca)
     return pos;
 }
 
+void pesquisaAlunoNome(void)
+{
+    pesquisaApresentaAlunoNome();
+}
+
 //***********************************************************************************************************************
 //  Objetivo: Pesquisar um aluno dentro de um arquivo por nome
 //  Parametros: nenhum
@@ -616,6 +621,11 @@ void apresentaAlunosMatriculadosEmPeriodo(void)
         else
             apresentaMensagem("Nao houve nenhuma correspondencia!");
     }
+}
+
+void apresentaAlunos(void)
+{
+    apresentaTodosAlunos();
 }
 
 //***********************************************************************************************************************
