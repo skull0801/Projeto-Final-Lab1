@@ -38,6 +38,12 @@ int main(void)
                                    "Relatorios",
                                    "Sair do Programa"};
                                    
+    char *tituloMenu[] = {"MENU ALUNOS",
+                          "MENU CURSOS",
+                          "MENU CADASTRO",
+                          "MENU RELATORIOS"};
+                          
+                                   
     char *opcoesMenuAlunos[] = {"Cadastrar um Aluno",
                                 "Alterar Dados de um Aluno",
                                 "Excluir um Aluno",
@@ -56,14 +62,14 @@ int main(void)
                                     "Alterar os Dados de uma Matricula",
                                     "Excluir uma Matricula",
                                     "Pesquisar uma Matricula",
-                                    "Apresentar Alunos Matriculados em um Curso",
                                     "Apresentar Todas as Matriculas Existentes",
+                                    "Apresentar Alunos Matriculados em um Curso",
                                     "Voltar para Menu Principal"};
                                     
     char *opcoesMenuRelatorios[] = {"Pesquisa por Chave ou Todos",
                                     "Pesquisa de Alunos por Nome",
                                     "Listar Alunos de um Curso",
-                                    "Pesquisar Cursos",
+                                    "Pesquisa de Cursos por Nome",
                                     "Alunos Matriculados em um Periodo",
                                     "Situacao Financeira dos Estudantes",
                                     "Voltar para Menu Principal"};
@@ -75,153 +81,28 @@ int main(void)
                                    "Listar Todos os Cursos",
                                    "Listar Todos as Matriculas",
                                    "Voltar"};
+                                   
+    int qtdOpcoes[] = {6, 6, 7, 7};
     
+    char **opcoesMenu[] = {opcoesMenuAlunos, opcoesMenuCursos, opcoesMenuMatriculas, opcoesMenuRelatorios};
+    
+    void (*funcoesAluno[])() = {cadastraAluno, alteraAluno, excluiAluno, pesquisaAluno, apresentaAlunos};
+    
+    void (*funcoesCurso[])() = {cadastraCurso, alteraCurso, excluiCurso, pesquisaCurso, apresentaCursos};
+    
+    void (*funcoesMatricula[])() = {cadastraAlunoEmCurso, alteraCadastro, excluiMatriculaAlunoEmUmCurso, 
+                                    pesquisaApresentaCadastro, apresentaTodosAlunosCadastrados, 
+                                    apresentaAlunosMatriculadosEmUmCurso};
+                                    
+    void (*funcoesRelatorios[])() = {cadastraAluno, pesquisaAlunoNome, apresentaAlunosMatriculadosEmUmCurso, 
+                                     pesquisaCursoNome, apresentaAlunosMatriculadosEmPeriodo, apresentaAlunosPorSituacao};
+                                    
+    void (**funcoes[])() = {funcoesAluno, funcoesCurso, funcoesMatricula, funcoesRelatorios};
     // Instrucoes
-    do
-    {
-        opcao = menuVertical("ESCOLA DE INFORMATICA", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, opcao, PRETO, CINZA_C);
-        subOpcao = 1;
-        switch(opcao)
-        {
-            case 1:
-                do
-                {
-                    subOpcao = menuVertical("MENU ALUNOS", opcoesMenuAlunos, 6, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
-                    switch(subOpcao)
-                    {
-                        case 1:
-                            cadastraAluno();
-                            break;
-                        case 2:
-                            alteraAluno();
-                            break;
-                        case 3:
-                            excluiAluno();
-                            break;
-                        case 4:
-                            pesquisaAluno();
-                            break;
-                        case 5:
-                            apresentaTodosAlunos();
-                            break;
-                    }
-                }
-                while(subOpcao != 0 && subOpcao != 6);
-                
-                break;
-            case 2:
-                do
-                {
-                    subOpcao = menuVertical("MENU CURSOS", opcoesMenuCursos, 6, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
-                    switch(subOpcao)
-                    {
-                        case 1:
-                            cadastraCurso();
-                            break;
-                        case 2:
-                            alteraCurso();
-                            break;
-                        case 3:
-                            excluiCurso();
-                            break;
-                        case 4:
-                            pesquisaCurso();
-                            break;
-                        case 5:
-                            apresentaTodosCursos();
-                            break;
-                    }
-                }
-                while(subOpcao != 0 && subOpcao != 6);
-                
-                break;
-            case 3:
-                do
-                {
-                    subOpcao = menuVertical("MENU CADASTRO", opcoesMenuMatriculas, 7, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
-                    switch(subOpcao)
-                    {
-                        case 1:
-                            cadastraAlunoEmCurso();
-                            break;
-                        case 2:
-                            alteraCadastro();
-                            break;
-                        case 3:
-                            excluiMatriculaAlunoEmUmCurso();
-                            break;
-                        case 4:
-                            pesquisaApresentaCadastro();
-                            break;
-                        case 5:
-                            apresentaAlunosMatriculadosEmUmCurso();
-                            break;
-                        case 6:
-                            apresentaTodosAlunosCadastrados();
-                            break;
-                    }
-                }
-                while(subOpcao != 0 && subOpcao != 7);
-                
-                break;
-            case 4:
-                do
-                {
-                    subOpcao = menuVertical("MENU RELATORIOS", opcoesMenuRelatorios, 7, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C);
-                    subSubOpcao = 1;
-                    switch(subOpcao)
-                    {
-                        case 1:
-                            do
-                            {
-                                subSubOpcao = menuVertical("MENU RELATORIO 1", opcoesPesquisaChave, 7, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subSubOpcao, PRETO, CINZA_C);
-                                switch(subSubOpcao)
-                                {
-                                    case 1:
-                                        pesquisaApresentaAlunoMatricula();
-                                        break;
-                                    case 2:
-                                        pesquisaApresentaCursoCodigo();
-                                        break;
-                                    case 3:
-                                        pesquisaApresentaCadastro();
-                                        break;
-                                    case 4:
-                                        apresentaTodosAlunos();
-                                        break;
-                                    case 5:
-                                        apresentaTodosCursos();
-                                        break;
-                                    case 6:
-                                        apresentaTodosAlunosCadastrados();
-                                        break;
-                                }
-                            }
-                            while(subSubOpcao != 0 && subSubOpcao != 7);
-
-                            break;
-                        case 2:
-                            pesquisaApresentaAlunoNome();
-                            break;
-                        case 3:
-                            apresentaAlunosMatriculadosEmUmCurso();
-                            break;
-                        case 4:
-                            pesquisaCurso();
-                            break;
-                        case 5:
-                            apresentaAlunosMatriculadosEmPeriodo();
-                            break;
-                        case 6:
-                            apresentaAlunosPorSituacao();
-                            break;
-                    }
-                }
-                while(subOpcao != 0 && subOpcao != 7);
-                
-                break;
-        }
-    }
+    do if((opcao = menuVertical("ESCOLA DE INFORMATICA", opcoesMenuPrincipal, 5, BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, opcao, PRETO, CINZA_C)) != 0 && opcao != 5)
+        do if((subOpcao = menuVertical(tituloMenu[opcao-1], opcoesMenu[opcao-1], qtdOpcoes[opcao-1], BRANCO, AZUL_C, 1, LINHA_MENU, COLUNA_MENU, subOpcao, PRETO, CINZA_C)) != 0 && subOpcao != qtdOpcoes[opcao-1])
+            (*(funcoes[opcao-1])[subOpcao-1])();
+        while(subOpcao != 0 && subOpcao != qtdOpcoes[opcao-1]);
     while(opcao != 0 && opcao != 5);
     
     return 0;
